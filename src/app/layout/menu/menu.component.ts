@@ -150,6 +150,28 @@ export class MenuComponent implements OnInit {
       timeModules.forEach((m) => added.add(m.id));
     }
 
+    // Procesar módulos que van en el panel de Talento Humano
+    const humanResourcesModules = sorted.filter(
+      (m) =>
+        ['Revisión de candidatos', 'Requerimientos'].includes(m.moduleName) &&
+        !added.has(m.id)
+    );
+
+    if (humanResourcesModules.length > 0) {
+      menuItems.push({
+        type: 'expansion',
+        moduleName: 'Talento Humano',
+        icon: 'people',
+        displayOrder: Math.min(...humanResourcesModules.map((m) => m.displayOrder)),
+        options: humanResourcesModules.map((m) => ({
+          type: 'item',
+          ...m,
+        })),
+      });
+
+      humanResourcesModules.forEach((m) => added.add(m.id));
+    }
+
     // Procesar módulos que van en el panel de Configuración
     const configModules = sorted.filter(
       (m) =>

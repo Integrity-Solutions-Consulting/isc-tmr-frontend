@@ -1,0 +1,74 @@
+
+<div class="main-content">
+  <div class="headers">
+    <h3>Gestión de Vacantes</h3>
+    <p class="subtitle">Administra todas las vacantes publicadas</p>
+
+    <div class="filters">
+      <mat-form-field class="search" appearance="outline">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>Buscar vacantes...</mat-label>
+        <input matInput (keyup)="onSearch($event.target.value)">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>filter_alt</mat-icon>
+        <mat-label>Filtrar por estado</mat-label>
+        <mat-select (selectionChange)="onFilterByStatus($event.value)">
+          <mat-option value="Todos">Todos los estados</mat-option>
+          <mat-option value="EN REVISION">En Revisión</mat-option>
+          <mat-option value="ABIERTO">Abierto</mat-option>
+          <mat-option value="CERRADO">Cerrado</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <!-- Tabla de vacantes -->
+  <div class="job-card">
+    <h2 class="section-title">Vacantes</h2>
+    <p class="section-desc">Lista completa de vacantes publicadas y su estado actual</p>
+
+    <table class="card-content">
+      <thead>
+        <tr >
+          <th>Puesto</th>
+          <th class="text-center">Departamento</th>
+          <th class="text-center">Estado</th>
+          <th class="text-center">Postulantes</th>
+          <th class="text-center">Fecha Límite</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+
+       <tbody>
+        <tr *ngFor="let job of filteredJobs">
+          <td class="puesto">{{ job.title }}</td>
+          <td>{{ job.location }}</td>
+
+          <td>
+            <span class="status" [ngClass]="getStatusClass(job.status)">
+              {{ job.status }}
+            </span>
+          </td>
+
+          <td>{{ job.id * 5 }}</td>
+
+          <td>{{ job.date }}</td>
+
+          <td class="acciones">
+            <mat-select class="status-select">
+              <mat-option>Estado</mat-option>
+              <mat-option value="ABIERTO">Abierto</mat-option>
+              <mat-option value="EN REVISION">En Revisión</mat-option>
+              <mat-option value="CERRADO">Cerrado</mat-option>
+            </mat-select>
+
+            <button mat-stroked-button color="primary" (click)="goToDetails(job.id)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      </table>
+  </div>
+</div>

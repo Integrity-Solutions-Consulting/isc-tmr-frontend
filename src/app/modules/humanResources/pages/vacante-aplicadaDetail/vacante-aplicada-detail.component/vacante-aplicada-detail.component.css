@@ -1,0 +1,160 @@
+/* ===== DETALLE DE VACANTE ===== */
+.job-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #f5f6f8;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ===== ENCABEZADO ===== */
+.job-header-card {
+  padding: 0;
+  overflow: hidden;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.job-header {
+  padding: 40px 50px 25px 50px;
+  background: #f5f6f8;
+}
+
+.job-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000;
+}
+
+.job-header .company {
+  color: #666;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+.job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag{
+  padding: 8px 14px;
+  border-radius: 13px;
+  font-size: 0.9em;
+  border: 1px solid #ccc;
+  font-weight: 500;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  gap: 6px;
+  color: #444;
+}
+
+.job-tags mat-icon {
+  font-size: 18px;
+  color: #1976d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== BOTÓN APLICAR ===== */
+.apply-button-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.itg-primary-button {
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 22px;
+  text-transform: none;
+  transition: background 0.3s ease;
+}
+
+.itg-primary-button:hover {
+  background-color: #145ea8 !important;
+}
+
+/* ===== SECCIONES DE DETALLE ===== */
+.cards {
+  padding: 30px 50px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f6f8;
+  gap: 25px;
+}
+
+.section-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.section-card .mat-card-header {
+  padding: 20px 25px 0 25px;
+  background: #f5f6f8;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.section-card .mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111;
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.section-card .mat-card-content {
+  padding: 20px 25px 25px 25px;
+}
+
+.description-text {
+  line-height: 1.7;
+  color: #333;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ===== LISTAS ===== */
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checklist li {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.checklist mat-icon {
+  color: #16a34a;
+  font-size: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .job-header {
+    padding: 25px;
+  }
+
+  .cards {
+    padding: 20px;
+  }
+
+  .job-header h2 {
+    font-size: 1.6rem;
+  }
+}
