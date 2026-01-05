@@ -117,10 +117,32 @@ export class MenuComponent implements OnInit {
       timeModules.forEach((m) => added.add(m.id));
     }
 
+    // Procesar módulos que van en el panel de Requerimiento
+    const humanResourcesManagement = sorted.filter(
+      (m) =>
+        ['Solicitud de Requerimiento', 'Solicitud de Requerimiento'].includes(m.moduleName) &&
+        !added.has(m.id)
+    );
+
+    if (humanResourcesManagement.length > 0) {
+      menuItems.push({
+        type: 'expansion',
+        moduleName: 'Gestion RH',
+        icon: 'people',
+        displayOrder: Math.min(...humanResourcesManagement.map((m) => m.displayOrder)),
+        options: humanResourcesManagement.map((m) => ({
+          type: 'item',
+          ...m,
+        })),
+      });
+
+      humanResourcesManagement.forEach((m) => added.add(m.id));
+    }
+
     // Procesar módulos que van en el panel de Talento Humano
     const humanResourcesModules = sorted.filter(
       (m) =>
-        ['Revisión de candidatos', 'Requerimientos'].includes(m.moduleName) &&
+        ['Dashboard', 'Gestión de vacantes', 'Revisión de candidatos', 'Nueva vacante'].includes(m.moduleName) &&
         !added.has(m.id)
     );
 

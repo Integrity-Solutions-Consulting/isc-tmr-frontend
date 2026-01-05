@@ -8,7 +8,8 @@
       <mat-form-field class="search" appearance="outline">
         <mat-icon matPrefix>search</mat-icon>
         <mat-label>Buscar vacantes...</mat-label>
-        <input matInput (keyup)="onSearch($event.target.value)">
+        <input matInput [(ngModel)]="searchText"
+          (ngModelChange)="onSearch($event)">
       </mat-form-field>
 
       <mat-form-field appearance="outline">

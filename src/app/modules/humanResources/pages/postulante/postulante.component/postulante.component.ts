@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterModule } from '@angular/router';
-import { NavComponent } from '../../../../../shared/nav/nav.component/nav.component';
-import { SideNavComponent } from '../../../../../shared/side-nav/side-nav-postulante.component/side-nav.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
