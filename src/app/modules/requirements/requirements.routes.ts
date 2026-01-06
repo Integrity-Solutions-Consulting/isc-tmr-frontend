@@ -2,7 +2,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HistorialRequerimientoComponent } from './pages/historial-requerimiento/historial-requerimiento/historial-requerimiento.component';
 import { SolicitudRequerimientoComponent } from './pages/solicitud-requerimiento/solicitud-requerimiento/solicitud-requerimiento.component';
 
-const routes: Routes = [
+export const REQUIREMENTS_ROUTES: Routes = [
   {
     path: '',
         children: [
@@ -12,4 +12,4 @@ const routes: Routes = [
   },
 ];
 
-export const RequirementsRoutes = RouterModule.forChild(routes);
+export default REQUIREMENTS_ROUTES;
