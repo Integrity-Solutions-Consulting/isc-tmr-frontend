@@ -19,8 +19,6 @@ import { ExcelExporter } from '../../../../shared/exporters/excel-exporter';
 import { ProyectoHoursResponse } from '../../interfaces/reports';
 import { ReportsService } from '../../services/Reports.service';
 
-
-
 @Component({
   selector: 'report-hours-table',
   standalone: true,
@@ -62,7 +60,7 @@ export class ReportHoursTableComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  constructor(private reportService:ReportsService ) {}
+  constructor(private reportService: ReportsService) {}
 
   ngOnInit(): void {
     this.loadDataFromAPI();
@@ -142,6 +140,18 @@ export class ReportHoursTableComponent implements OnInit {
           paginatorIntl.lastPageLabel = 'Última página';
           this.loading = false;
         });
+        const currentMonth = new Date().getMonth() + 1;
+        const currentYear = new Date().getFullYear();
+
+        if (this.months.some((m) => m.value === currentMonth)) {
+          this.monthFilter.setValue(currentMonth, { emitEvent: false });
+        }
+
+        if (this.years.includes(currentYear)) {
+          this.yearFilter.setValue(currentYear, { emitEvent: false });
+        }
+
+        this.applyFilters();
       },
     });
   }

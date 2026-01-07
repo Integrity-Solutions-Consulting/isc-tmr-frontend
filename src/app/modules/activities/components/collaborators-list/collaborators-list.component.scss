@@ -37,7 +37,7 @@
 
   mat-form-field {
     flex: 1;
-    min-width: 50px; /* Para que no se hagan muy pequeños */
+    min-width: 190px; /* Para que no se hagan muy pequeños */
     height: 40px;
     display: flex;
     align-items: center;
@@ -195,3 +195,15 @@ mat-paginator {
     font-size: 1.1em;
     font-style: italic;
   }
+.period-and-filter-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* 👈 alineado a la derecha */
+  gap: 8px;
+}
+
+.without-hours-toggle {
+  font-size: 13px;
+  margin-left: auto;
+  padding-right: 30px;
+}
