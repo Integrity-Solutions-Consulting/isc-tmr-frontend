@@ -23,6 +23,8 @@ import { Collaborator } from '../../interfaces/activity.interface';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ExcelExporter } from '../../../../shared/exporters/excel-exporter';
 
 interface Holiday {
   id: number;
@@ -49,7 +51,10 @@ interface Holiday {
     MatSlideToggleModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,6 +70,7 @@ export class CollaboratorsListComponent implements OnInit {
   monthControl = new FormControl<number>(new Date().getMonth());
   periodToggleControl = new FormControl<boolean>(this.shouldUseFullMonth());
   yearControl = new FormControl<number>(new Date().getFullYear());
+  showOnlyWithoutHours = new FormControl(false);
 
   months = [
     { value: 0, name: 'Enero' },
@@ -86,13 +92,22 @@ export class CollaboratorsListComponent implements OnInit {
   noDataMessage: string = '';
   holidays: Holiday[] = [];
   businessDays: number = 0;
+  clients: any[] = [];
+  filteredClients: any[] = [];
+  clientControl = new FormControl('');
+  currentFilters = {
+  client: '',
+  search: ''
+  };
+
 
   readonly range = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
   });
 
-  displayedColumns: string[] = ['select', 'colaborador', 'proyecto', 'cliente', 'lider', 'horas', 'estado', 'actions'];
+  displayedColumns: string[] = ['select', 'colaborador', 'proyecto', 'cliente', 'lider', 'horas', 'estado', 'actions','diasConReporte',
+  'diasPendientes'];
   dataSource: MatTableDataSource<Collaborator> = new MatTableDataSource<Collaborator>([]);
   selection = new SelectionModel<Collaborator>(true, []);
   searchControl = new FormControl('');
@@ -126,8 +141,42 @@ export class CollaboratorsListComponent implements OnInit {
 
   ngOnInit() {
     this.periodToggleControl.setValue(this.shouldUseFullMonth());
-
+    this.loadClients();
     this.loadHolidaysAndData();
+
+    this.clientControl.valueChanges.subscribe(value => {
+    this.filterClients(value);
+    this.currentFilters.client = value || '';
+    this.applyCombinedFilters();
+  });
+
+     this.searchControl.valueChanges.subscribe(value => {
+    this.currentFilters.search = value || '';
+    this.applyCombinedFilters();
+  });
+     this.showOnlyWithoutHours.valueChanges.subscribe(() => {
+    this.applyCombinedFilters();
+    this.resetPagination();
+  });
+
+      this.monthControl.valueChanges.subscribe(() => {
+    this.resetPagination();
+    this.loadHolidaysAndData();
+  });
+
+  // AÑO
+  this.yearControl.valueChanges.subscribe(() => {
+    this.resetPagination();
+    this.loadHolidaysAndData();
+  });
+
+  // QUINCENA / MES COMPLETO
+  this.periodToggleControl.valueChanges.subscribe(() => {
+    this.resetPagination();
+    this.calculateBusinessDays();
+    this.loadData();
+  });
+
 
     // Suscribirse a cambios de mes y año para recalcular días laborables
     // y resetear el paginador a la primera página
@@ -359,13 +408,10 @@ export class CollaboratorsListComponent implements OnInit {
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  this.currentFilters.search = (event.target as HTMLInputElement).value || '';
+  this.applyCombinedFilters();
+}
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
 
   onPageChange(event: any) {
     // Handle pagination changes
@@ -721,6 +767,25 @@ export class CollaboratorsListComponent implements OnInit {
     return businessDays;
   }
 
+  //Cargar cliente para realizar el filtro
+  loadClients() {
+  const params = {
+    PageNumber: 1,
+    PageSize: 9999,
+    search: ''
+  };
+
+  this.http.get<any>(`${this.urlBase}/api/Client/GetAllClients`, { params })
+    .subscribe({
+      next: (res) => {
+        this.clients = res.items ?? [];
+        this.filteredClients = this.clients;
+      },
+      error: (err) => console.error('Error cargando clientes:', err)
+    });
+  }
+
+
   loadData() {
     const selectedMonth = this.monthControl.value ?? new Date().getMonth();
     const selectedYear = this.yearControl.value ?? new Date().getFullYear();
@@ -764,23 +829,26 @@ export class CollaboratorsListComponent implements OnInit {
           lider: emp.lideresTecnicos,
           horas: emp.horasRegistradasPeriodo,
           estado: this.getEstado(emp.horasRegistradasPeriodo),
+          diasConReporte: emp.diasConReporte,
+          diasPendientes: emp.diasPendientes,
           horasRegistradasPeriodo: emp.horasRegistradasPeriodo,
           projectData: undefined,
-          clientData: undefined
+          clientData: undefined,
         }));
 
-        const filteredCollaborators = collaborators.filter(colaborador => colaborador.horas > 0);
+/*         const filteredCollaborators = collaborators.filter(colaborador => colaborador.horas > 0);
 
         if (filteredCollaborators.length === 0) {
           this.noDataMessage = 'No hay empleados que hayan registrado actividades durante ese periodo.';
         } else {
           this.noDataMessage = '';
-        }
+        } */
 
-        this.dataSource.data = filteredCollaborators;
+
+        this.dataSource.data = collaborators;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        this.totalItems = filteredCollaborators.length;
+        this.totalItems = collaborators.length;
 
         // Resetear a la primera página después de cargar nuevos datos
         this.resetPagination();
@@ -804,10 +872,114 @@ export class CollaboratorsListComponent implements OnInit {
 
     if (porcentajeCompletado >= 100) {
       return 'Completo';
-    } else if (porcentajeCompletado >= 50) {
+    } else if (porcentajeCompletado >= 70) {
       return 'En progreso';
     } else {
       return 'Pendiente';
     }
   }
+  //Buscar cliente
+    applyClientFilter(clientName: string | null) {
+
+    if (!clientName || clientName.trim() === '') {
+      this.dataSource.filter = '';
+      return;
+    }
+
+    this.dataSource.filterPredicate = (row: any) => {
+      return row.cliente
+        ?.toLowerCase()
+        ?.includes(clientName.toLowerCase());
+    };
+
+    this.dataSource.filter = Math.random().toString();
+  }
+  filterClients(value: string | null) {
+  const search = (value || '').toLowerCase();
+
+    this.filteredClients = this.clients.filter(c =>
+      (c.tradeName || '').toLowerCase().includes(search) ||
+      (c.legalName || '').toLowerCase().includes(search)
+    );
+  }
+  applyCombinedFilters() {
+
+  this.dataSource.filterPredicate = (row: any) => {
+
+    // FILTRO CLIENTE
+    const matchesClient =
+      !this.currentFilters.client ||
+      row.cliente?.toLowerCase().includes(
+        this.currentFilters.client.toLowerCase()
+      );
+
+    // FILTRO COLABORADOR
+    const matchesSearch =
+      !this.currentFilters.search ||
+      row.nombre?.toLowerCase().includes(
+        this.currentFilters.search.toLowerCase()
+      );
+     // FILTRO HORAS (toggle)
+    const matchesHours = this.showOnlyWithoutHours.value
+      ? row.horas === 0   // ON → solo sin horas
+      : true;             // OFF → todos
+
+    return matchesClient && matchesSearch && matchesHours;
+  };
+
+  // fuerza refresco
+  this.dataSource.filter = Math.random().toString();
+}
+getMonthName(monthIndex: number | null): string {
+  if (monthIndex === null || monthIndex === undefined) return '';
+
+  const month = this.months.find(m => m.value === monthIndex);
+  return month ? month.name : '';
+}
+
+
+//columnas del excel a exportar
+  columnsExcel = [
+    { header: 'Colaborador', key: 'nombre', width: 30 },
+    { header: 'Proyecto', key: 'proyecto', width: 30 },
+    { header: 'Cliente', key: 'cliente', width: 30 },
+    { header: 'Líder', key: 'lider', width: 30 },
+    { header: 'Horas', key: 'horas', width: 15 },
+    { header: 'Estado', key: 'estado', width: 18 },
+    { header: 'Días con reporte', key: 'diasConReporte', width: 20 },
+    { header: 'Días pendientes', key: 'diasPendientes', width: 20 }
+  ];
+  downloadTableExcel() {
+
+  const dataToExport = this.dataSource.filteredData.length
+    ? this.dataSource.filteredData   // si hay filtros
+    : this.dataSource.data;           // si no hay filtros
+
+  if (!dataToExport || dataToExport.length === 0) {
+    console.warn('No hay datos para exportar');
+    return;
+  }
+
+  const filtersText = [
+    `Año: ${this.yearControl.value}`,
+    `Mes: ${this.getMonthName(this.monthControl.value)}`,
+    //`Periodo: ${this.periodToggleControl.value ? 'Mes completo' : 'Quincena'}`,
+    this.currentFilters.client ? `Cliente: ${this.currentFilters.client}` : null,
+    this.currentFilters.search ? `Colaborador: ${this.currentFilters.search}` : null,
+    this.showOnlyWithoutHours.value ? `Colaboradores sin horas` : null
+  ]
+  .filter(x => x !== null)
+  .join(' | ');
+
+  ExcelExporter.export(
+    'Reporte de colaboradores',
+    this.columnsExcel,
+    dataToExport,
+    `Reporte_Colaboradores_${new Date().toISOString().slice(0, 10)}`,
+    filtersText
+  );
+  }
+
+
+
 }
