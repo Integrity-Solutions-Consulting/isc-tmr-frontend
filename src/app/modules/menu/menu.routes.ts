@@ -109,9 +109,9 @@ export const menuRoutes: Routes = [
           import('../reports/reports.routes').then((m) => m.REPORTES_ROUTES),
       },
       {
-        path: 'requirementS',
+        path: 'requirements',
         loadChildren: () =>
-          import('../requirements/requirements.routes').then((m) => m.REQUIREMENTS_ROUTES),
+          import('../requirements/requirements.routes').then((m) => m.requirementsRoutes),
       },
       {
         path: 'humanResources',
