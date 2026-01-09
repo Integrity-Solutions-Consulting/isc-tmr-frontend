@@ -1,0 +1,82 @@
+.service-mode-container {
+  padding: 2rem;
+  max-width: 800px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Ajusta según la fuente global de tu proyecto */
+}
+
+.header {
+  margin-bottom: 2.5rem;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+
+    .gear-icon {
+      width: 28px;
+      height: 28px;
+      color: #3498db; /* Azul tipo engranaje de configuración */
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #002f5b; /* Azul oscuro del título */
+      margin: 0;
+    }
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #7f8c8d; /* Gris para el subtítulo */
+    margin: 0;
+    margin-left: 2.5rem; /* Alineado visualmente con el texto del título */
+  }
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 500px; /* Limita el ancho para que se vea como en la imagen */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+
+    .required {
+      color: #e74c3c;
+    }
+  }
+
+  .form-control {
+    padding: 0.8rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: #fff;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+  }
+
+  /* Estilos específicos para los inputs de Tiempo */
+  .time-inputs {
+    display: flex;
+    gap: 1rem; /* Espacio entre los dos inputs */
+
+    .form-control {
+      flex: 1; /* Hace que ambos ocupen el mismo ancho */
+    }
+  }
+}

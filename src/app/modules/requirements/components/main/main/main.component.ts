@@ -4,7 +4,6 @@ import { GeneralDataComponent } from '../../booklets/general-data/general-data/g
 import { KnowledgeComponent } from '../../booklets/knowledge/knowledge/knowledge.component';
 import { PaymentScheduleComponent } from '../../booklets/payment-schedule/payment-schedule/payment-schedule.component';
 import { ProfileDetailComponent } from '../../booklets/profile-detail/profile-detail/profile-detail.component';
-import { ResourcesComponent } from '../../booklets/resources/resources/resources.component';
 import { ServiceModeComponent } from '../../booklets/service-mode/service-mode/service-mode.component';
 import { AbstractControl, FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,12 +11,17 @@ import { ModalDialogService } from '../../../../../shared/services/modalDialog.s
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatCardModule } from "@angular/material/card";
+import { ResourcesLevelComponent } from '../../booklets/resources-level/resources-level/resources-level.component';
 
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [MatStepperModule, MatIconModule, MatProgressSpinnerModule, MatCardModule, GeneralDataComponent, ServiceModeComponent, PaymentScheduleComponent, ResourcesComponent, ProfileDetailComponent, KnowledgeComponent],
+  imports: [MatStepperModule, MatIconModule,
+    MatProgressSpinnerModule, MatCardModule,
+    GeneralDataComponent, ServiceModeComponent,
+    PaymentScheduleComponent, ResourcesLevelComponent,
+    ProfileDetailComponent, KnowledgeComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
@@ -38,8 +42,8 @@ export class MainComponent implements OnInit {
   @ViewChild(ProfileDetailComponent)
   profileDetailComponent!: ProfileDetailComponent;
 
-  @ViewChild(ResourcesComponent)
-  resourcesComponent!: ResourcesComponent;
+  @ViewChild(ResourcesLevelComponent)
+  resourcesComponent!: ResourcesLevelComponent;
 
   @ViewChild(ServiceModeComponent)
   serviceModeComponent!: ServiceModeComponent;
