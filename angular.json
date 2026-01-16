@@ -74,14 +74,15 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          
-      "options": {
-        "allowedHosts": [
-        "dev.tmr.dokploy.integritysolutions.com.ec",
-        "*.dokploy.integritysolutions.com.ec"
-      ]
-    },
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "ISC.TimeReport.FE:build",
+            "allowedHosts": [
+              "dev.tmr.dokploy.integritysolutions.com.ec",
+              ".integritysolutions.com.ec"
+            ]
+          },
+          "configurations": {
             "production": {
               "buildTarget": "ISC.TimeReport.FE:build:production"
             },
