@@ -91,6 +91,7 @@ export class CollaboratorsListComponent implements OnInit {
   isApproving = false;
   noDataMessage: string = '';
   holidays: Holiday[] = [];
+  // Solo informativo. NO usar para validar estados.
   businessDays: number = 0;
   clients: any[] = [];
   filteredClients: any[] = [];
@@ -380,20 +381,9 @@ export class CollaboratorsListComponent implements OnInit {
   }
 
   // Calcular días laborables (lunes a viernes excluyendo feriados)
-  private calculateBusinessDays() {
+  // SOLO informativo. No usar para estados.
+  private calculateBusinessDays(): void {
     this.businessDays = this.calculateBusinessDaysForPeriod();
-
-    const selectedMonth = this.monthControl.value ?? new Date().getMonth();
-    const selectedYear = this.yearControl.value ?? new Date().getFullYear();
-    const isFullMonth = this.periodToggleControl.value ?? false;
-
-    if (isFullMonth) {
-        // Mes completo: calcular todos los días laborables del mes
-        return this.calculateBusinessDaysForMonth(selectedMonth, selectedYear);
-      } else {
-        // Quincena: calcular días laborables del 1 al 15
-        return this.calculateBusinessDaysForFortnight(selectedMonth, selectedYear);
-      }
   }
 
   // Verificar si una fecha es feriado
@@ -791,7 +781,12 @@ export class CollaboratorsListComponent implements OnInit {
     const selectedYear = this.yearControl.value ?? new Date().getFullYear();
     const mesCompleto = this.periodToggleControl.value ?? false;
 
+
     this.calculateBusinessDays();
+    console.log('Mes:', (this.monthControl.value ?? 0) + 1);
+    console.log('Año:', this.yearControl.value);
+    console.log('Mes completo:', this.periodToggleControl.value);
+    console.log('Días laborables:', this.businessDays);
 
     this.http.get<any[]>(
       `${this.urlBase}/api/TimeReport/recursos-pendientes`,
@@ -828,12 +823,16 @@ export class CollaboratorsListComponent implements OnInit {
           clienteIDs: emp.clienteIDs, // Agregar esta línea
           lider: emp.lideresTecnicos,
           horas: emp.horasRegistradasPeriodo,
-          estado: this.getEstado(emp.horasRegistradasPeriodo),
+         estado: this.getEstado(
+          emp.horasRegistradasPeriodo,
+          emp.diasConReporte,
+          emp.diasPendientes),
           diasConReporte: emp.diasConReporte,
-          diasPendientes: emp.diasPendientes,
+          diasPendientes: Math.max(0, emp.diasPendientes),
           horasRegistradasPeriodo: emp.horasRegistradasPeriodo,
           projectData: undefined,
           clientData: undefined,
+
         }));
 
 /*         const filteredCollaborators = collaborators.filter(colaborador => colaborador.horas > 0);
@@ -859,25 +858,38 @@ export class CollaboratorsListComponent implements OnInit {
         this.noDataMessage = 'Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo.';
         this.resetPagination();
       }
+
     });
+
   }
 
   // Método auxiliar para determinar el estado basado en las horas
-  private getEstado(horasRegistradas: number): string {
-    const horasEsperadas = this.businessDays * 8; // 8 horas por día laborable
+      private getEstado(
+      horasRegistradas: number,
+      diasConReporte: number,
+      diasPendientes: number
+    ): string {
 
-    if (horasEsperadas === 0) return 'Pendiente'; // Evitar división por cero
+      const diasObjetivo = diasConReporte + diasPendientes;
+      const horasEsperadas = diasObjetivo * 8;
 
-    const porcentajeCompletado = (horasRegistradas / horasEsperadas) * 100;
+      if (horasEsperadas <= 0) return 'Pendiente';
 
-    if (porcentajeCompletado >= 100) {
-      return 'Completo';
-    } else if (porcentajeCompletado >= 70) {
-      return 'En progreso';
-    } else {
+      if (horasRegistradas >= horasEsperadas) {
+        return 'Completo';
+      }
+
+      const porcentajeCompletado = (horasRegistradas / horasEsperadas) * 100;
+
+      if (porcentajeCompletado >= 50) {
+        return 'En progreso';
+      }
+
       return 'Pendiente';
     }
-  }
+
+
+
   //Buscar cliente
     applyClientFilter(clientName: string | null) {
 
@@ -947,7 +959,7 @@ getMonthName(monthIndex: number | null): string {
     { header: 'Horas', key: 'horas', width: 15 },
     { header: 'Estado', key: 'estado', width: 18 },
     { header: 'Días con reporte', key: 'diasConReporte', width: 20 },
-    { header: 'Días pendientes', key: 'diasPendientes', width: 20 }
+    { header: 'Días a Completar', key: 'diasPendientes', width: 20 }
   ];
   downloadTableExcel() {
 
