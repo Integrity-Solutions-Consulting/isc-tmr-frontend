@@ -458,23 +458,31 @@ export class EventDialogComponent implements OnInit {
   }
 
   validateHours(): void {
-    // Si el valor está vacío o no es un número, establecer como null
-    if (this.event.hours === '' || isNaN(Number(this.event.hours))) {
-      this.event.hours = null;
-      return;
-    }
-
-    const hours = Number(this.event.hours);
-
-    // Forzar valores entre 0.5 y 8
-    if (hours < 0.5) {
-      this.event.hours = 0.5;
-    } else if (hours > 8) {
-      this.event.hours = 8;
-    } else {
-      this.event.hours = hours;
-    }
+  if (this.event.hours === '' || isNaN(Number(this.event.hours))) {
+    this.event.hours = null;
+    return;
   }
+
+  const hours = Number(this.event.hours);
+
+
+  const VACACIONES_ID = 4003;
+  const PERMISO_ID = 4004;
+
+  const allowZero = this.event.activityTypeID === VACACIONES_ID ||
+                    this.event.activityTypeID === PERMISO_ID;
+
+  if (allowZero) {
+    if (hours < 0) this.event.hours = 0;
+    else if (hours > 8) this.event.hours = 8;
+    else this.event.hours = hours;
+  } else {
+    if (hours < 0.5) this.event.hours = 0.5;
+    else if (hours > 8) this.event.hours = 8;
+    else this.event.hours = hours;
+  }
+}
+
 
   private formatDate(dateInput: any): string {
     if (!dateInput) {
@@ -555,8 +563,20 @@ export class EventDialogComponent implements OnInit {
       return false;
     }
 
-    const hours = Number(this.event.hours);
-    if (isNaN(hours) || hours < 0.5 || hours > 8) {
+    const hours=Number(this.event.hours);
+
+    const VACACIONES_ID = 4003;
+    const PERMISO_ID = 4004;
+
+    const allowZero = this.event.activityTypeID === VACACIONES_ID ||
+                      this.event.activityTypeID === PERMISO_ID;
+
+    if (
+      isNaN(hours) ||
+      hours > 8 ||
+      (!allowZero && hours < 0.5) ||
+      (allowZero && hours < 0)
+    ) {
       return false;
     }
 
@@ -601,7 +621,7 @@ export class EventDialogComponent implements OnInit {
       }
 
       const proposedHours = Number(this.event.hours);
-      if ((currentHoursForDay + proposedHours) > 8 && !this.data.isEdit) {
+      if (proposedHours > 0 && (currentHoursForDay + proposedHours) > 8 && !this.data.isEdit) {
         return false;
       }
     }
