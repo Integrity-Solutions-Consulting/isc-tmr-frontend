@@ -4,8 +4,11 @@ import { ErrorPage } from './modules/auth/pages/error/error.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthRedirectGuard } from './guards/auth-redirect.guard';
 import { AdminGuard } from './guards/admin.guard';
+import { MainComponent } from './modules/requirements/components/main/main/main.component';
 
 export const routes: Routes = [
+  {path: 'requirements', component: MainComponent },
+
   {
     path: '',
     redirectTo: 'auth/login',

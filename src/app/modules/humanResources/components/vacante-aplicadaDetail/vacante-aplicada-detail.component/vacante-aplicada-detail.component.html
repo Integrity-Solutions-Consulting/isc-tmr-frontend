@@ -1,0 +1,51 @@
+<div class="job-detail" *ngIf="selectedJob">
+    <div class="job-header-card">
+      <div appearance="outline" class="job-header">
+        <h2>{{ selectedJob.title }}</h2>
+        <p class="company">{{ selectedJob.company }}</p>
+        <p>Gestiona el estado de todos los candidatos</p>
+
+        <div class="apply-button-row">
+          <button mat-raised-button class="itg-primary-button"
+          (click)="goToApply()">Aplicar ahora</button>
+        </div>
+
+        <mat-form-field appearance="outline">
+        <mat-icon matPrefix>filter_alt</mat-icon>
+        <mat-label>Filtrar por estado</mat-label>
+        <mat-select (selectionChange)="onFilterByStatus($event.value)">
+          <mat-option value="Todos">Todos los estados</mat-option>
+          <mat-option value="EN REVISION">En Revisión</mat-option>
+          <mat-option value="ENTREVISTA">Entrevista</mat-option>
+          <mat-option value="RECHAZADO">Rechazado</mat-option>
+        </mat-select>
+      </mat-form-field>
+      </div>
+    </div>
+
+    <div class="cards">
+      <mat-card class="section-card">
+          <mat-card-header>
+            <mat-card-title>
+              Descripción del puesto
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="description-text">{{ selectedJob.description }}</p>
+          </mat-card-content>
+      </mat-card>
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-card-title>REQUISITOS</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="checklist">
+            <li *ngFor="let req of selectedJob.requirements">
+              <mat-icon>check_circle_outline</mat-icon>
+              {{req}}
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    </div>
+</div>
