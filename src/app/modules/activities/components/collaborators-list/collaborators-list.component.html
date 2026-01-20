@@ -97,6 +97,7 @@
       </button>
   </div>
 
+  <div class="table-wrapper">
   <table mat-table [dataSource]="dataSource" matSort class="collaborator-table">
     <!-- Checkbox Column -->
     <ng-container matColumnDef="select">
@@ -196,6 +197,7 @@
       [ngClass]="{ 'sin-horas': row.horas === 0 }">
     </tr>
   </table>
+</div>
 
   <div *ngIf="dataSource.data.length === 0 && noDataMessage" class="no-data-message">
     {{ noDataMessage }}

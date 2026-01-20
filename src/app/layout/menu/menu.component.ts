@@ -77,6 +77,7 @@ export class MenuComponent implements OnInit {
       'Clientes',
       'Líderes',
       'Proyecciones',
+      'Requerimientos',
 
     ];
 
@@ -118,31 +119,31 @@ export class MenuComponent implements OnInit {
     }
 
     // Procesar módulos que van en el panel de Requerimiento
-    const humanResourcesManagement = sorted.filter(
+    const requirementManagement = sorted.filter(
       (m) =>
-        ['Solicitud de Requerimiento', 'Solicitud de Requerimiento'].includes(m.moduleName) &&
+        ['Solicitud de requerimiento', 'Historial de requerimiento'].includes(m.moduleName) &&
         !added.has(m.id)
     );
 
-    if (humanResourcesManagement.length > 0) {
+    if (requirementManagement.length > 0) {
       menuItems.push({
         type: 'expansion',
-        moduleName: 'Gestion RH',
-        icon: 'people',
-        displayOrder: Math.min(...humanResourcesManagement.map((m) => m.displayOrder)),
-        options: humanResourcesManagement.map((m) => ({
+        moduleName: 'Requerimientos',
+        icon: 'playlist_add_check',
+        displayOrder: Math.min(...requirementManagement.map((m) => m.displayOrder)),
+        options: requirementManagement.map((m) => ({
           type: 'item',
           ...m,
         })),
       });
 
-      humanResourcesManagement.forEach((m) => added.add(m.id));
+      requirementManagement.forEach((m) => added.add(m.id));
     }
 
     // Procesar módulos que van en el panel de Talento Humano
     const humanResourcesModules = sorted.filter(
       (m) =>
-        ['Dashboard', 'Gestión de vacantes', 'Revisión de candidatos', 'Nueva vacante'].includes(m.moduleName) &&
+        ['Dashboard TH', 'Gestión de vacantes', 'Revisión de candidatos', 'Nueva vacante'].includes(m.moduleName) &&
         !added.has(m.id)
     );
 
