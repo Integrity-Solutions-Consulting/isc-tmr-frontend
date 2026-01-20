@@ -4,12 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { ModalDialogService } from '../../../../../shared/services/modalDialog.service';
-import { GeneralDataComponent } from '../../../components/booklets/general-data/general-data/general-data.component';
-import { KnowledgeComponent } from '../../../components/booklets/knowledge/knowledge/knowledge.component';
-import { PaymentScheduleComponent } from '../../../components/booklets/payment-schedule/payment-schedule/payment-schedule.component';
-import { ProfileDetailComponent } from '../../../components/booklets/profile-detail/profile-detail/profile-detail.component';
-import { ResourcesLevelComponent } from '../../../components/booklets/resources-level/resources-level/resources-level.component';
-import { ServiceModeComponent } from '../../../components/booklets/service-mode/service-mode/service-mode.component';
+import { GeneralDataComponent } from '../../../components/templates/general-data/general-data/general-data.component';
+import { KnowledgeComponent } from '../../../components/templates/knowledge/knowledge/knowledge.component';
+import { PaymentScheduleComponent } from '../../../components/templates/payment-schedule/payment-schedule/payment-schedule.component';
+import { ProfileDetailComponent } from '../../../components/templates/profile-detail/profile-detail/profile-detail.component';
+import { ResourcesLevelComponent } from '../../../components/templates/resources-level/resources-level/resources-level.component';
+import { ServiceModeComponent } from '../../../components/templates/service-mode/service-mode/service-mode.component';
 import { MatIconModule } from "@angular/material/icon";
 import { MatCardModule } from "@angular/material/card";
 
