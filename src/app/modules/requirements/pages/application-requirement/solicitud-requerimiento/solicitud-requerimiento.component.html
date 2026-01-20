@@ -141,13 +141,15 @@
           mat-button
           class="itg-primary-btn"
           (click)="saveKnowledgeAndNext()"
-
         >
-          <span *ngIf="!isSaving">Completar Perfil</span>
-          <span *ngIf="isSaving">
-            <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
-            Guardando...
-          </span>
+          @if (!isSaving) {
+            <span>Completar Perfil</span>
+          } @else {
+            <span>
+              <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+              Guardando...
+            </span>
+}
         </button>
         <!-- [disabled]="!isStepComplete(5) || isSaving" -->
       </div>

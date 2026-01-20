@@ -1,31 +1,26 @@
 import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
-import { GeneralDataComponent } from '../../booklets/general-data/general-data/general-data.component';
-import { KnowledgeComponent } from '../../booklets/knowledge/knowledge/knowledge.component';
-import { PaymentScheduleComponent } from '../../booklets/payment-schedule/payment-schedule/payment-schedule.component';
-import { ProfileDetailComponent } from '../../booklets/profile-detail/profile-detail/profile-detail.component';
-import { ServiceModeComponent } from '../../booklets/service-mode/service-mode/service-mode.component';
-import { AbstractControl, FormBuilder } from '@angular/forms';
+import { FormBuilder, AbstractControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { ModalDialogService } from '../../../../../shared/services/modalDialog.service';
-import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { ModalDialogService } from '../../../../../shared/services/modalDialog.service';
+import { GeneralDataComponent } from '../../../components/booklets/general-data/general-data/general-data.component';
+import { KnowledgeComponent } from '../../../components/booklets/knowledge/knowledge/knowledge.component';
+import { PaymentScheduleComponent } from '../../../components/booklets/payment-schedule/payment-schedule/payment-schedule.component';
+import { ProfileDetailComponent } from '../../../components/booklets/profile-detail/profile-detail/profile-detail.component';
+import { ResourcesLevelComponent } from '../../../components/booklets/resources-level/resources-level/resources-level.component';
+import { ServiceModeComponent } from '../../../components/booklets/service-mode/service-mode/service-mode.component';
+import { MatIconModule } from "@angular/material/icon";
 import { MatCardModule } from "@angular/material/card";
-import { ResourcesLevelComponent } from '../../booklets/resources-level/resources-level/resources-level.component';
-
 
 @Component({
-  selector: 'app-main',
+  selector: 'app-solicitud-requerimiento',
   standalone: true,
-  imports: [MatStepperModule, MatIconModule,
-    MatProgressSpinnerModule, MatCardModule,
-    GeneralDataComponent, ServiceModeComponent,
-    PaymentScheduleComponent, ResourcesLevelComponent,
-    ProfileDetailComponent, KnowledgeComponent],
-  templateUrl: './main.component.html',
-  styleUrl: './main.component.scss'
+  imports: [MatProgressSpinnerModule, MatStepperModule, MatIconModule, ResourcesLevelComponent, PaymentScheduleComponent, ServiceModeComponent, ProfileDetailComponent, KnowledgeComponent, MatCardModule, GeneralDataComponent],
+  templateUrl: './solicitud-requerimiento.component.html',
+  styleUrl: './solicitud-requerimiento.component.scss'
 })
-export class MainComponent implements OnInit {
+export class SolicitudRequerimientoComponent implements OnInit {
   @ViewChild('stepper') stepper!: MatStepper;
 
   @Output() solicitudRequerimeintoEvent = new EventEmitter<boolean>();

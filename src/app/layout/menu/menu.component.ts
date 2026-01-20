@@ -77,7 +77,7 @@ export class MenuComponent implements OnInit {
       'Clientes',
       'Líderes',
       'Proyecciones',
-      'Requerimientos',
+
 
     ];
 
