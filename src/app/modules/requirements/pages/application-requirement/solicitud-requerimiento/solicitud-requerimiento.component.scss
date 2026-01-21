@@ -65,3 +65,16 @@
   border-top-width: 2px;
   border-top-color: #e0e0e0;
 }
+
+/* ===== BOTONES DE NAVEGACIÓN ===== */
+.step-actions {
+  display: flex;
+  align-items: center;          // misma altura
+  justify-content: space-between; // uno izquierda, otro derecha
+  margin-top: 24px;
+}
+
+/* En pasos con solo un botón */
+.step-actions-first {
+  justify-content: flex-end; // botón a la derecha
+}
