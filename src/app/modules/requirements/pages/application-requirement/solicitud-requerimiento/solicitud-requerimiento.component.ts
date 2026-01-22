@@ -5,18 +5,18 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { ModalDialogService } from '../../../../../shared/services/modalDialog.service';
 import { GeneralDataComponent } from '../../../components/templates/general-data/general-data/general-data.component';
-import { KnowledgeComponent } from '../../../components/templates/knowledge/knowledge/knowledge.component';
 import { PaymentScheduleComponent } from '../../../components/templates/payment-schedule/payment-schedule/payment-schedule.component';
 import { ProfileDetailComponent } from '../../../components/templates/profile-detail/profile-detail/profile-detail.component';
 import { ResourcesLevelComponent } from '../../../components/templates/resources-level/resources-level/resources-level.component';
 import { ServiceModeComponent } from '../../../components/templates/service-mode/service-mode/service-mode.component';
 import { MatIconModule } from "@angular/material/icon";
 import { MatCardModule } from "@angular/material/card";
+import { OtherKnowledgeComponent } from '../../../components/templates/other-knowledge/other-knowledge/other-knowledge.component';
 
 @Component({
   selector: 'app-solicitud-requerimiento',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatStepperModule, MatIconModule, ResourcesLevelComponent, PaymentScheduleComponent, ServiceModeComponent, ProfileDetailComponent, KnowledgeComponent, MatCardModule, GeneralDataComponent],
+  imports: [MatProgressSpinnerModule, MatStepperModule, MatIconModule, ResourcesLevelComponent, PaymentScheduleComponent, OtherKnowledgeComponent,ServiceModeComponent, ProfileDetailComponent, MatCardModule, GeneralDataComponent],
   templateUrl: './solicitud-requerimiento.component.html',
   styleUrl: './solicitud-requerimiento.component.scss'
 })
@@ -28,8 +28,8 @@ export class SolicitudRequerimientoComponent implements OnInit {
   @ViewChild(GeneralDataComponent)
   generalDataComponent!: GeneralDataComponent;
 
-  @ViewChild(KnowledgeComponent)
-  knowledgeComponent!: KnowledgeComponent;
+  @ViewChild(OtherKnowledgeComponent)
+  knowledgeComponent!: OtherKnowledgeComponent;
 
   @ViewChild(PaymentScheduleComponent)
   paymentScheduleComponent!: PaymentScheduleComponent;

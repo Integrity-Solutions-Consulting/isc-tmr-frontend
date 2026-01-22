@@ -5,10 +5,10 @@ import { FormGroup } from '@angular/forms';
   selector: 'other-knowledge',
   standalone: true,
   imports: [],
-  templateUrl: './knowledge.component.html',
-  styleUrl: './knowledge.component.scss'
+  templateUrl: './other-knowledge.component.html',
+  styleUrl: './other-knowledge.component.scss'
 })
-export class KnowledgeComponent {
+export class OtherKnowledgeComponent {
   knowledgeForm!: FormGroup;
 
   constructor() {
