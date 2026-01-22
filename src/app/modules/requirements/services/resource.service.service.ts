@@ -9,6 +9,7 @@ import { EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementRespo
 })
 export class ResourceServiceService {
   urlBase: string = environment.URL_BASE;
+  URL_BDE: string = environment.URL_BDE;
 
   constructor(private http: HttpClient) { }
 
@@ -40,6 +41,11 @@ export class ResourceServiceService {
   postOtherKnowledge(request: any): Observable<any> {
     return this.http.post<any>(
       `${this.urlBase}/api/Requirements/other-knowledge`, request)
+  }
+
+  getVacancies(): Observable<any> {
+    return this.http.get<any>(
+      `${this.URL_BDE}/api/Vacancy/get-all-vacancies`);
   }
 
 }

@@ -61,3 +61,13 @@ export interface OtherKnowledgeRequestDTO {
   certificate_data: string;
   other_comments: string;
 }
+
+export interface ClientResponseDTO {
+  id: number;
+  legalName: string;
+}
+
+export interface VacancyResponseDTO  {
+  id: number;
+  name: string;
+}
