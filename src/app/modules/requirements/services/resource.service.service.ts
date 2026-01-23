@@ -30,12 +30,12 @@ export class ResourceServiceService {
 
   getTemplate(): Observable<any> {
     return this.http.get<any>(
-      `${this.urlBase}/api/Requirements/templates`);
+      `${this.urlBase}/api/Requirements/show-templates`);
   }
 
   postTemplate(request: any): Observable<any> {
     return this.http.post<any>(
-      `${this.urlBase}/api/Requirements/templates`, request)
+      `${this.urlBase}/api/Requirements/create-templates`, request)
   }
 
   postOtherKnowledge(request: any): Observable<any> {
@@ -48,4 +48,8 @@ export class ResourceServiceService {
       `${this.URL_BDE}/api/Vacancy/get-all-vacancies`);
   }
 
+  getContactsByClient(clientId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.urlBase}/api/Clients/${clientId}/contacts`);
+  }
 }

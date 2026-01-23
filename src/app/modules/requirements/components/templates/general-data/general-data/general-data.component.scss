@@ -90,3 +90,51 @@
   }
 }
 
+/* REEMPLAZA TU BLOQUE DE NG-SELECT CON ESTE FINAL (CALIBRADO A 42px) */
+:host ::ng-deep ng-select {
+  padding-bottom: 0;
+
+  /* 1. LA CAJA PRINCIPAL */
+  .ng-select-container {
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    /* CORRECCIÓN FINAL DE ALTURA: 42px */
+    /* Esto coincide matemáticamente con padding 0.75rem + font 1rem */
+    min-height: 42px !important;
+    height: 44px !important;
+
+    align-items: center;
+  }
+
+  /* 2. EL TEXTO SELECCIONADO */
+  .ng-value-container .ng-value {
+    font-size: 1rem !important;
+    color: #333;
+    line-height: 42px !important; /* Centrado vertical perfecto */
+  }
+
+  /* 3. EL PLACEHOLDER (Texto de fondo) */
+  .ng-placeholder {
+    font-size: 1rem !important;
+    color: #666 !important; /* Más oscuro para mejor contraste */
+    font-weight: 400;
+
+    /* Truco para que no se vea subido ni bajado */
+    line-height: normal !important;
+    padding-top: 2px; /* Pequeño ajuste visual */
+  }
+
+  /* Alineación lateral idéntica a tus inputs */
+  .ng-value-container {
+    padding: 0 1rem !important;
+  }
+
+  /* FOCUS */
+  &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+    border-color: #3498db;
+    background-color: #fff;
+    box-shadow: none;
+  }
+}

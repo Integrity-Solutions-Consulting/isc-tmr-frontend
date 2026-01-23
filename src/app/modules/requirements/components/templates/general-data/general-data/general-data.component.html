@@ -1,64 +1,93 @@
 <div class="layout-wrapper">
-
   <div class="header-section">
     <h2 class="main-title">Datos generales del cliente</h2>
   </div>
 
   <form [formGroup]="generalDataForm" class="general-data-container">
-
     <div class="columns-grid">
 
       <section class="panel left-column">
+
         <div class="form-group">
           <label for="cliente">Cliente</label>
-          <select id="cliente" class="form-control" formControlName="clientId">
-            <option value="" disabled selected>Seleccione un cliente</option>
-            @for (client of clients(); track client.id) {
-              <option [value]="client.id">{{ client.legalName }}</option>
-            } @empty {
-              <option disabled>No hay clientes disponibles</option>
-            }
-          </select>
+          <ng-select
+            id="cliente"
+            [items]="clients()"
+            bindLabel="legalName"
+            bindValue="id"
+            formControlName="clientId"
+            placeholder="Seleccione o busque un cliente"
+            [clearable]="true">
+          </ng-select>
         </div>
 
         <div class="form-group">
           <label for="cargo">Cargo de vacante</label>
-          <select id="cargo" class="form-control" formControlName="cargoId">
-            <option value="" disabled selected>Seleccione un cargo</option>
-            <option value="dev">DEV.FULLSTACK</option>
-            <option value="qa">ANALISTA QA</option>
-          </select>
+          <ng-select
+            id="cargo"
+            [items]="vacancies()"
+            bindLabel="name"
+            bindValue="value"
+            formControlName="cargoId"
+            placeholder="Seleccione o busque un cargo"
+            [clearable]="true">
+          </ng-select>
         </div>
+
       </section>
 
       <section class="panel right-column">
 
-        <div class="form-group">
+        <div class="form-group horizontal-group">
           <label>Persona de Contacto</label>
-          <select class="form-control">
-            <option value="" selected>Seleccionar de lista...</option>
-          </select>
+          <ng-select
+            [items]="contacts()"
+            bindLabel="fullName"
+            bindValue="id"
+            formControlName="contactId"
+            placeholder="Seleccione de la lista o deje vacío para crear nuevo"
+            (change)="onContactSelect($event)"
+            [clearable]="true"
+            [readonly]="!generalDataForm.get('clientId')?.value">
+          </ng-select>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="nombres">Nombres <span class="required">*</span></label>
-            <input type="text" id="nombres" class="form-control" placeholder="Ingrese los nombres" formControlName="contactFirstName">
+            <input
+              type="text"
+              id="nombres"
+              class="form-control"
+              placeholder="Ingrese los nombres"
+              formControlName="contactFirstName"
+              [readonly]="!!generalDataForm.get('contactId')?.value">
           </div>
 
           <div class="form-group">
             <label for="apellidos">Apellidos <span class="required">*</span></label>
-            <input type="text" id="apellidos" class="form-control" placeholder="Ingrese los apellidos" formControlName="contactLastName">
+            <input
+              type="text"
+              id="apellidos"
+              class="form-control"
+              placeholder="Ingrese los apellidos"
+              formControlName="contactLastName"
+              [readonly]="!!generalDataForm.get('contactId')?.value">
           </div>
         </div>
 
         <div class="form-group">
           <label for="correo">Correo Electrónico (Opcional)</label>
-          <input type="email" id="correo" class="form-control" placeholder="correo@ejemplo.com" formControlName="contactEmail">
+          <input
+            type="email"
+            id="correo"
+            class="form-control"
+            placeholder="correo@ejemplo.com"
+            formControlName="contactEmail"
+            [readonly]="!!generalDataForm.get('contactId')?.value">
         </div>
       </section>
 
     </div>
   </form>
-
 </div>
