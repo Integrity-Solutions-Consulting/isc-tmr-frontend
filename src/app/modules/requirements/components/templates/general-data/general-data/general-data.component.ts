@@ -116,7 +116,7 @@ onContactSelect(contact: any) {
         contactEmail: contact.email
       });
     } else {
-      // CASO B: Borró la selección (X) -> Limpiamos para que escriba uno nuevo manualmente
+      // CASO B: Borró la selección (X) > Limpiamos para que escriba uno nuevo manualmente
       this.generalDataForm.patchValue({
         contactId: null,      // ID nulo significa "Nuevo Contacto" para el backend
         contactFirstName: '', // Limpiamos para que el usuario escriba
