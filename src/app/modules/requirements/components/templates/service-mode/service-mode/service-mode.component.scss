@@ -1,45 +1,47 @@
+/* service-mode.component.scss */
+
 .service-mode-container {
-  padding: 2rem;
-  max-width: 800px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Ajusta según la fuente global de tu proyecto */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  /* padding: 1rem; (Opcional, según tu layout global) */
 }
 
+/* HEADER Y TÍTULO */
 .header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 0.5rem;
+}
 
-  .title-group {
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem; /* Espacio entre icono y texto */
+
+  /* Estilo del nuevo Mat-Icon */
+  .gear-icon {
+    color: #3498db; /* Tu azul corporativo (ajusta a tu gusto) */
+    font-size: 1.8rem; /* Tamaño del icono */
+    width: 1.8rem;
+    height: 1.8rem;
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.5rem;
-
-    .gear-icon {
-      width: 28px;
-      height: 28px;
-      color: #3498db; /* Azul tipo engranaje de configuración */
-    }
-
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: #002f5b; /* Azul oscuro del título */
-      margin: 0;
-    }
+    justify-content: center;
   }
 
-  .subtitle {
-    font-size: 1rem;
-    color: #7f8c8d; /* Gris para el subtítulo */
+  .main-title {
+    font-size: 1.5rem; /* Ajusta según tus otros títulos */
+    font-weight: 700;
+    color: #333;
     margin: 0;
-    margin-left: 2.5rem; /* Alineado visualmente con el texto del título */
   }
 }
 
+/* FORMULARIO */
 .form-content {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 500px; /* Limita el ancho para que se vea como en la imagen */
+  max-width: 600px; /* O el ancho que prefieras */
 }
 
 .form-group {
@@ -48,35 +50,43 @@
   gap: 0.5rem;
 
   label {
+    font-size: 0.9rem;
     font-weight: 600;
-    color: #333;
-    font-size: 1rem;
-
-    .required {
-      color: #e74c3c;
-    }
+    color: #444;
+    .required { color: #e74c3c; }
   }
 
+  /* ESTILO UNIFICADO PARA INPUTS Y SELECTS */
   .form-control {
-    padding: 0.8rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 0.95rem;
-    background-color: #fff;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #fdfdfd;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 42px; /* Misma altura que definimos en el componente anterior */
 
     &:focus {
       outline: none;
       border-color: #3498db;
+      background-color: #fff;
+    }
+
+    &::placeholder {
+      color: #aaa;
     }
   }
 
-  /* Estilos específicos para los inputs de Tiempo */
-  .time-inputs {
-    display: flex;
-    gap: 1rem; /* Espacio entre los dos inputs */
-
-    .form-control {
-      flex: 1; /* Hace que ambos ocupen el mismo ancho */
-    }
+  /* Flecha personalizada para el select normal */
+  select.form-control {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23555%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem top 50%;
+    background-size: 0.65rem auto;
+    appearance: none;
+    padding-right: 2.5rem;
   }
 }
