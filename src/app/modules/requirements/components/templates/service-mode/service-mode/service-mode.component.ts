@@ -1,7 +1,9 @@
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ResourceServiceService } from '../../../../services/resource.service.service';
 
 @Component({
   selector: 'service-mode',
@@ -9,14 +11,36 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatIconModule
+    MatIconModule,
+    NgSelectModule
   ],
   templateUrl: './service-mode.component.html',
   styleUrl: './service-mode.component.scss'
 })
-export class ServiceModeComponent {
-  serviceModeForm!: FormGroup;
+export class ServiceModeComponent implements OnInit {
 
-  constructor() {
+  private fb = inject(FormBuilder);
+  private resourceService = inject(ResourceServiceService);
+
+  modalities = signal<any[]>([]);
+
+  serviceModeForm: FormGroup = this.fb.group({
+    serviceModeId: [null, [Validators.required]], // null para ng-select
+    time: ['']
+  });
+
+  ngOnInit(): void {
+    this.loadServiceModalities();
+  }
+
+  loadServiceModalities() {
+    this.resourceService.getServiceModalities().subscribe({
+      next: (response: any) => {
+        // Asegura que sea un array
+        const data = Array.isArray(response) ? response : (response.data || []);
+        this.modalities.set(data);
+      },
+      error: (err) => console.error('Error cargando modalidades:', err)
+    });
   }
 }

@@ -52,4 +52,15 @@ export class ResourceServiceService {
     return this.http.get<any>(
       `${this.urlBase}/api/Clients/${clientId}/contacts`);
   }
+
+  getServiceModalities(): Observable<any> {
+    return this.http.get<any>(
+      `${this.urlBase}/api/Catalogs/service-modality`);
+  }
+
+  getCities(): Observable<any> {
+    return this.http.get<any>(
+      `${this.urlBase}/api/Catalogs/cities`);
+  }
+
 }
