@@ -20,9 +20,7 @@
             "outputPath": "dist/isc.time-report.fe",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -75,6 +73,13 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "ISC.TimeReport.FE:build",
+            "allowedHosts": [
+              "dev.tmr.dokploy.integritysolutions.com.ec",
+              ".integritysolutions.com.ec"
+            ]
+          },
           "configurations": {
             "production": {
               "buildTarget": "ISC.TimeReport.FE:build:production"
@@ -91,10 +96,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
