@@ -931,11 +931,19 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    if (isNaN(Number(eventData.hoursQuantity)) || Number(eventData.hoursQuantity) <= 0) {
+    const VACACIONES_ID = 4003;
+    const PERMISO_ID = 4004;
+
+    const hours = Number(eventData.hoursQuantity);
+    const allowZero = eventData.activityTypeID === VACACIONES_ID ||
+                      eventData.activityTypeID === PERMISO_ID;
+
+    if (isNaN(hours) || hours < 0 || (!allowZero && hours === 0)) {
       console.error('hoursQuantity no es válido:', eventData.hoursQuantity);
       this.snackBar.open('Error: Cantidad de horas no válida', 'Cerrar');
       return;
     }
+
 
     const activityDate = this.ensureDateObject(eventData.activityDate);
 
