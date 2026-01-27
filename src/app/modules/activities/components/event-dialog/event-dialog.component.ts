@@ -125,7 +125,8 @@ export class EventDialogComponent implements OnInit {
         ...this.event,
         ...this.data.event,
         // Asegurar que hours tenga el valor correcto
-        hours: this.data.event.hoursQuantity || this.data.event.hours || 4
+        hours: this.data.event.hoursQuantity ?? this.data.event.hours ?? 4
+
       };
     }
 
@@ -281,7 +282,7 @@ export class EventDialogComponent implements OnInit {
         const payload = {
           projectID: Number(this.event.projectID),
           activityTypeID: this.event.activityTypeID,
-          hoursQuantity: Number(this.event.hours || 4),
+          hoursQuantity: Number(this.event.hours ?? 4),
           activityDate: this.formatDate(new Date(currentDate)), // Usar formatDate
           activityDescription: this.event.activityDescription,
           requirementCode: this.event.requirementCode,
@@ -301,7 +302,7 @@ export class EventDialogComponent implements OnInit {
       id: this.data.isEdit ? this.event.id : undefined,
       projectID: Number(this.event.projectID),
       activityTypeID: this.event.activityTypeID,
-      hoursQuantity: Number(this.event.hours || 4),
+      hoursQuantity: Number(this.event.hours ?? 4),
       activityDate: this.event.activityDate,
       activityDescription: this.event.activityDescription,
       requirementCode: this.event.requirementCode,
