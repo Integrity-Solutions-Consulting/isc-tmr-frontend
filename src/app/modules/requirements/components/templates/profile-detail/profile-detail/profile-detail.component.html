@@ -1,4 +1,5 @@
 <div class="profile-detail-container">
+  <form [formGroup]="profileDetailForm">
 
   <header class="header">
     <div class="title-group">
@@ -21,13 +22,10 @@
       <div class="form-group">
         <label for="estado-estudios">Estado de Estudios <span class="required">*</span></label>
         <ng-select [items]="studyStatus()"
-                   bindLabel="name"
-                   bindValue="id"
+                   bindLabel="educationstatus_name"
+                   bindValue="educationStatusID"
                    placeholder="Seleccione estado de estudios"
                    formControlName="studyStatusId">
-          <ng-option *ngFor="let status of studyStatus()" [value]="status.id">
-            {{ status.name }}
-          </ng-option>
         </ng-select>
       </div>
     </div>
@@ -35,13 +33,10 @@
     <div class="form-group full-width">
       <label>Carrera <span class="required">*</span></label>
       <ng-select [items]="availableCareers()"
-                 bindLabel="name"
-                 bindValue="id"
+                 bindLabel="careerName"
+                 bindValue="Id"
                  placeholder="Seleccione carrera"
                  formControlName="careerId">
-        <ng-option *ngFor="let career of availableCareers()" [value]="career.id">
-          {{ career.name }}
-        </ng-option>
       </ng-select>
     </div>
 
@@ -56,14 +51,11 @@
         <label>Plantilla</label>
         <ng-select class="form-control"
                    [items]="templates()"
-                   bindLabel="name"
-                   bindValue="id"
+                   bindLabel="templateName"
+                   bindValue="templateDetailID"
                    placeholder="Seleccione plantilla"
                    formControlName="templateId"
                    (change)="onTemplateSelect($event)">
-          <ng-option *ngFor="let template of templates()" [value]="template.id">
-            {{ template.name }}
-          </ng-option>
         </ng-select>
       </div>
 
@@ -92,26 +84,32 @@
 
       <div class="form-group">
         <label for="nombre-plantilla">Nombre plantilla</label>
-        <input type="text" id="nombre-plantilla" class="form-control white-bg" placeholder="Ingrese nombre">
+        <input type="text" id="nombre-plantilla" class="form-control white-bg"
+               placeholder="Ingrese nombre" formControlName="templateName">
       </div>
 
       <div class="form-group">
         <label for="conocimiento">Conocimiento</label>
-        <select id="conocimiento" class="form-control white-bg">
-          <option value="" disabled selected>Seleccione conocimiento</option>
-          <option value="angular">Angular</option>
-          <option value="react">React</option>
-          <option value="net">.NET Core</option>
-        </select>
+        <ng-select class="form-control white-bg"
+                   [items]="knowledgeList()"
+                   bindLabel="knowledgeName"
+                   bindValue="id"
+                   placeholder="Seleccione conocimiento"
+                   formControlName="knowledgeIds"
+                   multiple>
+        </ng-select>
       </div>
 
       <div class="form-group">
         <label for="herramientas">Herramientas</label>
-        <select id="herramientas" class="form-control white-bg">
-          <option value="" disabled selected>Seleccione herramienta</option>
-          <option value="vscode">VS Code</option>
-          <option value="sql">SQL Server</option>
-        </select>
+        <ng-select class="form-control white-bg"
+                   [items]="toolsList()"
+                   bindLabel="toolName"
+                   bindValue="id"
+                   placeholder="Seleccione herramientas"
+                   formControlName="toolIds"
+                   multiple>
+        </ng-select>
       </div>
 
       <div class="action-footer">
@@ -121,5 +119,5 @@
     </div>
 
   </section>
-
+  </form>
 </div>

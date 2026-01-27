@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CareerResponseDTO, StudyStatuResponseDTO } from '../../../../interfaces/requirement.interface';
+import { CareerResponseDTO, KnowledgeResponseDTO, StudyStatuResponseDTO, ToolResponseDTO } from '../../../../interfaces/requirement.interface';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
 
 @Component({
@@ -28,8 +28,8 @@ export class ProfileDetailComponent implements OnInit{
 
   profileDetailForm: FormGroup = this.fb.group({
     experienceYears: [null, [Validators.required, Validators.min(0)]],
-    studyStatusIds: [null, [Validators.required]],
-    careerIds: [null, [Validators.required]],
+    studyStatusId: [null, [Validators.required]],
+    careerId: [null, [Validators.required]],
 
     templateId: [null],
     templateName: [''],
@@ -41,8 +41,9 @@ export class ProfileDetailComponent implements OnInit{
   ngOnInit(): void {
     this.loadStudyStatus();
     this.loadCareers();
+    this.loadKnowledge();
+    this.loadTools();
     this.loadTemplates();
-    this.saveTemplate();
   }
 
   loadStudyStatus() {
@@ -60,6 +61,24 @@ export class ProfileDetailComponent implements OnInit{
         this.availableCareers.set(response);
       },
       error: (err) => console.error('Error loading careers:', err)
+    });
+  }
+
+  loadKnowledge() {
+    this.resourceService.GetAllKnowledge(true).subscribe({
+      next: (response: KnowledgeResponseDTO[]) => {
+        this.knowledgeList.set(response);
+      },
+      error: (err) => console.error('Error loading knowledge:', err)
+    });
+  }
+
+  loadTools() {
+    this.resourceService.GetAllTools(true).subscribe({
+      next: (response: ToolResponseDTO[]) => {
+        this.toolsList.set(response);
+      },
+      error: (err) => console.error('Error loading tools:', err)
     });
   }
 
@@ -96,7 +115,11 @@ export class ProfileDetailComponent implements OnInit{
   }
 
   saveTemplate() {
-    if (this.profileDetailForm.invalid) return;
+    if (this.profileDetailForm.invalid){
+      this.profileDetailForm.markAllAsTouched();
+      console.error('Form is invalid', this.profileDetailForm.value);
+      return;
+    }
 
     const { templateName, knowledgeIds, toolIds } = this.profileDetailForm.value;
 

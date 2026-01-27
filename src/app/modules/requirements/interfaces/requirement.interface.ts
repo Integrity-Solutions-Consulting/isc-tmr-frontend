@@ -4,13 +4,8 @@ export interface EmployeeCategoryResponseDTO {
 }
 
 export interface CareerResponseDTO {
-  CareerID: number;
-  career_name: string;
-}
-
-export interface StudyStatusResponseDTO {
-  StudyStatusID: number;
-  study_status_name: string;
+  Id: number;
+  CareerName: string;
 }
 
 export interface EmployeeCategoryRequirementResponseDTO {
@@ -28,19 +23,20 @@ export interface EmployeeCategoryRequirementRequestDTO {
 
 export interface ProfileDetailResponseDTO {
   experience: number;
-  StudyStatusID: StudyStatusResponseDTO[];
+  StudyStatusID: StudyStatuResponseDTO[];
   CareerID: CareerResponseDTO[];
 }
 
 export interface ProfileDetailRequestDTO {
   ProfileDetailResponseID: number;
   experience: number;
-  StudyStatusID: StudyStatusResponseDTO[];
+  StudyStatusID: StudyStatuResponseDTO[];
   CareerID: CareerResponseDTO[];
 }
 
 export interface TemplateResponseDTO {
   templateID: number;
+  templateName: string;
 }
 
 export interface TemplateDetailResponseDTO {
@@ -54,6 +50,16 @@ export interface TemplateRequestDTO {
   templateName: string;
   knowledgeIds: number[];
   toolIds: number[];
+}
+
+export interface ToolResponseDTO {
+  toolID: number;
+  toolName: string;
+}
+
+export interface KnowledgeResponseDTO {
+  knowledgeID: number;
+  knowledgeName: string;
 }
 
 export interface OtherKnowledgeResponseDTO {
