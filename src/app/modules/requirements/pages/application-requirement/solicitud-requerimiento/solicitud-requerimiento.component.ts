@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, AbstractControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -20,7 +20,7 @@ import { OtherKnowledgeComponent } from '../../../components/templates/other-kno
   templateUrl: './solicitud-requerimiento.component.html',
   styleUrl: './solicitud-requerimiento.component.scss'
 })
-export class SolicitudRequerimientoComponent implements OnInit {
+export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   @ViewChild('stepper') stepper!: MatStepper;
 
   @Output() solicitudRequerimeintoEvent = new EventEmitter<boolean>();
@@ -59,6 +59,10 @@ export class SolicitudRequerimientoComponent implements OnInit {
     private cdr: ChangeDetectorRef, private dialog: MatDialog,) { }
 
   ngOnInit(): void {
+  }
+
+ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   get generalDataForm(): AbstractControl {

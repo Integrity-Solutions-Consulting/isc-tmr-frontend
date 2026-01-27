@@ -53,13 +53,31 @@ export class GeneralDataComponent implements OnInit {
     });
   }
 
+  // loadVacancies() {
+  //   this.resourceService.getVacancies().subscribe({
+  //     next: (response: any) => {
+  //       const listaCruda = response.data || [];
+
+  //       const listaMapeada = listaCruda.map((item: any) => ({
+  //         name: item.vacancyTitle,
+  //         value: item.id
+  //       }));
+
+  //       this.vacancies.set(listaMapeada);
+  //     },
+  //     error: (err: any) => console.error('Error cargando vacantes:', err)
+  //   });
+  // }
+
   loadVacancies() {
     this.resourceService.getVacancies().subscribe({
       next: (response: any) => {
-        const listaCruda = response.data || [];
+        console.log('Respuesta API Vacantes:', response); // 1. Agrega esto para ver qué llega
+
+        const listaCruda = Array.isArray(response) ? response : (response.data || []);
 
         const listaMapeada = listaCruda.map((item: any) => ({
-          name: item.vacancyTitle,
+          name: item.vacancyTitle, // Asegúrate que este campo coincida con tu JSON
           value: item.id
         }));
 

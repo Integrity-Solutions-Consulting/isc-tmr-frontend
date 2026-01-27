@@ -9,7 +9,7 @@ import { EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementRespo
 })
 export class ResourceServiceService {
   urlBase: string = environment.URL_BASE;
-  URL_BDE: string = environment.URL_BDE;
+  urlBDE: string = environment.URL_BDE;
 
   constructor(private http: HttpClient) { }
 
@@ -45,7 +45,7 @@ export class ResourceServiceService {
 
   getVacancies(): Observable<any> {
     return this.http.get<any>(
-      `${this.URL_BDE}/api/Vacancy/get-all-vacancies`);
+      `${this.urlBDE}/api/Catalog/get-all-vacancies?isActive=true`);
   }
 
   getContactsByClient(clientId: number): Observable<any> {
@@ -53,14 +53,16 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Clients/${clientId}/contacts`);
   }
 
-  getServiceModalities(): Observable<any> {
-    return this.http.get<any>(
-      `${this.urlBase}/api/Catalogs/service-modality`);
-  }
+  // getServiceModalities(): Observable<any> {
+  //   return this.http.get<any>(
+  //     `${this.urlBase}/api/Catalog/get-modalidad`);
+  // }
 
-  getCities(): Observable<any> {
-    return this.http.get<any>(
-      `${this.urlBase}/api/Catalogs/cities`);
-  }
+  // getCities(): Observable<any> {
+  //   return this.http.get<any>(
+  //     `${this.urlBase}/api/Catalog/cities`);
+  // }
+
+
 
 }

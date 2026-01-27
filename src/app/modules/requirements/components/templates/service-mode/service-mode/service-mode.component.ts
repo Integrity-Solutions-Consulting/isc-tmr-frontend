@@ -30,17 +30,17 @@ export class ServiceModeComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadServiceModalities();
+    // this.loadServiceModalities();
   }
 
-  loadServiceModalities() {
-    this.resourceService.getServiceModalities().subscribe({
-      next: (response: any) => {
-        // Asegura que sea un array
-        const data = Array.isArray(response) ? response : (response.data || []);
-        this.modalities.set(data);
-      },
-      error: (err) => console.error('Error cargando modalidades:', err)
-    });
-  }
+  // loadServiceModalities() {
+  //   this.resourceService.getServiceModalities().subscribe({
+  //     next: (response: any) => {
+  //       // Asegura que sea un array
+  //       const data = Array.isArray(response) ? response : (response.data || []);
+  //       this.modalities.set(data);
+  //     },
+  //     error: (err) => console.error('Error cargando modalidades:', err)
+  //   });
+  // }
 }

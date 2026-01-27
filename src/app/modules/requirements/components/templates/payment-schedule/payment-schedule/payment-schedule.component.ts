@@ -31,18 +31,18 @@ export class PaymentScheduleComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadCities();
+    // this.loadCities();
   }
 
-  loadCities() {
-    this.resourceService.getCities().subscribe({
-      next: (response: any) => {
-        const data = Array.isArray(response) ? response : (response.data || []);
-        this.cities.set(data);
-      },
-      error: (err) => console.error('Error cargando ciudades:', err)
-    });
-  }
+  // loadCities() {
+  //   this.resourceService.getCities().subscribe({
+  //     next: (response: any) => {
+  //       const data = Array.isArray(response) ? response : (response.data || []);
+  //       this.cities.set(data);
+  //     },
+  //     error: (err) => console.error('Error cargando ciudades:', err)
+  //   });
+  // }
 
   getDTO(): any {
     return this.paymentScheduleForm.valid ? this.paymentScheduleForm.value : null;
