@@ -126,17 +126,6 @@ onContactSelect(contact: any) {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
   getDTO(): any {
     return this.generalDataForm.valid ? this.generalDataForm.value : null;
   }

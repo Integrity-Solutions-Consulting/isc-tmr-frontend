@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO } from '../interfaces/requirement.interface';
+import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO } from '../interfaces/requirement.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -28,14 +28,20 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Requirements/profile-detail`, request)
   }
 
-  getTemplate(): Observable<any> {
-    return this.http.get<any>(
-      `${this.urlBase}/api/Requirements/show-templates`);
+  getAllTemplates(): Observable<TemplateResponseDTO[]> {
+    return this.http.get<TemplateResponseDTO[]>(
+      `${this.URL_BDE}/api/Template/get-all-template`);
   }
 
-  postTemplate(request: any): Observable<any> {
-    return this.http.post<any>(
-      `${this.urlBase}/api/Requirements/create-templates`, request)
+  getTemplateById(templateID: number): Observable<TemplateDetailResponseDTO> {
+    return this.http.get<TemplateDetailResponseDTO>(
+      `${this.URL_BDE}/api/Template/get-template-by-id/${templateID}`);
+  }
+
+  postTemplate(name: string, knowledgeIds: number[], toolIds: number[]): Observable<number> {
+    const body = {templateName: name, knowledgeIds: knowledgeIds, toolIds: toolIds};
+    return this.http.post<number>(
+      `${this.URL_BDE}/api/Template/create-template`, body)
   }
 
   postOtherKnowledge(request: any): Observable<any> {
@@ -61,6 +67,19 @@ export class ResourceServiceService {
   getCities(): Observable<any> {
     return this.http.get<any>(
       `${this.urlBase}/api/Catalogs/cities`);
+  }
+
+  GetAllStudyStatus(): Observable<StudyStatuResponseDTO[]>{
+    return this.http.get<StudyStatuResponseDTO[]>(
+      `${this.URL_BDE}/Catalog/get-all-study-status`
+    )
+  }
+
+  GetAllCareers(isActive: boolean): Observable<CareerResponseDTO[]>{
+    const params = new HttpParams().set('isActive', isActive);
+    return this.http.get<CareerResponseDTO[]>(
+      `${this.URL_BDE}/api/Catalogs/get-all-careers`, {params}
+    )
   }
 
 }

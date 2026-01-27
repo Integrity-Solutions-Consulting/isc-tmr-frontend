@@ -40,13 +40,20 @@ export interface ProfileDetailRequestDTO {
 }
 
 export interface TemplateResponseDTO {
-  template_name: string;
+  templateID: number;
+}
+
+export interface TemplateDetailResponseDTO {
+  templateDetailID: number;
+  templateName: string;
+  knowledgeIDs: number[];
+  toolIDs: number[];
 }
 
 export interface TemplateRequestDTO {
-  TemplateID: number;
-  template_name: string;
-
+  templateName: string;
+  knowledgeIds: number[];
+  toolIds: number[];
 }
 
 export interface OtherKnowledgeResponseDTO {
@@ -70,4 +77,9 @@ export interface ClientResponseDTO {
 export interface VacancyResponseDTO  {
   id: number;
   name: string;
+}
+
+export interface StudyStatuResponseDTO {
+  educationStatusID: number;
+  educationstatus_name: string;
 }

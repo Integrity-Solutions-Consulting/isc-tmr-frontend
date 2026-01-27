@@ -154,3 +154,22 @@
     }
   }
 }
+
+/* Estilos para los chips  */
+.chips-container {
+  margin-top: 12px;
+}
+
+.chip-group {
+  margin-bottom: 8px;
+}
+
+.chip {
+  display: inline-block;
+  background: #e6f2ff;
+  color: #0056b3;
+  padding: 4px 10px;
+  border-radius: 16px;
+  margin: 4px;
+  font-size: 13px;
+}
