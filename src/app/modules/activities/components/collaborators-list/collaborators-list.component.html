@@ -98,105 +98,109 @@
   </div>
 
   <div class="table-wrapper">
-  <table mat-table [dataSource]="dataSource" matSort class="collaborator-table">
-    <!-- Checkbox Column -->
-    <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()">
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row">
-        <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)">
-        </mat-checkbox>
-      </td>
-    </ng-container>
+    <div class="table-loading-overlay" *ngIf="loading">
+      <mat-spinner diameter="60"></mat-spinner>
+    <p>Cargando datos...</p>
+  </div>
+    <table mat-table [dataSource]="dataSource" matSort class="collaborator-table">
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="colaborador">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Colaborador</th>
-      <td mat-cell *matCellDef="let element">
-        <strong>{{element.nombre}}</strong>
-      </td>
-    </ng-container>
+      <!-- Name Column -->
+      <ng-container matColumnDef="colaborador">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Colaborador</th>
+        <td mat-cell *matCellDef="let element">
+          <strong>{{element.nombre}}</strong>
+        </td>
+      </ng-container>
 
-    <!-- Project Column -->
-    <ng-container matColumnDef="proyecto">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Proyecto</th>
-      <td mat-cell *matCellDef="let element">{{element.proyecto}}</td>
-    </ng-container>
+      <!-- Project Column -->
+      <ng-container matColumnDef="proyecto">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Proyecto</th>
+        <td mat-cell *matCellDef="let element">{{element.proyecto}}</td>
+      </ng-container>
 
-    <!-- Client Column -->
-    <ng-container matColumnDef="cliente">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
-      <td mat-cell *matCellDef="let element">{{element.cliente}}</td>
-    </ng-container>
+      <!-- Client Column -->
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+        <td mat-cell *matCellDef="let element">{{element.cliente}}</td>
+      </ng-container>
 
-    <!-- Leader Column -->
-    <ng-container matColumnDef="lider">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Lider Técnico</th>
-      <td mat-cell *matCellDef="let element">{{element.lider}}</td>
-    </ng-container>
+      <!-- Leader Column -->
+      <ng-container matColumnDef="lider">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Lider Técnico</th>
+        <td mat-cell *matCellDef="let element">{{element.lider}}</td>
+      </ng-container>
 
-    <!-- Hours Column -->
-    <ng-container matColumnDef="horas">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nro de Horas</th>
-      <td mat-cell *matCellDef="let element">
-        {{element.horas | number:'1.2-2'}} hrs
-      </td>
-    </ng-container>
+      <!-- Hours Column -->
+      <ng-container matColumnDef="horas">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nro de Horas</th>
+        <td mat-cell *matCellDef="let element">
+          {{element.horas | number:'1.2-2'}} hrs
+        </td>
+      </ng-container>
 
-    <!-- Status Column -->
-    <ng-container matColumnDef="estado">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-      <td mat-cell *matCellDef="let element">
-        <div class="status-container" [ngClass]="{
-          'completed': element.estado === 'Completo',
-          'pending': element.estado === 'Pendiente',
-          'process': element.estado === 'En progreso'
-        }">
-          <div class="status-dot"></div>
-          <div class="status-text">{{element.estado}}</div>
-        </div>
-      </td>
-    </ng-container>
+      <!-- Status Column -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="status-container" [ngClass]="{
+            'completed': element.estado === 'Completo',
+            'pending': element.estado === 'Pendiente',
+            'process': element.estado === 'En progreso'
+          }">
+            <div class="status-dot"></div>
+            <div class="status-text">{{element.estado}}</div>
+          </div>
+        </td>
+      </ng-container>
 
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Acciones</th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button
-                class="download-button"
-                matTooltip="Descargar reporte"
-                (click)="downloadCollaboratorExcel(element)">
-          <mat-icon aria-hidden="false" aria-label="Download icon">download</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="diasConReporte">
-  <th mat-header-cell *matHeaderCellDef>Días con Reporte</th>
-  <td mat-cell *matCellDef="let element">
-    {{ element.diasConReporte }}
-  </td>
-</ng-container>
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button
+                  class="download-button"
+                  matTooltip="Descargar reporte"
+                  (click)="downloadCollaboratorExcel(element)">
+            <mat-icon aria-hidden="false" aria-label="Download icon">download</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="diasConReporte">
+    <th mat-header-cell *matHeaderCellDef>Días con Reporte</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.diasConReporte }}
+    </td>
+  </ng-container>
 
-<!-- Días pendientes -->
-<ng-container matColumnDef="diasPendientes">
-  <th mat-header-cell *matHeaderCellDef>Días a Completar</th>
-  <td mat-cell *matCellDef="let element">
-    {{ element.diasPendientes }}
-  </td>
-</ng-container>
+  <!-- Días pendientes -->
+  <ng-container matColumnDef="diasPendientes">
+    <th mat-header-cell *matHeaderCellDef>Días a Completar</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.diasPendientes }}
+    </td>
+  </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row
-      *matRowDef="let row; columns: displayedColumns;"
-      [ngClass]="{ 'sin-horas': row.horas === 0 }">
-    </tr>
-  </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row
+        *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="{ 'sin-horas': row.horas === 0 }">
+      </tr>
+    </table>
 </div>
 
   <div *ngIf="dataSource.data.length === 0 && noDataMessage" class="no-data-message">
