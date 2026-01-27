@@ -2,13 +2,17 @@
   padding: 16px;
 }
 
+/* ================= TOP CONTAINER ================= */
+
 .top-container {
   display: flex;
-  flex-wrap: wrap; /* Permite que bajen de línea cuando no caben */
+  flex-wrap: wrap;
+  overflow-x: auto;
   align-items: center;
   gap: 16px;
   width: 100%;
   padding: 8px 0;
+
 
   .approve-button {
     background-color: #4caf50;
@@ -37,7 +41,7 @@
 
   mat-form-field {
     flex: 1;
-    min-width: 190px; /* Para que no se hagan muy pequeños */
+    min-width: 190px;
     height: 40px;
     display: flex;
     align-items: center;
@@ -54,34 +58,33 @@
     }
   }
 
-.year-selector,
-.month-selector {
-  width: 120px !important; /* o el ancho que prefieras */
-  min-width: 120px !important;
-  max-width: 120px !important;
-  margin-bottom: 18px;
+  .year-selector,
+  .month-selector {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+    margin-bottom: 18px;
 
-  .mat-form-field-wrapper {
-    width: 100% !important;
+    .mat-form-field-wrapper {
+      width: 100% !important;
+    }
+
+    .mat-form-field-flex {
+      width: 100% !important;
+    }
   }
 
-  .mat-form-field-flex {
-    width: 100% !important;
-  }
-}
+  .period-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
 
-.period-toggle-container {
-  display: flex;
-  align-items: center;
-  margin: 0 16px;
-  margin-bottom: 18px;
-
-  .toggle-label {
-    margin-right: 8px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.6);
+    .toggle-label {
+      margin-right: 8px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.6);
+    }
   }
-}
 
   .download-button {
     background-color: var(--itg-primary);
@@ -102,34 +105,18 @@
       opacity: 0.7;
     }
   }
+}
 
-  /* 📱 Responsividad */
-  @media (max-width: 900px) {
-    mat-form-field {
-      flex: 1 1 45%; /* Dos columnas */
-    }
-    .period-toggle,
-    .download-button {
-      flex: 1 1 45%;
-    }
-  }
+/* ================= TABLE ================= */
 
-  @media (max-width: 600px) {
-    mat-form-field,
-    .period-toggle,
-    .download-button {
-      flex: 1 1 100%; /* Una sola columna */
-      min-width: unset;
-    }
-
-    .download-button {
-      width: 100%;
-    }
-  }
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .collaborator-table {
   width: 100%;
+  min-width: 900px;
   border-radius: 8px 8px 0 0;
   overflow: hidden;
 
@@ -142,6 +129,8 @@
     color: #3f51b5;
   }
 }
+
+/* ================= STATUS ================= */
 
 .status-container {
   display: flex;
@@ -182,28 +171,279 @@
   }
 }
 
+/* ================= PAGINATOR ================= */
+
 mat-paginator {
   border-radius: 0 0 8px 8px;
   border: 1px solid #e0e0e0;
   border-top: none;
 }
 
+/* ================= EMPTY ================= */
+
 .no-data-message {
-    padding: 20px;
-    text-align: center;
-    color: #555;
-    font-size: 1.1em;
-    font-style: italic;
-  }
+  padding: 20px;
+  text-align: center;
+  color: #555;
+  font-size: 1.1em;
+  font-style: italic;
+}
+
+/* ================= PERIOD ================= */
 .period-and-filter-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* 👈 alineado a la derecha */
-  gap: 8px;
+  justify-content: center;
+  gap: 45px;
+
+  padding-top: 80px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  flex: 0 0 auto !important;
+
+
 }
 
 .without-hours-toggle {
   font-size: 13px;
-  margin-left: auto;
-  padding-right: 30px;
+  align-self: flex-end;   /* 🔥 aquí está la clave */
+  white-space: nowrap;
+
+  flex-shrink: 0;
+
+}
+
+/* ================================================= */
+/* =============== RESPONSIVE FIX ================= */
+/* ================================================= */
+
+.top-container mat-form-field {
+  width: 100%;
+}
+
+/* -------- TABLET -------- */
+@media (max-width: 1024px) {
+  .top-container > * {
+    flex: 1 1 45%;
+    min-width: 220px;
+  }
+
+  .period-and-filter-container {
+    flex: 1 1 100% !important;
+    width: 100%;
+    max-width: 100%;
+    order: 5;
+  }
+
+  .top-container > .period-and-filter-container {
+    height: auto !important;
+    align-items: flex-start;
+  }
+}
+
+/* -------- MOBILE -------- */
+@media (max-width: 768px) {
+  .period-and-filter-container {
+    align-items: flex-start;
+  }
+
+  .without-hours-toggle {
+    margin-left: 0 !important;
+    padding-right: 0 !important;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-container > * {
+    flex: 1 1 100% !important;
+    min-width: unset !important;
+  }
+
+  .period-toggle-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .approve-button,
+  .download-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  mat-paginator {
+    font-size: 12px;
+  }
+}
+
+/* -------- EXTRA SMALL -------- */
+@media (max-width: 768px) {
+
+  .period-and-filter-container {
+    padding-top: 0;        /* 🔥 quita el salto raro */
+    gap: 12px;             /* más compacto */
+    align-items: flex-start;
+  }
+
+  .without-hours-toggle {
+    align-self: flex-start;  /* 🔥 deja de “volar” */
+  }
+
+  .period-toggle-container {
+    margin: 0;
+  }
+}
+/* ================= FIX ESTABILIDAD TOP BAR ================= */
+
+/* Evita que flex mande el toggle o botones a otra fila solos */
+.period-and-filter-container {
+  flex: 0 0 auto !important;
+  min-width: fit-content;
+}
+
+/* El toggle no se encoge ni se rompe */
+.without-hours-toggle {
+  flex: 0 0 auto !important;
+  white-space: nowrap;
+}
+
+/* Botones estables */
+.approve-button,
+.download-button {
+  flex: 0 0 auto !important;
+  white-space: nowrap;
+}
+
+/* ================= RESPONSIVE CONTROLADO ================= */
+
+/* Recién aquí permitimos que TODO el bloque baje ordenado */
+@media (max-width: 900px) {
+  .top-container {
+    align-items: flex-start;
+  }
+
+  .top-container > * {
+    flex: 1 1 100% !important;
+  }
+
+  .period-and-filter-container {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .without-hours-toggle {
+    align-self: flex-start;
+  }
+}
+
+/* ================= ESTABILIDAD FLEX ================= */
+
+/* Solo los filtros se estiran */
+.top-container mat-form-field {
+  flex: 1 1 220px;
+}
+
+/* Todo lo demás NO se estira */
+.top-container > :not(mat-form-field) {
+  flex: 0 0 auto;
+}
+
+/* El bloque del periodo nunca se encoge */
+.period-and-filter-container {
+  flex: 0 0 auto !important;
+  min-width: max-content;
+  padding-top: 80px; /* se respeta tu diseño */
+}
+
+/* Toggle estable */
+.without-hours-toggle {
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Botones estables */
+.approve-button,
+.download-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ================== RESPONSIVE REAL ================== */
+
+@media (max-width: 900px) {
+  .top-container > * {
+    flex: 1 1 100% !important;
+  }
+
+  .period-and-filter-container {
+    width: 100%;
+    padding-top: 20px;
+  }
+
+  .without-hours-toggle {
+    align-self: flex-start;
+  }
+}
+
+.table-wrapper {
+  position: relative;
+  min-height: 350px;
+}
+
+.table-loading-overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(3px);
+  z-index: 10;
+}
+
+.table-loading-overlay p {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #1565c0;
+}
+
+/* Animación suave */
+.full-table {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.table-wrapper {
+  position: relative; /* 🔥 necesario para el overlay */
+  min-height: 200px;  /* evita que desaparezca si no hay data */
+}
+
+.table-loading-overlay {
+  position: absolute;
+  inset: 0; /* top:0 left:0 right:0 bottom:0 */
+  background: rgba(255, 255, 255, 0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+
+.table-loading-overlay p {
+  margin-top: 12px;
+  font-weight: 500;
+  color: #555;
 }
