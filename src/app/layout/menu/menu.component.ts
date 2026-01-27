@@ -77,6 +77,7 @@ export class MenuComponent implements OnInit {
       'Clientes',
       'Líderes',
       'Proyecciones',
+      'Requerimientos',
 
     ];
 
@@ -115,6 +116,50 @@ export class MenuComponent implements OnInit {
       });
 
       timeModules.forEach((m) => added.add(m.id));
+    }
+
+    // Procesar módulos que van en el panel de Requerimiento
+    const requirementManagement = sorted.filter(
+      (m) =>
+        ['Solicitud de requerimiento', 'Historial de requerimiento'].includes(m.moduleName) &&
+        !added.has(m.id)
+    );
+
+    if (requirementManagement.length > 0) {
+      menuItems.push({
+        type: 'expansion',
+        moduleName: 'Requerimientos',
+        icon: 'playlist_add_check',
+        displayOrder: Math.min(...requirementManagement.map((m) => m.displayOrder)),
+        options: requirementManagement.map((m) => ({
+          type: 'item',
+          ...m,
+        })),
+      });
+
+      requirementManagement.forEach((m) => added.add(m.id));
+    }
+
+    // Procesar módulos que van en el panel de Talento Humano
+    const humanResourcesModules = sorted.filter(
+      (m) =>
+        ['Dashboard TH', 'Gestión de vacantes', 'Revisión de candidatos', 'Nueva vacante'].includes(m.moduleName) &&
+        !added.has(m.id)
+    );
+
+    if (humanResourcesModules.length > 0) {
+      menuItems.push({
+        type: 'expansion',
+        moduleName: 'Talento Humano',
+        icon: 'people',
+        displayOrder: Math.min(...humanResourcesModules.map((m) => m.displayOrder)),
+        options: humanResourcesModules.map((m) => ({
+          type: 'item',
+          ...m,
+        })),
+      });
+
+      humanResourcesModules.forEach((m) => added.add(m.id));
     }
 
     // Procesar módulos que van en el panel de Configuración

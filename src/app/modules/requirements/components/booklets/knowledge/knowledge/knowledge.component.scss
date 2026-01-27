@@ -1,0 +1,77 @@
+.knowledge-container {
+  padding: 2rem;
+  max-width: 800px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  margin-bottom: 2rem;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+
+    .book-icon {
+      width: 28px;
+      height: 28px;
+      color: #3498db; /* Azul tipo libro de conocimientos */
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #002f5b; /* Azul oscuro */
+      margin: 0;
+    }
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin: 0;
+    margin-left: 2.5rem;
+  }
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem; /* Espacio generoso entre cada bloque de texto */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  label {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+  }
+
+  .form-control {
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; /* Bordes un poco más redondeados para áreas grandes */
+    font-size: 0.95rem;
+    font-family: inherit; /* Hereda la fuente del body */
+    background-color: #fcfcfc;
+    resize: vertical; /* Permite al usuario estirar el cuadro hacia abajo si necesita más espacio */
+    min-height: 80px; /* Altura mínima para que no se vea aplastado */
+    transition: all 0.2s ease-in-out;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db; /* Borde azul brillante al escribir */
+      background-color: #fff;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); /* Pequeño resplandor azul opcional */
+    }
+
+    &::placeholder {
+      color: #aab7b8;
+    }
+  }
+}
