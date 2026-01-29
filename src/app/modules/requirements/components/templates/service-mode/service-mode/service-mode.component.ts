@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatIconModule } from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
+import { WorkModeResponseDTO } from '../../../../interfaces/requirement.interface';
 
 @Component({
   selector: 'service-mode',
@@ -15,7 +16,7 @@ import { ResourceServiceService } from '../../../../services/resource.service.se
     NgSelectModule
   ],
   templateUrl: './service-mode.component.html',
-  styleUrl: './service-mode.component.scss'
+  styleUrls: ['./service-mode.component.scss']
 })
 export class ServiceModeComponent implements OnInit {
 
@@ -30,17 +31,15 @@ export class ServiceModeComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // this.loadServiceModalities();
+    this.loadWorkMode();
   }
 
-  // loadServiceModalities() {
-  //   this.resourceService.getServiceModalities().subscribe({
-  //     next: (response: any) => {
-  //       // Asegura que sea un array
-  //       const data = Array.isArray(response) ? response : (response.data || []);
-  //       this.modalities.set(data);
-  //     },
-  //     error: (err) => console.error('Error cargando modalidades:', err)
-  //   });
-  // }
+  loadWorkMode() {
+    this.resourceService.getWorkMode().subscribe({
+      next: (response: WorkModeResponseDTO[]) => {
+        this.modalities.set(response);
+      },
+      error: (err) => console.error('Error cargando modalidades:', err)
+    });
+  }
 }

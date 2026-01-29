@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO } from '../interfaces/requirement.interface';
+import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO, WorkCityResponseDTO, WorkModeResponseDTO } from '../interfaces/requirement.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -34,8 +34,9 @@ export class ResourceServiceService {
   }
 
   getTemplateById(templateID: number): Observable<TemplateDetailResponseDTO> {
+    const params = new HttpParams().set('id', templateID);
     return this.http.get<TemplateDetailResponseDTO>(
-      `${this.urlBDE}/api/Template/get-template-by-id/${templateID}`);
+      `${this.urlBDE}/api/Template/get-template-by-id`, { params });
   }
 
   postTemplate(name: string, knowledgeIds: number[], toolIds: number[]): Observable<number> {
@@ -59,17 +60,15 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Clients/${clientId}/contacts`);
   }
 
-  // getServiceModalities(): Observable<any> {
-  //   return this.http.get<any>(
-  //     `${this.urlBase}/api/Catalog/get-modalidad`);
-  // }
+  getWorkMode(): Observable<WorkModeResponseDTO[]> {
+    return this.http.get<WorkModeResponseDTO[]>(
+      `${this.urlBase}/api/Catalog/work-mode`);
+  }
 
-  // getCities(): Observable<any> {
-  //   return this.http.get<any>(
-  //     `${this.urlBase}/api/Catalog/cities`);
-  // }
-
-
+  getWorkCity(): Observable<WorkCityResponseDTO[]> {
+    return this.http.get<WorkCityResponseDTO[]>(
+       `${this.urlBDE}/api/Catalog/get-all-work-city`);
+  }
 
   GetAllStudyStatus(): Observable<StudyStatuResponseDTO[]>{
     return this.http.get<StudyStatuResponseDTO[]>(

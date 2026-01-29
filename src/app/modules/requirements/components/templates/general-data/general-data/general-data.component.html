@@ -1,7 +1,11 @@
 <div class="layout-wrapper">
-  <div class="header-section">
-    <h2 class="main-title">Datos generales del cliente</h2>
-  </div>
+
+  <header class="header-section">
+    <div class="title-group">
+      <mat-icon class="general-icon">description</mat-icon>
+      <h2 class="main-title">Datos generales del cliente</h2>
+    </div>
+  </header>
 
   <form [formGroup]="generalDataForm" class="general-data-container">
     <div class="columns-grid">
@@ -36,7 +40,7 @@
 
       </section>
 
-      <section class="panel right-column">
+      <section class="panel right-column" *ngIf ="generalDataForm.get('clientId')?.value">
 
         <div class="form-group horizontal-group">
           <label>Persona de Contacto</label>

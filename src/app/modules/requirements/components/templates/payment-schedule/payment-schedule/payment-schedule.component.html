@@ -17,13 +17,12 @@
       </div>
 
       <div class="form-group">
-        <label for="ciudad">Ciudad de trabajo</label>
+        <label>Ciudad de trabajo</label>
         <ng-select
-          id="ciudad"
           [items]="cities()"
-          bindLabel="name"
-          bindValue="id"
-          formControlName="cityId"
+          bindLabel="workcity_name"
+          bindValue="workCityID"
+          formControlName="workCityId"
           placeholder="Seleccione una ciudad"
           [clearable]="true">
         </ng-select>

@@ -7,11 +7,12 @@ import { map } from 'rxjs';
 import { ClientService } from '../../../../../clients/services/client.service';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
 import { ClientResponseDTO } from '../../../../interfaces/requirement.interface';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'general-data',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgSelectModule],
+  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIcon],
   templateUrl: './general-data.component.html',
   styleUrl: './general-data.component.scss'
 })

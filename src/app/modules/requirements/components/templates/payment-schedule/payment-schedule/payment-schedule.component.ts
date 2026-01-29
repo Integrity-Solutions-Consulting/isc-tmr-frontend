@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
+import { WorkCityResponseDTO } from '../../../../interfaces/requirement.interface';
 
 @Component({
   selector: 'payment-schedule',
@@ -26,23 +27,22 @@ export class PaymentScheduleComponent implements OnInit {
 
   paymentScheduleForm: FormGroup = this.fb.group({
     budget: [''], // Presupuesto (Input normal)
-    cityId: [null], // Ciudad (Ng-Select)
+    workCityId: [null], // Ciudad (Ng-Select)
     schedule: [''] // Horario (Input normal)
   });
 
   ngOnInit(): void {
-    // this.loadCities();
+    this.loadCities();
   }
 
-  // loadCities() {
-  //   this.resourceService.getCities().subscribe({
-  //     next: (response: any) => {
-  //       const data = Array.isArray(response) ? response : (response.data || []);
-  //       this.cities.set(data);
-  //     },
-  //     error: (err) => console.error('Error cargando ciudades:', err)
-  //   });
-  // }
+  loadCities() {
+     this.resourceService.getWorkCity().subscribe({
+       next: (response: WorkCityResponseDTO[]) => {
+         this.cities.set(response);
+       },
+       error: (err) => console.error('Error cargando ciudades:', err)
+     });
+  }
 
   getDTO(): any {
     return this.paymentScheduleForm.valid ? this.paymentScheduleForm.value : null;

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CareerResponseDTO, KnowledgeResponseDTO, StudyStatuResponseDTO, ToolResponseDTO } from '../../../../interfaces/requirement.interface';
+import { CareerResponseDTO, KnowledgeResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO } from '../../../../interfaces/requirement.interface';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
 
 @Component({
@@ -34,8 +34,14 @@ export class ProfileDetailComponent implements OnInit{
     templateId: [null],
     templateName: [''],
 
-    knowledgeIds: [[], [Validators.required]],
-    toolIds: [[], [Validators.required]]
+    knowledgeIds: [[]],
+    toolIds: [[]]
+  });
+
+  templateForm: FormGroup = this.fb.group({
+    templateName: ['', Validators.required],
+    knowledgeIds: [[], Validators.required],
+    toolIds: [[], Validators.required]
   });
 
   ngOnInit(): void {
@@ -84,23 +90,35 @@ export class ProfileDetailComponent implements OnInit{
 
   loadTemplates() {
     this.resourceService.getAllTemplates().subscribe({
-      next: (response: any) => {
-        this.templates.set(response.data || []);
+      next: (response: TemplateResponseDTO[]) => {
+        this.templates.set(response);
       },
       error: (err) => console.error('Error loading templates:', err)
     });
   }
 
-  onTemplateSelect(templateId: number) {
-  if (!templateId) return;
+  onTemplateSelect(templateId: number | null) {
+    if (!templateId) return;
 
-  this.resourceService.getTemplateById(templateId).subscribe({
-    next: (res) => {
-      this.selectedTemplateDetail.set(res);
-      this.createTemplate.set(false);
-    }
-  });
-}
+    this.resourceService.getTemplateById(templateId).subscribe({
+      next: res  => {
+        console.log('Detalle de plantilla:', res);
+        this.selectedTemplateDetail.set(res);
+        this.createTemplate.set(false);
+      },
+      error: (err) => console.error('Error fetching template details:', err)
+    });
+  }
+
+  getKnowledgeName(id: number): string {
+    const item = this.knowledgeList().find(k => k.id === id);
+    return item ? item.knowledgeName : 'Cargando...';
+  }
+
+  getToolName(id: number): string {
+    const item = this.toolsList().find(t => t.id === id);
+    return item ? item.toolName : 'Cargando...';
+  }
 
   toggleCreateTemplate() {
     this.createTemplate.update(v => !v);
@@ -115,19 +133,19 @@ export class ProfileDetailComponent implements OnInit{
   }
 
   saveTemplate() {
-    if (this.profileDetailForm.invalid){
-      this.profileDetailForm.markAllAsTouched();
-      console.error('Form is invalid', this.profileDetailForm.value);
+    if (this.templateForm.invalid){
+      this.templateForm.markAllAsTouched();
+      console.error('Form is invalid', this.templateForm.value);
       return;
     }
 
-    const { templateName, knowledgeIds, toolIds } = this.profileDetailForm.value;
+    const { templateName, knowledgeIds, toolIds } = this.templateForm.value;
 
     this.resourceService.postTemplate(templateName, knowledgeIds, toolIds).subscribe({
       next: () => {
         this.loadTemplates();
         this.createTemplate.set(false);
-        this.profileDetailForm.patchValue({
+        this.templateForm.reset({
           templateName: '',
           knowledgeIds: [],
           toolIds: []

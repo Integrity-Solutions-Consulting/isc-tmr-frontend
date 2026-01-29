@@ -36,7 +36,7 @@ export interface ProfileDetailRequestDTO {
 
 export interface TemplateResponseDTO {
   templateID: number;
-  templateName: string;
+  template_name: string;
 }
 
 export interface TemplateDetailResponseDTO {
@@ -88,4 +88,14 @@ export interface VacancyResponseDTO  {
 export interface StudyStatuResponseDTO {
   educationStatusID: number;
   educationstatus_name: string;
+}
+
+export interface WorkCityResponseDTO {
+  WorkCityID: number;
+  cityNaworkcity_name: string;
+}
+
+export interface WorkModeResponseDTO{
+  Id: number;
+  Name: string;
 }

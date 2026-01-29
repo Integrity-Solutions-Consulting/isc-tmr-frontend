@@ -49,13 +49,13 @@
     <div class="template-header">
       <div class="form-group flex-grow">
         <label>Plantilla</label>
-        <ng-select class="form-control"
-                   [items]="templates()"
-                   bindLabel="templateName"
-                   bindValue="templateDetailID"
-                   placeholder="Seleccione plantilla"
-                   formControlName="templateId"
-                   (change)="onTemplateSelect($event)">
+        <ng-select
+          [items]="templates()"
+          bindLabel="template_name"
+          bindValue="templateID"
+          placeholder="Seleccione plantilla"
+          formControlName="templateId"
+          (change)="onTemplateSelect($event)">
         </ng-select>
       </div>
 
@@ -63,15 +63,15 @@
         <div class="chip-group">
           <label>Conocimientos</label>
           <span class="chip"
-                *ngFor="let k of selectedTemplateDetail().knowledges">
-            {{ k.knowledgeName }}
+                *ngFor="let k of selectedTemplateDetail()?.knowledgeIDs">
+            {{ getKnowledgeName(k) }}
           </span>
         </div>
         <div class="chip-group">
           <label>Herramientas</label>
           <span class="chip"
-                *ngFor="let t of selectedTemplateDetail().tools">
-            {{ t.toolName }}
+                *ngFor="let t of selectedTemplateDetail()?.toolIDs">
+            {{ getToolName(t) }}
           </span>
         </div>
       </div>
@@ -81,41 +81,41 @@
     </div>
 
     <div class="template-box" *ngIf="createTemplate()">
+      <form [formGroup]="templateForm">
+        <div class="form-group">
+          <label for="nombre-plantilla">Nombre plantilla</label>
+          <input type="text" id="nombre-plantilla" class="form-control white-bg"
+                placeholder="Ingrese nombre" formControlName="templateName">
+        </div>
 
-      <div class="form-group">
-        <label for="nombre-plantilla">Nombre plantilla</label>
-        <input type="text" id="nombre-plantilla" class="form-control white-bg"
-               placeholder="Ingrese nombre" formControlName="templateName">
-      </div>
+        <div class="form-group">
+          <label for="conocimiento">Conocimiento</label>
+          <ng-select class="form-control white-bg"
+                    [items]="knowledgeList()"
+                    bindLabel="knowledgeName"
+                    bindValue="id"
+                    placeholder="Seleccione conocimiento"
+                    formControlName="knowledgeIds"
+                    multiple>
+          </ng-select>
+        </div>
 
-      <div class="form-group">
-        <label for="conocimiento">Conocimiento</label>
-        <ng-select class="form-control white-bg"
-                   [items]="knowledgeList()"
-                   bindLabel="knowledgeName"
-                   bindValue="id"
-                   placeholder="Seleccione conocimiento"
-                   formControlName="knowledgeIds"
-                   multiple>
-        </ng-select>
-      </div>
+        <div class="form-group">
+          <label for="herramientas">Herramientas</label>
+          <ng-select class="form-control white-bg"
+                    [items]="toolsList()"
+                    bindLabel="toolName"
+                    bindValue="id"
+                    placeholder="Seleccione herramientas"
+                    formControlName="toolIds"
+                    multiple>
+          </ng-select>
+        </div>
 
-      <div class="form-group">
-        <label for="herramientas">Herramientas</label>
-        <ng-select class="form-control white-bg"
-                   [items]="toolsList()"
-                   bindLabel="toolName"
-                   bindValue="id"
-                   placeholder="Seleccione herramientas"
-                   formControlName="toolIds"
-                   multiple>
-        </ng-select>
-      </div>
-
-      <div class="action-footer">
-        <button class="btn-save" type="button" (click)="saveTemplate()">Guardar</button>
-      </div>
-
+        <div class="action-footer">
+          <button class="btn-save" type="button" (click)="saveTemplate()">Guardar</button>
+        </div>
+      </form>
     </div>
 
   </section>
