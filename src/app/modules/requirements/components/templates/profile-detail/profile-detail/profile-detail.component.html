@@ -3,10 +3,7 @@
 
   <header class="header">
     <div class="title-group">
-      <svg xmlns="http://www.w3.org/2000/svg" class="profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-        <path d="M16 11h6m-3-3v6"></path> </svg>
+      <mat-icon class="profile-icon">person</mat-icon>
       <h1>Detalle del Perfil</h1>
     </div>
   </header>
@@ -49,35 +46,41 @@
     <div class="template-header">
       <div class="form-group flex-grow">
         <label>Plantilla</label>
-        <ng-select
-          [items]="templates()"
-          bindLabel="template_name"
-          bindValue="templateID"
-          placeholder="Seleccione plantilla"
-          formControlName="templateId"
-          (change)="onTemplateSelect($event)">
-        </ng-select>
-      </div>
 
-      <div class="chips-container" *ngIf="selectedTemplateDetail()">
-        <div class="chip-group">
-          <label>Conocimientos</label>
-          <span class="chip"
-                *ngFor="let k of selectedTemplateDetail()?.knowledgeIDs">
-            {{ getKnowledgeName(k) }}
-          </span>
-        </div>
-        <div class="chip-group">
-          <label>Herramientas</label>
-          <span class="chip"
-                *ngFor="let t of selectedTemplateDetail()?.toolIDs">
-            {{ getToolName(t) }}
-          </span>
-        </div>
-      </div>
+          <div class="space-bf-chip">
+            <ng-select
+              [items]="templates()"
+              bindLabel="template_name"
+              bindValue="templateID"
+              placeholder="Seleccione plantilla"
+              formControlName="templateId"
+              (change)="onTemplateSelect($event)"
+              (clear)="onTemplateClear()">
+            </ng-select>
 
-      <button class="btn-add" title="Agregar nueva plantilla" type="button"
-        (click)="toggleCreateTemplate()">+</button>
+            <button class="btn-add" title="Agregar nueva plantilla" type="button"
+            (click)="toggleCreateTemplate()">+</button>
+          </div>
+
+          <div class="chips-container" *ngIf="selectedTemplateDetail()">
+            <div class="chip-group">
+              <label>Conocimientos</label>
+              <span class="chip"
+                    *ngFor="let k of selectedTemplateDetail()?.knowledges">
+                {{ k.knowledgeName }}
+              </span>
+            </div>
+
+            <div class="chip-group">
+              <label>Herramientas</label>
+              <span class="chip"
+                    *ngFor="let t of selectedTemplateDetail()?.tools">
+                {{ t.toolName }}
+              </span>
+            </div>
+        </div>
+
+      </div>
     </div>
 
     <div class="template-box" *ngIf="createTemplate()">

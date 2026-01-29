@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CareerResponseDTO, KnowledgeResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO } from '../../../../interfaces/requirement.interface';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'profile-detail',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgSelectModule],
+  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIconModule],
   templateUrl: './profile-detail.component.html',
   styleUrl: './profile-detail.component.scss'
 })
@@ -97,27 +98,35 @@ export class ProfileDetailComponent implements OnInit{
     });
   }
 
-  onTemplateSelect(templateId: number | null) {
-    if (!templateId) return;
+  onTemplateSelect(template: TemplateResponseDTO | null) {
+    if (!template) {
+      this.selectedTemplateDetail.set(null);
+      return;
+    }
+
+    const templateId = template.templateID;
 
     this.resourceService.getTemplateById(templateId).subscribe({
-      next: res  => {
-        console.log('Detalle de plantilla:', res);
+      next: res => {
         this.selectedTemplateDetail.set(res);
         this.createTemplate.set(false);
       },
-      error: (err) => console.error('Error fetching template details:', err)
+      error: err => console.error(err)
     });
   }
 
+  onTemplateClear() {
+    this.selectedTemplateDetail.set(null);
+  }
+
   getKnowledgeName(id: number): string {
-    const item = this.knowledgeList().find(k => k.id === id);
-    return item ? item.knowledgeName : 'Cargando...';
+    const item = this.knowledgeList().find(k => k.knowledgeID === id)?.knowledgeName ?? '';
+    return item;
   }
 
   getToolName(id: number): string {
-    const item = this.toolsList().find(t => t.id === id);
-    return item ? item.toolName : 'Cargando...';
+    const item = this.toolsList().find(t => t.toolID === id)?.toolName ?? '';
+    return item;
   }
 
   toggleCreateTemplate() {

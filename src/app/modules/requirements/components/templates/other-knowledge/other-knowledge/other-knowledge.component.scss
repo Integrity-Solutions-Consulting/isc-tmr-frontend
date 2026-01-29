@@ -13,16 +13,20 @@
     gap: 0.8rem;
     margin-bottom: 0.5rem;
 
-    .book-icon {
-      width: 28px;
-      height: 28px;
-      color: #3498db; /* Azul tipo libro de conocimientos */
+    .knowledge-icon {
+      color: #2c2a2a;
+      font-size: 1.8rem;
+      width: 1.8rem;
+      height: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     h1 {
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: #002f5b; /* Azul oscuro */
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
       margin: 0;
     }
   }

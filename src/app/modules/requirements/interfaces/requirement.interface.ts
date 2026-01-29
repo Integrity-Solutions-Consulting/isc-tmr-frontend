@@ -40,10 +40,16 @@ export interface TemplateResponseDTO {
 }
 
 export interface TemplateDetailResponseDTO {
-  templateDetailID: number;
-  templateName: string;
-  knowledgeIDs: number[];
-  toolIDs: number[];
+  id: number;
+  name: string;
+  knowledges: {
+    id: number;
+    knowledgeName: string;
+  }[];
+  tools: {
+    id: number;
+    toolName: string;
+  }[];
 }
 
 export interface TemplateRequestDTO {

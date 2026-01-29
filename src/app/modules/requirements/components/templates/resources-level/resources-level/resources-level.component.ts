@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'resources-level',
   standalone: true,
-  imports: [],
+  imports: [MatIcon],
   templateUrl: './resources-level.component.html',
   styleUrl: './resources-level.component.scss'
 })

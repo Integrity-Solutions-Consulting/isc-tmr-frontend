@@ -36,7 +36,7 @@ export class ResourceServiceService {
   getTemplateById(templateID: number): Observable<TemplateDetailResponseDTO> {
     const params = new HttpParams().set('id', templateID);
     return this.http.get<TemplateDetailResponseDTO>(
-      `${this.urlBDE}/api/Template/get-template-by-id`, { params });
+      `${this.urlBDE}/api/Template/get-template-detail-by-id`, { params });
   }
 
   postTemplate(name: string, knowledgeIds: number[], toolIds: number[]): Observable<number> {
