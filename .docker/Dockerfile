@@ -1,10 +1,14 @@
 FROM node:20-alpine
 
-WORKDIR /app
+# 1. Definimos los ARG (reciben valores de --build-arg)
+ARG BUILD_CONFIG=production
+ARG NODE_ENV_ARG=production
 
-# Esto nos dirá qué archivos hay exactamente antes de fallar
-# Revisa los logs de Dokploy después de añadir esto
-RUN ls -la .. && ls -la .
+# 2. Convertimos el ARG en ENV para que esté disponible en el CMD
+ENV BUILD_CONFIG=$BUILD_CONFIG
+ENV NODE_ENV=$NODE_ENV_ARG
+
+WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
@@ -12,4 +16,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 3000
-CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "3000"]
+
+# Cambia esto en tu última línea:
+CMD npm run start -- --host 0.0.0.0 --port 3000 --configuration $BUILD_CONFIG

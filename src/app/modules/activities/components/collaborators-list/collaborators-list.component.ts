@@ -14,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { catchError, finalize, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { ClientDetail, LeaderDetail, ProjectDetail } from '../../interfaces/activity.interface';
 import { environment } from '../../../../../environments/environment';
 import { MatSelectModule } from '@angular/material/select';
@@ -71,6 +71,7 @@ export class CollaboratorsListComponent implements OnInit {
   periodToggleControl = new FormControl<boolean>(this.shouldUseFullMonth());
   yearControl = new FormControl<number>(new Date().getFullYear());
   showOnlyWithoutHours = new FormControl(false);
+  loading = false;
 
   months = [
     { value: 0, name: 'Enero' },
@@ -115,6 +116,7 @@ export class CollaboratorsListComponent implements OnInit {
   totalItems = 0;
   pageSize = 10;
 
+
   currentYear = new Date().getFullYear();
   currentMonth = new Date().getMonth();
   private clientNameToIdMap = new Map<string, number>();
@@ -141,62 +143,57 @@ export class CollaboratorsListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loading = true;
+
+
     this.periodToggleControl.setValue(this.shouldUseFullMonth());
     this.loadClients();
     this.loadHolidaysAndData();
 
     this.clientControl.valueChanges.subscribe(value => {
-    this.filterClients(value);
-    this.currentFilters.client = value || '';
-    this.applyCombinedFilters();
-  });
+      this.filterClients(value);
+      this.currentFilters.client = value || '';
+      this.applyCombinedFilters();
+    });
 
-     this.searchControl.valueChanges.subscribe(value => {
-    this.currentFilters.search = value || '';
-    this.applyCombinedFilters();
-  });
-     this.showOnlyWithoutHours.valueChanges.subscribe(() => {
-    this.applyCombinedFilters();
-    this.resetPagination();
-  });
+    this.searchControl.valueChanges.subscribe(value => {
+      this.currentFilters.search = value || '';
+      this.applyCombinedFilters();
+    });
 
-      this.monthControl.valueChanges.subscribe(() => {
-    this.resetPagination();
-    this.loadHolidaysAndData();
-  });
+    this.showOnlyWithoutHours.valueChanges.subscribe(() => {
+      this.applyCombinedFilters();
+      this.resetPagination();
+    });
 
-  // AÑO
-  this.yearControl.valueChanges.subscribe(() => {
-    this.resetPagination();
-    this.loadHolidaysAndData();
-  });
-
-  // QUINCENA / MES COMPLETO
-  this.periodToggleControl.valueChanges.subscribe(() => {
-    this.resetPagination();
-    this.calculateBusinessDays();
-    this.loadData();
-  });
-
-
-    // Suscribirse a cambios de mes y año para recalcular días laborables
-    // y resetear el paginador a la primera página
+    // MES
     this.monthControl.valueChanges.subscribe(() => {
       this.resetPagination();
       this.loadHolidaysAndData();
     });
 
+    // AÑO
     this.yearControl.valueChanges.subscribe(() => {
       this.resetPagination();
       this.loadHolidaysAndData();
     });
 
+
     this.periodToggleControl.valueChanges.subscribe(() => {
+      this.loading = true;
+
+    setTimeout(() => {
       this.resetPagination();
-      this.calculateBusinessDays(); // Recalcular inmediatamente
-      this.loadData(); // Recargar datos para actualizar estados
+      this.calculateBusinessDays();
+      this.loadData();
     });
-  }
+
+});
+
+
+
+}
+
 
   // Método para resetear el paginador a la primera página
   private resetPagination(): void {
@@ -780,7 +777,7 @@ export class CollaboratorsListComponent implements OnInit {
     const selectedMonth = this.monthControl.value ?? new Date().getMonth();
     const selectedYear = this.yearControl.value ?? new Date().getFullYear();
     const mesCompleto = this.periodToggleControl.value ?? false;
-
+    this.loading = true;
 
     this.calculateBusinessDays();
     console.log('Mes:', (this.monthControl.value ?? 0) + 1);
@@ -804,7 +801,10 @@ export class CollaboratorsListComponent implements OnInit {
         this.noDataMessage = 'Error al cargar los datos. Por favor, inténtalo de nuevo.';
         this.resetPagination();
         return of([]);
-      })
+      }),
+      finalize(() => {
+      this.loading = false;
+    })
     ).subscribe({
       next: (employees) => {
         if (!employees || employees.length === 0) {
@@ -858,7 +858,6 @@ export class CollaboratorsListComponent implements OnInit {
         this.noDataMessage = 'Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo.';
         this.resetPagination();
       }
-
     });
 
   }
