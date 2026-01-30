@@ -274,7 +274,7 @@ export class EventDialogComponent implements OnInit {
     const endDate = new Date(this.recurrenceEndDate);
 
     while (currentDate <= endDate) {
-      // Incluir según las opciones seleccionadas
+      // Incluir según las opciones seleccionada
       const includeDate = (this.includeWeekends || !this.isWeekend(currentDate)) &&
                         (this.includeHolidays || !this.isHoliday(currentDate));
 
