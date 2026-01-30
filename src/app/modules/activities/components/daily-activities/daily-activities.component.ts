@@ -1125,7 +1125,8 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           projectID: extendedProps['projectID'],
           activityDescription: extendedProps['activityDescription'],
           details: extendedProps['notes'],
-          activityDate: clickInfo.event.start || new Date(),
+          activityDate: clickInfo.event.start || new Date(), // Usar la fecha de inicio del evento
+          // Aseguramos que fullDay se mapee correctamente
           fullDay: extendedProps['hoursQuantity'] === 8,
           hours: extendedProps['hoursQuantity'],
           requirementCode: extendedProps['requirementCode']
@@ -1142,35 +1143,33 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
         // Si se eliminó la actividad, recargar el calendario
         this.snackBar.open('Actividad eliminada correctamente', 'Cerrar', { duration: 3000 });
         this.loadActivities().then(() => {
+          // Forzar la actualización del botón después de eliminar
           this.updateMonthlyHoursButton();
         });
-      } else if (result && !result.success) { // Cambia esta condición
-        // Aquí llegan los datos de edición
+      } else if (result) {
         if (isNaN(numericId)) {
           console.error('ID inválido al actualizar:', numericId);
           return;
         }
-
-        // Preparar los datos para actualización
         const updateData = {
-          projectID: result.projectID,
-          activityTypeID: result.activityTypeID,
-          hoursQuantity: Number(result.hoursQuantity || result.hours),
-          activityDate: this.formatDate(result.activityDate),
-          activityDescription: result.activityDescription,
-          notes: result.notes || result.details || '',
-          requirementCode: result.requirementCode,
-          employeeID: this.currentEmployeeId
-        };
+        projectID: result.projectID,
+        activityTypeID: result.activityTypeID,
+        hoursQuantity: result.hoursQuantity || result.hours, // Ambos nombres por seguridad
+        activityDate: result.activityDate,
+        activityDescription: result.activityDescription || result.details, // Ambos nombres
+        notes: result.notes || result.details, // Ambos nombres
+        requirementCode: result.requirementCode,
+        employeeID: this.currentEmployeeId // Añadir employeeID
+      };
+      /*
 
-        // Llamar al servicio para actualizar
         this.activityService.updateActivity(numericId, updateData).subscribe({
           next: () => {
             this.snackBar.open('Actividad actualizada correctamente', 'Cerrar', { duration: 3000 });
-            // Recargar actividades para actualizar la vista
             this.loadActivities().then(() => {
+              // Actualizar el botón después de modificar
               this.updateMonthlyHoursButton();
-            });
+            }); // Recargar actividades después de actualizar
           },
           error: (error) => {
             console.error('Error al actualizar actividad', error);
@@ -1181,7 +1180,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
               this.snackBar.open('Error al actualizar actividad: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar');
             }
           }
-        });
+        }); */
       }
     });
   }
@@ -1225,37 +1224,46 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   }
 
   private formatDate(dateInput: any): string {
-    if (!dateInput) return new Date().toISOString().split('T')[0];
-
-    if (dateInput instanceof Date) {
-      return dateInput.toISOString().split('T')[0];
-    }
-
-    if (typeof dateInput === 'string') {
-      // Si ya está en formato YYYY-MM-DD, devolverlo
-      if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-        return dateInput;
+      // Si es undefined o null, devuelve la fecha actual
+      if (!dateInput) {
+          return new Date().toISOString().split('T')[0];
       }
-      // Intentar parsear
-      const parsedDate = new Date(dateInput);
-      if (!isNaN(parsedDate.getTime())) {
-        return parsedDate.toISOString().split('T')[0];
+
+      // Si ya es un objeto Date, formatea directamente
+      if (dateInput instanceof Date) {
+          return dateInput.toISOString().split('T')[0];
       }
-    }
 
-    // Para otros casos (moment.js, etc.)
-    const date = new Date(dateInput);
-    if (!isNaN(date.getTime())) {
-      return date.toISOString().split('T')[0];
-    }
+      // Si es un string en formato ISO (YYYY-MM-DD)
+      if (typeof dateInput === 'string') {
+          // Si ya está en el formato correcto, devuélvelo directamente
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+              return dateInput;
+          }
+          // Si es un string ISO con tiempo, extrae solo la parte de la fecha
+          if (dateInput.includes('T')) {
+              return dateInput.split('T')[0];
+          }
+          // Intenta parsear otros formatos de string
+          const parsedDate = new Date(dateInput);
+          if (!isNaN(parsedDate.getTime())) {
+              return parsedDate.toISOString().split('T')[0];
+          }
+      }
 
-    console.warn('Formato de fecha no reconocido:', dateInput);
-    return new Date().toISOString().split('T')[0];
+      // Si es un timestamp numérico
+      if (typeof dateInput === 'number') {
+          return new Date(dateInput).toISOString().split('T')[0];
+      }
+
+      // Si no reconocemos el formato, usamos la fecha actual como fallback
+      console.warn('Formato de fecha no reconocido:', dateInput);
+      return new Date().toISOString().split('T')[0];
   }
 
   private lightenColor(color: string | undefined, factor: number): string {
     // Si no hay color, devuelve un color por defecto aclarado
-    if (!color) return '#e6f2fe'; // Azul muy claro por defecto
+    if (!color) return '#e6f2ff'; // Azul muy claro por defecto
 
     // Si el color no empieza con #, añádelo
     if (!color.startsWith('#')) {

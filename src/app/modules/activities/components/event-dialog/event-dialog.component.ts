@@ -413,31 +413,25 @@ export class EventDialogComponent implements OnInit {
       const payload = this.preparePayload();
 
       if (this.data.isEdit) {
-        // Para edición, solo preparamos los datos y cerramos el diálogo
-        // El componente padre se encargará de llamar al servicio
-        const resultPayload = {
+        // Para edición, el diálogo podría hacer la llamada o dejar que el componente padre lo haga
+        await this.activityService.updateActivity(this.event.id, payload).toPromise();
+        this.snackBar.open('Actividad actualizada correctamente', 'Cerrar', { duration: 3000 });
+        this.dialogRef.close({
           ...payload,
           id: this.event.id,
           employeeID: this.currentEmployeeId,
-          // Asegúrate de incluir todos los campos necesarios
-          projectID: this.event.projectID,
-          activityTypeID: this.event.activityTypeID,
-          hoursQuantity: Number(this.event.hours ?? 4),
-          activityDate: this.event.activityDate,
-          activityDescription: this.event.activityDescription,
-          requirementCode: this.event.requirementCode,
-          notes: this.event.details || ''
-        };
-
-        this.dialogRef.close(resultPayload);
+          success: true
+        });
       } else {
-        // Para creación: preparar los datos
+        // Para creación: SOLO preparar los datos, NO llamar al API
         if (Array.isArray(payload)) {
+          // Para actividades recurrentes, enviar el array
           this.dialogRef.close(payload.map(p => ({
             ...p,
             employeeID: this.currentEmployeeId
           })));
         } else {
+          // Para actividad única, enviar los datos
           this.dialogRef.close({
             ...payload,
             employeeID: this.currentEmployeeId
