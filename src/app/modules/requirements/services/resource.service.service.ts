@@ -20,7 +20,7 @@ export class ResourceServiceService {
 
   postEmployeeCategoryRequirement(request: EmployeeCategoryRequirementRequestDTO): Observable<EmployeeCategoryRequirementResponseDTO> {
     return this.http.post<EmployeeCategoryRequirementResponseDTO>(
-      `${this.urlBase}/api/Requirements/employee-category-requirement`, request)
+      `${this.urlBase}/api/EmployeeCategoryRequirement/employee-category-requirement`, request)
   }
 
   postProfileDetail(request: ProfileDetailRequestDTO): Observable<ProfileDetailResponseDTO> {

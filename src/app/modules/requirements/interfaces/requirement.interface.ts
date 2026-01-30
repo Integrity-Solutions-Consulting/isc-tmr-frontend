@@ -10,15 +10,12 @@ export interface CareerResponseDTO {
 
 export interface EmployeeCategoryRequirementResponseDTO {
   EmployeeCategoryRequirementID: number;
-  EmployeeCategoryID: number;
-  RequirementID: number;
-  quantity: number;
 }
 
 export interface EmployeeCategoryRequirementRequestDTO {
-  EmployeeCategoryID: number;
-  RequirementID: number;
-  quantity: number;
+  EmployeeCategoryId: number;
+  RequirementId: number;
+  Quantity: number;
 }
 
 export interface ProfileDetailResponseDTO {
