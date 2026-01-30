@@ -1255,7 +1255,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
 
   private lightenColor(color: string | undefined, factor: number): string {
     // Si no hay color, devuelve un color por defecto aclarado
-    if (!color) return '#e6f2fe'; // Azul muy claro por defecto
+    if (!color) return '#e6f2ff'; // Azul muy claro por defecto
 
     // Si el color no empieza con #, añádelo
     if (!color.startsWith('#')) {
