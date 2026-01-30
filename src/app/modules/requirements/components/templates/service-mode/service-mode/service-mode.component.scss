@@ -4,6 +4,7 @@
   flex-direction: column;
   gap: 1.5rem;
   width: 100%; /* CAMBIO: Quitamos el límite de 600px para que ocupe todo el ancho */
+  margin-bottom: 2.5rem;
 }
 
 /*HEADER DEL COMPONENTE*/
@@ -69,6 +70,8 @@
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 1rem;
+    font-family: var(--font-subtitle);
+    color: #666;
     background-color: #fdfdfd;
     transition: border-color 0.3s ease;
     width: 100%;

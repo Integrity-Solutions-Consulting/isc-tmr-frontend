@@ -55,7 +55,8 @@
               placeholder="Seleccione plantilla"
               formControlName="templateId"
               (change)="onTemplateSelect($event)"
-              (clear)="onTemplateClear()">
+              (clear)="onTemplateClear()"
+              dropdownPanelClass="template-dropdown">
             </ng-select>
 
             <button class="btn-add" title="Agregar nueva plantilla" type="button"
