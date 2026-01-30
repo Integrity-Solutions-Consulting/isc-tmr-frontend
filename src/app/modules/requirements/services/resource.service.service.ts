@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO } from '../interfaces/requirement.interface';
+import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO, WorkCityResponseDTO, WorkModeResponseDTO } from '../interfaces/requirement.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -28,14 +28,21 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Requirements/profile-detail`, request)
   }
 
-  getTemplate(): Observable<any> {
-    return this.http.get<any>(
-      `${this.urlBase}/api/Requirements/show-templates`);
+  getAllTemplates(): Observable<TemplateResponseDTO[]> {
+    return this.http.get<TemplateResponseDTO[]>(
+      `${this.urlBDE}/api/Template/get-all-template`);
   }
 
-  postTemplate(request: any): Observable<any> {
-    return this.http.post<any>(
-      `${this.urlBase}/api/Requirements/create-templates`, request)
+  getTemplateById(templateID: number): Observable<TemplateDetailResponseDTO> {
+    const params = new HttpParams().set('id', templateID);
+    return this.http.get<TemplateDetailResponseDTO>(
+      `${this.urlBDE}/api/Template/get-template-detail-by-id`, { params });
+  }
+
+  postTemplate(name: string, knowledgeIds: number[], toolIds: number[]): Observable<number> {
+    const body = {templateName: name, knowledgeIds: knowledgeIds, toolIds: toolIds};
+    return this.http.post<number>(
+      `${this.urlBDE}/api/Template/create-template`, body)
   }
 
   postOtherKnowledge(request: any): Observable<any> {
@@ -53,16 +60,47 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Clients/${clientId}/contacts`);
   }
 
-  // getServiceModalities(): Observable<any> {
-  //   return this.http.get<any>(
-  //     `${this.urlBase}/api/Catalog/get-modalidad`);
-  // }
+  getWorkMode(): Observable<WorkModeResponseDTO[]> {
+    return this.http.get<WorkModeResponseDTO[]>(
+      `${this.urlBase}/api/Catalog/work-mode`);
+  }
 
-  // getCities(): Observable<any> {
-  //   return this.http.get<any>(
-  //     `${this.urlBase}/api/Catalog/cities`);
-  // }
+  getWorkCity(): Observable<WorkCityResponseDTO[]> {
+    return this.http.get<WorkCityResponseDTO[]>(
+       `${this.urlBDE}/api/Catalog/get-all-work-city`);
+  }
 
+  GetAllStudyStatus(): Observable<StudyStatuResponseDTO[]>{
+    return this.http.get<StudyStatuResponseDTO[]>(
+      `${this.urlBDE}/api/Catalog/get-all-study-status`
+    )
+  }
 
+  GetAllCareers(isActive: boolean): Observable<CareerResponseDTO[]>{
+    const params = new HttpParams().set('isActive', isActive);
+    return this.http.get<CareerResponseDTO[]>(
+      `${this.urlBDE}/api/Catalog/get-all-careers`, {params}
+    )
+  }
+
+  GetAllTools(isActive: boolean = true, search?: string): Observable<ToolResponseDTO[]>{
+    let params = new HttpParams().set('isActive', isActive);
+    if (search){
+      params = params.set('search', search);
+    }
+    return this.http.get<ToolResponseDTO[]>(
+      `${this.urlBDE}/api/Catalog/get-all-tools`,
+      {params}
+    )
+  }
+
+  GetAllKnowledge(isActive: boolean = true, search?: string): Observable<KnowledgeResponseDTO[]> {
+    let query = `?isActive=${isActive}`;
+    if (search) query += `&search=${search}`;
+
+    return this.http.get<KnowledgeResponseDTO[]>(
+      `${this.urlBDE}/api/Catalog/get-all-knowledges${query}`
+    );
+  }
 
 }

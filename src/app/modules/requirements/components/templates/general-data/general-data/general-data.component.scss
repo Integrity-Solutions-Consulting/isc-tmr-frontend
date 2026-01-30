@@ -9,13 +9,33 @@
   padding: 1rem;
 }
 
-/* 2. TÍTULO PRINCIPAL */
-.main-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #333;
-  margin: 0;
-}
+/*HEADER DEL COMPONENTE*/
+  .header-section {
+    margin-bottom: 0.5rem;
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+
+      .general-icon {
+        color: #2c2a2a;
+        font-size: 1.8rem;
+        width: 1.8rem;
+        height: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+      }
+    }
+  }
 
 /* 3. GRILLA DE DOS COLUMNAS */
 .columns-grid {

@@ -6,12 +6,43 @@
   width: 100%; /* CAMBIO: Quitamos el límite de 600px para que ocupe todo el ancho */
 }
 
+/*HEADER DEL COMPONENTE*/
+  .header {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+
+      .gear-icon {
+        color: #2c2a2a;
+        font-size: 1.8rem;
+        width: 1.8rem;
+        height: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+      }
+    }
+  }
+
 /* NUEVA CLASE: Agrega esto para alinear Modalidad y Tiempo */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Divide el espacio en 2 columnas iguales */
   gap: 2rem; /* Espacio en medio */
   align-items: start;
+  margin-bottom: 1rem;
+
 
   /* Responsivo: En pantallas chicas se pone uno debajo del otro */
   @media (max-width: 768px) {

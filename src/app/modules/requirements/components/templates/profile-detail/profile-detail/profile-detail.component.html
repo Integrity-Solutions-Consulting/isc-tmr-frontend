@@ -1,11 +1,9 @@
 <div class="profile-detail-container">
+  <form [formGroup]="profileDetailForm">
 
   <header class="header">
     <div class="title-group">
-      <svg xmlns="http://www.w3.org/2000/svg" class="profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-        <path d="M16 11h6m-3-3v6"></path> </svg>
+      <mat-icon class="profile-icon">person</mat-icon>
       <h1>Detalle del Perfil</h1>
     </div>
   </header>
@@ -15,27 +13,28 @@
     <div class="row-group">
       <div class="form-group">
         <label for="experiencia">Experiencia (Años) <span class="required">*</span></label>
-        <input type="number" id="experiencia" class="form-control" placeholder="Años de experiencia">
+        <input type="number" class="form-control" placeholder="Años de experiencia" formControlName="experienceYears">
       </div>
 
       <div class="form-group">
         <label for="estado-estudios">Estado de Estudios <span class="required">*</span></label>
-        <select id="estado-estudios" class="form-control">
-          <option value="" disabled selected>Seleccione el estado</option>
-          <option value="graduado">Graduado</option>
-          <option value="cursando">Cursando</option>
-          <option value="egresado">Egresado</option>
-        </select>
+        <ng-select [items]="studyStatus()"
+                   bindLabel="educationstatus_name"
+                   bindValue="educationStatusID"
+                   placeholder="Seleccione estado de estudios"
+                   formControlName="studyStatusId">
+        </ng-select>
       </div>
     </div>
 
     <div class="form-group full-width">
-      <label for="carrera">Carrera <span class="required">*</span></label>
-      <select id="carrera" class="form-control">
-        <option value="" disabled selected>Seleccione una carrera</option>
-        <option value="software">Ingeniería de Software</option>
-        <option value="sistemas">Ingeniería en Sistemas</option>
-      </select>
+      <label>Carrera <span class="required">*</span></label>
+      <ng-select [items]="availableCareers()"
+                 bindLabel="careerName"
+                 bindValue="Id"
+                 placeholder="Seleccione carrera"
+                 formControlName="careerId">
+      </ng-select>
     </div>
 
   </section>
@@ -46,47 +45,82 @@
 
     <div class="template-header">
       <div class="form-group flex-grow">
-        <label for="plantilla-select">Plantilla</label>
-        <select id="plantilla-select" class="form-control">
-          <option value="" disabled selected>Seleccione una plantilla</option>
-          <option value="fullstack">Plantilla Fullstack Senior</option>
-        </select>
+        <label>Plantilla</label>
+
+          <div class="space-bf-chip">
+            <ng-select
+              [items]="templates()"
+              bindLabel="template_name"
+              bindValue="templateID"
+              placeholder="Seleccione plantilla"
+              formControlName="templateId"
+              (change)="onTemplateSelect($event)"
+              (clear)="onTemplateClear()">
+            </ng-select>
+
+            <button class="btn-add" title="Agregar nueva plantilla" type="button"
+            (click)="toggleCreateTemplate()">+</button>
+          </div>
+
+          <div class="chips-container" *ngIf="selectedTemplateDetail()">
+            <div class="chip-group">
+              <label>Conocimientos</label>
+              <span class="chip"
+                    *ngFor="let k of selectedTemplateDetail()?.knowledges">
+                {{ k.knowledgeName }}
+              </span>
+            </div>
+
+            <div class="chip-group">
+              <label>Herramientas</label>
+              <span class="chip"
+                    *ngFor="let t of selectedTemplateDetail()?.tools">
+                {{ t.toolName }}
+              </span>
+            </div>
+        </div>
+
       </div>
-      <button class="btn-add" title="Agregar nueva plantilla">+</button>
     </div>
 
-    <div class="template-box">
+    <div class="template-box" *ngIf="createTemplate()">
+      <form [formGroup]="templateForm">
+        <div class="form-group">
+          <label for="nombre-plantilla">Nombre plantilla</label>
+          <input type="text" id="nombre-plantilla" class="form-control white-bg"
+                placeholder="Ingrese nombre" formControlName="templateName">
+        </div>
 
-      <div class="form-group">
-        <label for="nombre-plantilla">Nombre plantilla</label>
-        <input type="text" id="nombre-plantilla" class="form-control white-bg" placeholder="Ingrese nombre">
-      </div>
+        <div class="form-group">
+          <label for="conocimiento">Conocimiento</label>
+          <ng-select class="form-control white-bg"
+                    [items]="knowledgeList()"
+                    bindLabel="knowledgeName"
+                    bindValue="id"
+                    placeholder="Seleccione conocimiento"
+                    formControlName="knowledgeIds"
+                    multiple>
+          </ng-select>
+        </div>
 
-      <div class="form-group">
-        <label for="conocimiento">Conocimiento</label>
-        <select id="conocimiento" class="form-control white-bg">
-          <option value="" disabled selected>Seleccione conocimiento</option>
-          <option value="angular">Angular</option>
-          <option value="react">React</option>
-          <option value="net">.NET Core</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="herramientas">Herramientas</label>
+          <ng-select class="form-control white-bg"
+                    [items]="toolsList()"
+                    bindLabel="toolName"
+                    bindValue="id"
+                    placeholder="Seleccione herramientas"
+                    formControlName="toolIds"
+                    multiple>
+          </ng-select>
+        </div>
 
-      <div class="form-group">
-        <label for="herramientas">Herramientas</label>
-        <select id="herramientas" class="form-control white-bg">
-          <option value="" disabled selected>Seleccione herramienta</option>
-          <option value="vscode">VS Code</option>
-          <option value="sql">SQL Server</option>
-        </select>
-      </div>
-
-      <div class="action-footer">
-        <button class="btn-save">Guardar</button>
-      </div>
-
+        <div class="action-footer">
+          <button class="btn-save" type="button" (click)="saveTemplate()">Guardar</button>
+        </div>
+      </form>
     </div>
 
   </section>
-
+  </form>
 </div>
