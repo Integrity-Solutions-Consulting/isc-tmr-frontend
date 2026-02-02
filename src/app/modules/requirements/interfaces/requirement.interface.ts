@@ -1,11 +1,11 @@
-export interface EmployeeCategoryResponseDTO {
-  EmployeeCategoryID: number;
-  name: string;
-}
-
 export interface CareerResponseDTO {
   Id: number;
   CareerName: string;
+}
+
+export interface EmployeeCategoryResponseDTO {
+  EmployeeCategoryID: number;
+  categoryName: string;
 }
 
 export interface EmployeeCategoryRequirementResponseDTO {

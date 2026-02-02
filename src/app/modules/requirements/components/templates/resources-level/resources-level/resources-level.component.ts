@@ -1,41 +1,85 @@
-import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { MatIcon } from "@angular/material/icon";
+import { map } from 'rxjs';
+import { EmployeeCategoryRequirementRequestDTO } from './../../../../interfaces/requirement.interface';
+import { Component, inject, OnInit } from '@angular/core';
+import { MatIcon, MatIconModule } from "@angular/material/icon";
+import { ResourceServiceService } from '../../../../services/resource.service.service';
+import { EmployeeCategoryResponseDTO } from '../../../../interfaces/requirement.interface';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'resources-level',
   standalone: true,
-  imports: [MatIcon],
+  imports: [CommonModule, MatIconModule,
+    NgSelectModule, ReactiveFormsModule],
   templateUrl: './resources-level.component.html',
-  styleUrl: './resources-level.component.scss'
+  styleUrls: ['./resources-level.component.scss']
 })
-export class ResourcesLevelComponent {
-  resourcesForm!: FormGroup;
+export class ResourcesLevelComponent implements OnInit{
 
-  // Variables para almacenar la cantidad de cada recurso
-  junior: number = 0;
-  semisenior: number = 0;
-  senior: number = 0;
-  especialista: number = 0;
+  private fb = inject(FormBuilder);
+  private resourceService = inject(ResourceServiceService);
 
-  // Propiedad calculada para el total (se actualiza sola)
-  get total(): number {
-    return this.junior + this.semisenior + this.senior + this.especialista;
+  categories: EmployeeCategoryResponseDTO[] = [];
+
+  resourcesForm: FormGroup = this.fb.group({
+    categories: this.fb.array([])
+  });
+
+  ngOnInit(): void {
+    this.loadCategories();
   }
 
-  // Método para aumentar
-  aumentar(tipo: 'jun' | 'semi' | 'sen' | 'esp') {
-    if (tipo === 'jun') this.junior++;
-    if (tipo === 'semi') this.semisenior++;
-    if (tipo === 'sen') this.senior++;
-    if (tipo === 'esp') this.especialista++;
+  get categoryFormArray() {
+    return this.resourcesForm.get('categories') as FormArray;
+  }
+
+  loadCategories() {
+    this.resourceService.getEmployeeCategory().subscribe({
+      next: (categories) => {
+
+        const filteredCategories = categories.filter(
+          cat => cat.categoryName.toLowerCase() !== 'ninguno'
+        );
+
+        this.categories = filteredCategories;
+        this.categoryFormArray.clear();
+        filteredCategories.forEach(cat => {
+          this.categoryFormArray.push(this.fb.group({
+            id: [cat.EmployeeCategoryID],
+          name: [cat.categoryName],
+          quantity: [0]
+        }));
+      });
+      },
+  })}
+
+   // Método para aumentar
+  aumentar(quan: number) {
+    const cat = this.categoryFormArray.at(quan);
+    cat.patchValue({
+      quantity: cat.value.quantity + 1
+    });
   }
 
   // Método para disminuir (evita números negativos)
-  disminuir(tipo: 'jun' | 'semi' | 'sen' | 'esp') {
-    if (tipo === 'jun' && this.junior > 0) this.junior--;
-    if (tipo === 'semi' && this.semisenior > 0) this.semisenior--;
-    if (tipo === 'sen' && this.senior > 0) this.senior--;
-    if (tipo === 'esp' && this.especialista > 0) this.especialista--;
+  disminuir(quan: number) {
+    const cat = this.categoryFormArray.at(quan);
+    if (cat.value.quantity > 0) {
+      cat.patchValue({
+        quantity: cat.value.quantity - 1
+      });
+    }
+  }
+
+  // Propiedad calculada para el total (se actualiza sola)
+  get total(): number {
+    return this.categoryFormArray.controls.map(cat => cat.value.quantity)
+    .reduce((a, b) => a + b, 0);
+  }
+
+  getDTO(): any {
+    return this.resourcesForm.valid ? this.resourcesForm.value : null;
   }
 }

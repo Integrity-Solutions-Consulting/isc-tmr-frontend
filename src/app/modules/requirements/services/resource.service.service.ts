@@ -15,7 +15,7 @@ export class ResourceServiceService {
 
   getEmployeeCategory(): Observable<EmployeeCategoryResponseDTO[]> {
     return this.http.get<EmployeeCategoryResponseDTO[]>(
-      `${this.urlBase}/api/Catalogs/employee-category`);
+      `${this.urlBase}/api/Catalog/employee-category`);
   }
 
   postEmployeeCategoryRequirement(request: EmployeeCategoryRequirementRequestDTO): Observable<EmployeeCategoryRequirementResponseDTO> {
