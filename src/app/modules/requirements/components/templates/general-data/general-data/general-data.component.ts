@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
-
+import { MatIconModule } from '@angular/material/icon';
 import { map } from 'rxjs';
 import { ClientService } from '../../../../../clients/services/client.service';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
@@ -12,7 +12,7 @@ import { MatIcon } from "@angular/material/icon";
 @Component({
   selector: 'general-data',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIcon],
+  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIcon, MatIconModule],
   templateUrl: './general-data.component.html',
   styleUrl: './general-data.component.scss'
 })
@@ -54,31 +54,14 @@ export class GeneralDataComponent implements OnInit {
     });
   }
 
-  // loadVacancies() {
-  //   this.resourceService.getVacancies().subscribe({
-  //     next: (response: any) => {
-  //       const listaCruda = response.data || [];
-
-  //       const listaMapeada = listaCruda.map((item: any) => ({
-  //         name: item.vacancyTitle,
-  //         value: item.id
-  //       }));
-
-  //       this.vacancies.set(listaMapeada);
-  //     },
-  //     error: (err: any) => console.error('Error cargando vacantes:', err)
-  //   });
-  // }
-
   loadVacancies() {
     this.resourceService.getVacancies().subscribe({
       next: (response: any) => {
-        console.log('Respuesta API Vacantes:', response); // 1. Agrega esto para ver qué llega
 
         const listaCruda = Array.isArray(response) ? response : (response.data || []);
 
         const listaMapeada = listaCruda.map((item: any) => ({
-          name: item.vacancyTitle, // Asegúrate que este campo coincida con tu JSON
+          name: item.vacancyTitle,
           value: item.id
         }));
 
@@ -105,29 +88,31 @@ export class GeneralDataComponent implements OnInit {
     });
   }
 
-  loadContacts(clientId: number) {
+loadContacts(clientId: number) {
     this.resourceService.getContactsByClient(clientId).subscribe({
       next: (response: any) => {
 
         const lista = Array.isArray(response) ? response : (response.data || []);
 
         const contactosMapeados = lista.map((c: any) => ({
-           id: c.id,
-           fullName: `${c.firstName} ${c.lastName}`,
-           firstName: c.firstName,
-           lastName: c.lastName,
-           email: c.email
+            id: c.contactID,
+            fullName: `${c.first_name} ${c.last_name}`,
+            firstName: c.first_name,
+            lastName: c.last_name,
+            email: c.email
         }));
 
         this.contacts.set(contactosMapeados);
       },
-      error: (err) => console.error('Error cargando contactos:', err)
+      error: (err) => {
+        console.error('Error cargando contactos:', err);
+        this.contacts.set([]);
+      }
     });
   }
 
 onContactSelect(contact: any) {
     if (contact) {
-      // CASO A: Eligió a alguien de la lista -> Llenamos los campos y bloqueamos escritura (opcional)
       this.generalDataForm.patchValue({
         contactId: contact.id,
         contactFirstName: contact.firstName,
@@ -135,10 +120,9 @@ onContactSelect(contact: any) {
         contactEmail: contact.email
       });
     } else {
-      // CASO B: Borró la selección (X) > Limpiamos para que escriba uno nuevo manualmente
       this.generalDataForm.patchValue({
-        contactId: null,      // ID nulo significa "Nuevo Contacto" para el backend
-        contactFirstName: '', // Limpiamos para que el usuario escriba
+        contactId: null,
+        contactFirstName: '',
         contactLastName: '',
         contactEmail: ''
       });

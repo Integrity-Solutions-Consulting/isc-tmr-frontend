@@ -26,7 +26,7 @@ export class ServiceModeComponent implements OnInit {
   modalities = signal<any[]>([]);
 
   serviceModeForm: FormGroup = this.fb.group({
-    serviceModeId: [null, [Validators.required]], // null para ng-select
+    serviceModeId: [null, [Validators.required]],
     time: ['']
   });
 

@@ -55,9 +55,10 @@ export class ResourceServiceService {
       `${this.urlBDE}/api/Catalog/get-all-vacancies?isActive=true`);
   }
 
-  getContactsByClient(clientId: number): Observable<any> {
+getContactsByClient(clientId: number): Observable<any> {
     return this.http.get<any>(
-      `${this.urlBase}/api/Clients/${clientId}/contacts`);
+      `${this.urlBDE}/api/Contact/get-contact-by-client?clientId=${clientId}`
+    );
   }
 
   getWorkMode(): Observable<WorkModeResponseDTO[]> {
@@ -67,7 +68,7 @@ export class ResourceServiceService {
 
   getWorkCity(): Observable<WorkCityResponseDTO[]> {
     return this.http.get<WorkCityResponseDTO[]>(
-       `${this.urlBDE}/api/Catalog/get-all-work-city`);
+      `${this.urlBDE}/api/Catalog/get-all-work-city`);
   }
 
   GetAllStudyStatus(): Observable<StudyStatuResponseDTO[]>{

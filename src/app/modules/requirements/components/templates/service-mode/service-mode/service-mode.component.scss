@@ -1,13 +1,11 @@
-/* FORMULARIO */
 .form-content {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  width: 100%; /* CAMBIO: Quitamos el límite de 600px para que ocupe todo el ancho */
+  width: 100%;
   margin-bottom: 2.5rem;
 }
 
-/*HEADER DEL COMPONENTE*/
   .header {
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
@@ -36,16 +34,14 @@
     }
   }
 
-/* NUEVA CLASE: Agrega esto para alinear Modalidad y Tiempo */
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Divide el espacio en 2 columnas iguales */
-  gap: 2rem; /* Espacio en medio */
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
   align-items: start;
   margin-bottom: 1rem;
 
 
-  /* Responsivo: En pantallas chicas se pone uno debajo del otro */
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -64,7 +60,6 @@
     .required { color: #e74c3c; }
   }
 
-  /* ESTILO UNIFICADO PARA INPUTS Y SELECTS */
   .form-control {
     padding: 0.75rem 1rem;
     border: 1px solid #ddd;
@@ -89,7 +84,6 @@
     }
   }
 
-  /* Flecha personalizada para el select normal */
   select.form-control {
     cursor: pointer;
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23555%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
@@ -101,57 +95,45 @@
   }
 }
 
-/* ============================================================ */
-/* ESTILOS PARA IGUALAR NG-SELECT CON EL INPUT DE TIEMPO (42px) */
-/* ============================================================ */
 :host ::ng-deep ng-select {
   padding-bottom: 0;
 
-  /* 1. LA CAJA PRINCIPAL */
   .ng-select-container {
-    background-color: #fdfdfd;  /* Tu fondo */
-    border: 1px solid #ddd;     /* Tu borde */
-    border-radius: 6px;         /* Tu radio */
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 6px;
 
-    /* FORZAMOS LA ALTURA EXACTA DE TUS INPUTS */
     min-height: 43px !important;
     height: 43px !important;
 
     align-items: center;
   }
 
-  /* 2. EL TEXTO SELECCIONADO */
   .ng-value-container .ng-value {
     font-size: 1rem !important;
     color: #333;
-    line-height: 42px !important; /* Centrado vertical perfecto */
+    line-height: 42px !important;
   }
 
-  /* 3. EL PLACEHOLDER (Texto "Seleccione...") */
   .ng-placeholder {
     font-size: 1rem !important;
-    color: #aaa !important; /* Mismo color gris que usas en el input de Tiempo */
+    color: #aaa !important;
     font-weight: 400;
 
-    /* Ajustes finos de alineación vertical */
     line-height: normal !important;
     padding-top: 2px;
   }
 
-  /* 4. ALINEACIÓN LATERAL */
   .ng-value-container {
-    /* Mismo padding lateral (1rem) que definiste en .form-control */
     padding: 0 1rem !important;
   }
 
-  /* 5. CUANDO HACES CLIC (FOCUS) */
   &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
-    border-color: #3498db;      /* Tu azul */
+    border-color: #3498db;
     background-color: #fff;
     box-shadow: none;
   }
 
-  /* Ajuste de la flechita para que no quede pegada al borde */
   .ng-arrow-wrapper {
     padding-right: 1rem;
   }
