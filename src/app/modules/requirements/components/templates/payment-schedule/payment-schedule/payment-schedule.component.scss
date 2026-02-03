@@ -2,10 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  /* max-width: 900px; (Opcional, si quieres que ocupe todo quítalo) */
+
 }
 
-/* HEADER */
 .header {
   margin-bottom: 0.5rem;
 
@@ -40,7 +39,6 @@
   }
 }
 
-/* FORM CONTENT */
 .form-content {
   display: flex;
   flex-direction: column;
@@ -48,7 +46,6 @@
   width: 100%;
 }
 
-/* LAYOUT DE COLUMNAS (Igual al componente anterior) */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -72,7 +69,6 @@
     color: #444;
   }
 
-  /* INPUTS ESTÁNDAR (42px) */
   .form-control {
     padding: 0.75rem 1rem;
     border: 1px solid #ddd;
@@ -84,7 +80,7 @@
     transition: border-color 0.3s ease;
     width: 100%;
     box-sizing: border-box;
-    min-height: 42px; /* Altura estándar */
+    min-height: 42px;
 
     &:focus {
       outline: none;
@@ -98,9 +94,6 @@
   }
 }
 
-/* ============================================================ */
-/* ESTILOS PARA CLONAR NG-SELECT (42px)                         */
-/* ============================================================ */
 :host ::ng-deep ng-select {
   padding-bottom: 0;
 

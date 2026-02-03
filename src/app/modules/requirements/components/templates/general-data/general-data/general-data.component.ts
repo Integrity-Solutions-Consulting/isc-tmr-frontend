@@ -91,7 +91,6 @@ export class GeneralDataComponent implements OnInit {
 loadContacts(clientId: number) {
     this.resourceService.getContactsByClient(clientId).subscribe({
       next: (response: any) => {
-        console.log('Respuesta Contactos:', response);
 
         const lista = Array.isArray(response) ? response : (response.data || []);
 
@@ -114,7 +113,6 @@ loadContacts(clientId: number) {
 
 onContactSelect(contact: any) {
     if (contact) {
-      // CASO A: Eligió a alguien de la lista -> Llenamos los campos y bloqueamos escritura (opcional)
       this.generalDataForm.patchValue({
         contactId: contact.id,
         contactFirstName: contact.firstName,
@@ -122,10 +120,9 @@ onContactSelect(contact: any) {
         contactEmail: contact.email
       });
     } else {
-      // CASO B: Borró la selección (X) > Limpiamos para que escriba uno nuevo manualmente
       this.generalDataForm.patchValue({
-        contactId: null,      // ID nulo significa "Nuevo Contacto" para el backend
-        contactFirstName: '', // Limpiamos para que el usuario escriba
+        contactId: null,
+        contactFirstName: '',
         contactLastName: '',
         contactEmail: ''
       });

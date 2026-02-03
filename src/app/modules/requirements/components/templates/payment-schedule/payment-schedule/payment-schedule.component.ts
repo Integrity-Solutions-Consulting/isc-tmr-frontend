@@ -26,9 +26,9 @@ export class PaymentScheduleComponent implements OnInit {
   cities = signal<any[]>([]);
 
   paymentScheduleForm: FormGroup = this.fb.group({
-    budget: [''], // Presupuesto (Input normal)
-    workCityId: [null], // Ciudad (Ng-Select)
-    schedule: [''] // Horario (Input normal)
+    budget: [''],
+    workCityId: [null],
+    schedule: ['']
   });
 
   ngOnInit(): void {
