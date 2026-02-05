@@ -167,4 +167,22 @@ export class ProfileDetailComponent implements OnInit{
   getDTO(): any {
     return this.profileDetailForm.valid ? this.profileDetailForm.value : null;
   }
+
+  /*Validaciones*/
+  onlyLettersValidator(event: KeyboardEvent): void {
+    // Regex mejorado: letras, espacios, y caracteres españoles
+    const lettersRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+
+    if (!lettersRegex.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  blockInvalidNumberKeys(event: KeyboardEvent): void {
+    const invalidKeys = ['e', 'E', '+', '-', ','];
+
+    if (invalidKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
 }

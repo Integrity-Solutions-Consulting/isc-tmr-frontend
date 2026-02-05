@@ -65,7 +65,9 @@
               class="form-control"
               placeholder="Ingrese los nombres"
               formControlName="contactFirstName"
-              [readonly]="!!generalDataForm.get('contactId')?.value">
+              [readonly]="!!generalDataForm.get('contactId')?.value"
+              (keypress)="onlyLettersValidator($event)">
+
           </div>
 
           <div class="form-group">
@@ -76,7 +78,8 @@
               class="form-control"
               placeholder="Ingrese los apellidos"
               formControlName="contactLastName"
-              [readonly]="!!generalDataForm.get('contactId')?.value">
+              [readonly]="!!generalDataForm.get('contactId')?.value"
+              (keypress)="onlyLettersValidator($event)">
           </div>
         </div>
 
@@ -89,6 +92,11 @@
             placeholder="correo@ejemplo.com"
             formControlName="contactEmail"
             [readonly]="!!generalDataForm.get('contactId')?.value">
+          <div>
+            <span>
+
+            </span>
+          </div>
         </div>
       </section>
 

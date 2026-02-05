@@ -47,4 +47,13 @@ export class PaymentScheduleComponent implements OnInit {
   getDTO(): any {
     return this.paymentScheduleForm.valid ? this.paymentScheduleForm.value : null;
   }
+
+  /*Validaciones*/
+  blockInvalidNumberKeys(event: KeyboardEvent): void {
+    const invalidKeys = ['e', 'E', '+', '-', ','];
+
+    if (invalidKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
 }

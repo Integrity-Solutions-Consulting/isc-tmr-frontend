@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,7 +31,7 @@ export class GeneralDataComponent implements OnInit {
     contactId: [null],
     contactFirstName: ['', [Validators.required]],
     contactLastName: ['', [Validators.required]],
-    contactEmail: ['']
+    contactEmail: ['', [Validators.email]]
   });
 
   ngOnInit(): void {
@@ -130,6 +130,15 @@ onContactSelect(contact: any) {
 
   getDTO(): any {
     return this.generalDataForm.valid ? this.generalDataForm.value : null;
+  }
+
+  onlyLettersValidator(event: KeyboardEvent): void {
+    // Regex mejorado: letras, espacios, y caracteres españoles
+    const lettersRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+
+    if (!lettersRegex.test(event.key)) {
+      event.preventDefault();
+    }
   }
 
 }

@@ -76,7 +76,7 @@
   border-top-color: #e0e0e0;
 }
 
-/* ===== BOTONES DE NAVEGACIÓN ===== */
+/*BOTONES DE NAVEGACIÓN*/
 .step-actions {
   display: flex;
   align-items: center;          // misma altura
@@ -84,7 +84,14 @@
   margin-top: 24px;
 }
 
-/* En pasos con solo un botón */
+/* PRIMER BOTON */
 .step-actions-first {
   justify-content: flex-end; // botón a la derecha
+}
+
+/*BOTON DE COMPLETAR*/
+.itg-primary-btn--tall {
+  min-height: 35px;          // controla el alto real
+  padding: 0.6rem 1.5rem;    // más aire vertical
+  font-size: 0.85rem;        // opcional
 }
