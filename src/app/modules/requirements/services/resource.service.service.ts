@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO, WorkCityResponseDTO, WorkModeResponseDTO } from '../interfaces/requirement.interface';
+import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, RequirementRequestDTO, RequirementResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO, VacancyResponseDTO, WorkCityResponseDTO, WorkModeResponseDTO } from '../interfaces/requirement.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +18,9 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Catalog/employee-category`);
   }
 
-  postEmployeeCategoryRequirement(request: EmployeeCategoryRequirementRequestDTO): Observable<EmployeeCategoryRequirementResponseDTO> {
-    return this.http.post<EmployeeCategoryRequirementResponseDTO>(
-      `${this.urlBase}/api/EmployeeCategoryRequirement/employee-category-requirement`, request)
+  postEmployeeCategoryRequirement(request: EmployeeCategoryRequirementRequestDTO[]): Observable<EmployeeCategoryRequirementResponseDTO[]> {
+    return this.http.post<EmployeeCategoryRequirementResponseDTO[]>(
+      `${this.urlBDE}/api/EmployeeCategoryRequirement/employee-category-requirement`, request)
   }
 
   postProfileDetail(request: ProfileDetailRequestDTO): Observable<ProfileDetailResponseDTO> {
@@ -50,8 +50,8 @@ export class ResourceServiceService {
       `${this.urlBase}/api/Requirements/other-knowledge`, request)
   }
 
-  getVacancies(): Observable<any> {
-    return this.http.get<any>(
+  getVacancies(): Observable<VacancyResponseDTO[]> {
+    return this.http.get<VacancyResponseDTO[]>(
       `${this.urlBDE}/api/Catalog/get-all-vacancies?isActive=true`);
   }
 
@@ -104,4 +104,8 @@ getContactsByClient(clientId: number): Observable<any> {
     );
   }
 
+  PostRequirement(request: RequirementRequestDTO): Observable<RequirementResponseDTO>{
+    return this.http.post<RequirementResponseDTO>(
+      `${this.urlBDE}/api/Requirement/create-requirement`, request)
+  }
 }

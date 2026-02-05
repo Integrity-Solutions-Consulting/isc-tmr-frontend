@@ -42,4 +42,8 @@ export class ServiceModeComponent implements OnInit {
       error: (err) => console.error('Error cargando modalidades:', err)
     });
   }
+
+  getDTO(): any {
+    return this.serviceModeForm.valid ? this.serviceModeForm.value : null;
+  }
 }

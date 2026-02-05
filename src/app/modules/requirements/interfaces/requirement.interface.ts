@@ -1,10 +1,32 @@
+export interface RequirementRequestDTO {
+  contactId: number;
+  workModeId: number;
+  careerId: number;
+  vacancyId: number;
+  workCityId: number;
+  templateId?: number;
+  educationStatusId: number;
+  contractPeriod: string;
+  budget: number;
+  workingHours: number;
+  yearsExperience: number;
+  otherCertification: string;
+  otherKnowledge: string;
+  additionalComments: string;
+}
+
+export interface RequirementResponseDTO {
+  requirementID: number;
+  message: string;
+}
+
 export interface CareerResponseDTO {
   Id: number;
   CareerName: string;
 }
 
 export interface EmployeeCategoryResponseDTO {
-  EmployeeCategoryID: number;
+  id: number;
   categoryName: string;
 }
 
@@ -85,7 +107,7 @@ export interface ClientResponseDTO {
 
 export interface VacancyResponseDTO  {
   id: number;
-  name: string;
+  vacancyTitle: string;
 }
 
 export interface StudyStatuResponseDTO {

@@ -47,9 +47,9 @@ export class ResourcesLevelComponent implements OnInit{
         this.categoryFormArray.clear();
         filteredCategories.forEach(cat => {
           this.categoryFormArray.push(this.fb.group({
-            id: [cat.EmployeeCategoryID],
-          name: [cat.categoryName],
-          quantity: [0]
+            EmployeeCategoryId: [cat.id],
+            name: [cat.categoryName],
+            quantity: [0]
         }));
       });
       },
@@ -79,7 +79,13 @@ export class ResourcesLevelComponent implements OnInit{
     .reduce((a, b) => a + b, 0);
   }
 
-  getDTO(): any {
-    return this.resourcesForm.valid ? this.resourcesForm.value : null;
+  getDTO(): EmployeeCategoryRequirementRequestDTO[] {
+    return this.categoryFormArray.value
+    .filter((control: any) => control.quantity > 0)
+      .map((control: any) => ({
+        EmployeeCategoryId: control.EmployeeCategoryId,
+        Quantity: control.quantity,
+        RequirementId: 0
+      }));
   }
 }

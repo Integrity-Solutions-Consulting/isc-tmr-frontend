@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { map } from 'rxjs';
 import { ClientService } from '../../../../../clients/services/client.service';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
-import { ClientResponseDTO } from '../../../../interfaces/requirement.interface';
 import { MatIcon } from "@angular/material/icon";
 
 @Component({
@@ -28,7 +27,7 @@ export class GeneralDataComponent implements OnInit {
 
   generalDataForm: FormGroup = this.fb.group({
     clientId: [null, [Validators.required]],
-    cargoId: [null, [Validators.required]],
+    vacancyId: [null, [Validators.required]],
     contactId: [null],
     contactFirstName: ['', [Validators.required]],
     contactLastName: ['', [Validators.required]],
@@ -62,7 +61,7 @@ export class GeneralDataComponent implements OnInit {
 
         const listaMapeada = listaCruda.map((item: any) => ({
           name: item.vacancyTitle,
-          value: item.id
+          id: item.id
         }));
 
         this.vacancies.set(listaMapeada);

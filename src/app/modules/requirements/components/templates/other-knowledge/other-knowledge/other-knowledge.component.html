@@ -1,4 +1,4 @@
-<div class="knowledge-container">
+<div class="knowledge-container" *ngIf="knowledgeForm" [formGroup]="knowledgeForm">
 
   <header class="header">
     <div class="title-group">
@@ -10,18 +10,24 @@
   <section class="form-content">
 
     <div class="form-group">
-      <label for="otros-conocimientos">Otros Conocimientos</label>
-      <textarea id="otros-conocimientos" class="form-control" rows="4" placeholder="Describa otros conocimientos específicos..."></textarea>
+      <label>Otros Conocimientos</label>
+      <textarea class="form-control" rows="4"
+                placeholder="Describa otros conocimientos específicos..."
+                formControlName="otherKnowledge"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="certificaciones">Certificaciones</label>
-      <textarea id="certificaciones" class="form-control" rows="3" placeholder="Liste las certificaciones requeridas..."></textarea>
+      <label>Certificaciones</label>
+      <textarea class="form-control" rows="3"
+                placeholder="Liste las certificaciones requeridas..."
+                formControlName="otherCertification"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="comentarios">Comentarios Adicionales</label>
-      <textarea id="comentarios" class="form-control" rows="3" placeholder="Comentarios o información adicional..."></textarea>
+      <label>Comentarios Adicionales</label>
+      <textarea class="form-control" rows="3"
+                placeholder="Comentarios o información adicional..."
+                formControlName="additionalComments"></textarea>
     </div>
 
   </section>

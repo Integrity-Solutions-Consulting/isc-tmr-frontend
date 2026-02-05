@@ -31,12 +31,7 @@ export class ProfileDetailComponent implements OnInit{
     experienceYears: [null, [Validators.required, Validators.min(0)]],
     studyStatusId: [null, [Validators.required]],
     careerId: [null, [Validators.required]],
-
-    templateId: [null],
-    templateName: [''],
-
-    knowledgeIds: [[]],
-    toolIds: [[]]
+    templateId: [null, Validators.required],
   });
 
   templateForm: FormGroup = this.fb.group({
@@ -101,10 +96,12 @@ export class ProfileDetailComponent implements OnInit{
   onTemplateSelect(template: TemplateResponseDTO | null) {
     if (!template) {
       this.selectedTemplateDetail.set(null);
+      this.profileDetailForm.patchValue({ templateId: null });
       return;
     }
 
     const templateId = template.templateID;
+    this.profileDetailForm.patchValue({ templateId: templateId });
 
     this.resourceService.getTemplateById(templateId).subscribe({
       next: res => {
@@ -132,13 +129,16 @@ export class ProfileDetailComponent implements OnInit{
   toggleCreateTemplate() {
     this.createTemplate.update(v => !v);
 
+    const template = this.profileDetailForm.get('templateId');
+
     if (this.createTemplate()) {
-      this.profileDetailForm.patchValue({
-        templateId: null,
-        knowledgeIds: [],
-        toolIds: []
-      });
+      template?.clearValidators();
+      template?.setValue(null);
+    } else {
+      template?.setValidators([Validators.required]);
+
     }
+    template?.updateValueAndValidity();
   }
 
   saveTemplate() {
@@ -162,5 +162,9 @@ export class ProfileDetailComponent implements OnInit{
       },
       error: err => console.error(err)
     });
+  }
+
+  getDTO(): any {
+    return this.profileDetailForm.valid ? this.profileDetailForm.value : null;
   }
 }

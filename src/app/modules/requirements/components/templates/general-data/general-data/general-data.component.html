@@ -26,13 +26,13 @@
         </div>
 
         <div class="form-group">
-          <label for="cargo">Cargo de vacante</label>
+          <label for="vacancies">Vacante</label>
           <ng-select
-            id="cargo"
+            id="vacancy"
             [items]="vacancies()"
             bindLabel="name"
-            bindValue="value"
-            formControlName="cargoId"
+            bindValue="id"
+            formControlName="vacancyId"
             placeholder="Seleccione o busque un cargo"
             [clearable]="true">
           </ng-select>
