@@ -1,0 +1,97 @@
+<div class="layout-wrapper">
+
+  <header class="header-section">
+    <div class="title-group">
+      <mat-icon class="general-icon">description</mat-icon>
+      <h2 class="main-title">Datos generales del cliente</h2>
+    </div>
+  </header>
+
+  <form [formGroup]="generalDataForm" class="general-data-container">
+    <div class="columns-grid">
+
+      <section class="panel left-column">
+
+        <div class="form-group">
+          <label for="cliente">Cliente</label>
+          <ng-select
+            id="cliente"
+            [items]="clients()"
+            bindLabel="legalName"
+            bindValue="id"
+            formControlName="clientId"
+            placeholder="Seleccione o busque un cliente"
+            [clearable]="true">
+          </ng-select>
+        </div>
+
+        <div class="form-group">
+          <label for="vacancies">Vacante</label>
+          <ng-select
+            id="vacancy"
+            [items]="vacancies()"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="vacancyId"
+            placeholder="Seleccione o busque un cargo"
+            [clearable]="true">
+          </ng-select>
+        </div>
+
+      </section>
+
+      <section class="panel right-column" *ngIf ="generalDataForm.get('clientId')?.value">
+
+        <div class="form-group horizontal-group">
+          <label>Persona de Contacto</label>
+          <ng-select
+            [items]="contacts()"
+            bindLabel="fullName"
+            bindValue="id"
+            formControlName="contactId"
+            placeholder="Seleccione de la lista o deje vacío para crear nuevo"
+            (change)="onContactSelect($event)"
+            [clearable]="true"
+            [readonly]="!generalDataForm.get('clientId')?.value">
+          </ng-select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nombres">Nombres <span class="required">*</span></label>
+            <input
+              type="text"
+              id="nombres"
+              class="form-control"
+              placeholder="Ingrese los nombres"
+              formControlName="contactFirstName"
+              [readonly]="!!generalDataForm.get('contactId')?.value">
+          </div>
+
+          <div class="form-group">
+            <label for="apellidos">Apellidos <span class="required">*</span></label>
+            <input
+              type="text"
+              id="apellidos"
+              class="form-control"
+              placeholder="Ingrese los apellidos"
+              formControlName="contactLastName"
+              [readonly]="!!generalDataForm.get('contactId')?.value">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="correo">Correo Electrónico (Opcional)</label>
+          <input
+            type="email"
+            id="correo"
+            class="form-control"
+            placeholder="correo@ejemplo.com"
+            formControlName="contactEmail"
+            [readonly]="!!generalDataForm.get('contactId')?.value">
+        </div>
+      </section>
+
+    </div>
+  </form>
+</div>
