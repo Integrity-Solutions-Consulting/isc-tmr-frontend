@@ -1,7 +1,22 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild, AfterViewInit, inject } from '@angular/core';
-import { FormBuilder, AbstractControl, FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+  AfterViewInit,
+  inject,
+} from '@angular/core';
+import {
+  FormBuilder,
+  AbstractControl,
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { ModalDialogService } from '../../../../../shared/services/modalDialog.service';
 import { GeneralDataComponent } from '../../../components/templates/general-data/general-data/general-data.component';
@@ -9,21 +24,36 @@ import { PaymentScheduleComponent } from '../../../components/templates/payment-
 import { ProfileDetailComponent } from '../../../components/templates/profile-detail/profile-detail/profile-detail.component';
 import { ResourcesLevelComponent } from '../../../components/templates/resources-level/resources-level/resources-level.component';
 import { ServiceModeComponent } from '../../../components/templates/service-mode/service-mode/service-mode.component';
-import { MatIconModule } from "@angular/material/icon";
-import { MatCardModule } from "@angular/material/card";
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { OtherKnowledgeComponent } from '../../../components/templates/other-knowledge/other-knowledge/other-knowledge.component';
 import { CommonModule } from '@angular/common';
-import { EmployeeCategoryRequirementRequestDTO, RequirementRequestDTO } from '../../../interfaces/requirement.interface';
+import {
+  EmployeeCategoryRequirementRequestDTO,
+  RequirementRequestDTO,
+} from '../../../interfaces/requirement.interface';
 import { ResourceServiceService } from '../../../services/resource.service.service';
+import { RequirementResultDialogComponent } from '../../../components/requirement-result-dialog-component/requirement-result-dialog-component.component';
 
 @Component({
   selector: 'app-solicitud-requerimiento',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatStepperModule, MatIconModule,
-    ResourcesLevelComponent, PaymentScheduleComponent, OtherKnowledgeComponent,ServiceModeComponent,
-    ProfileDetailComponent, MatCardModule, GeneralDataComponent, ReactiveFormsModule, CommonModule],
+  imports: [
+    MatProgressSpinnerModule,
+    MatStepperModule,
+    MatIconModule,
+    ResourcesLevelComponent,
+    PaymentScheduleComponent,
+    OtherKnowledgeComponent,
+    ServiceModeComponent,
+    ProfileDetailComponent,
+    MatCardModule,
+    GeneralDataComponent,
+    ReactiveFormsModule,
+    CommonModule,
+  ],
   templateUrl: './solicitud-requerimiento.component.html',
-  styleUrl: './solicitud-requerimiento.component.scss'
+  styleUrl: './solicitud-requerimiento.component.scss',
 })
 export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
@@ -54,7 +84,7 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   knowledgeForm: FormGroup = this.fb.group({
     otherKnowledge: [''],
     otherCertification: [''],
-    additionalComments: ['']
+    additionalComments: [''],
   });
 
   // Estados
@@ -66,8 +96,7 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
     return this.stepper?.selectedIndex === index;
   }
 
-    ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.cdr.detectChanges();
@@ -139,7 +168,10 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   saveKnowledgeAndNext(): void {
     console.log('Requerimiento completado');
     if (!this.isComplete()) {
-      this.modalService.showError('Error', 'Por favor, complete todos los pasos antes de continuar.');
+      this.modalService.showError(
+        'Error',
+        'Por favor, complete todos los pasos antes de continuar.',
+      );
       return;
     }
     this.isSaving = true;
@@ -167,11 +199,13 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   isStepComplete(stepIndex: number): boolean {
     switch (stepIndex) {
       case 0:
-        return this.generalDataComponent?.generalDataForm?.valid  || false;
+        return this.generalDataComponent?.generalDataForm?.valid || false;
       case 1:
         return this.serviceModeComponent?.serviceModeForm?.valid || false;
       case 2:
-        return this.paymentScheduleComponent?.paymentScheduleForm?.valid || false;
+        return (
+          this.paymentScheduleComponent?.paymentScheduleForm?.valid || false
+        );
       case 3:
         return this.resourcesComponent?.total > 0;
       case 4:
@@ -192,37 +226,55 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
     const knowledgeData = this.knowledgeForm.value;
 
     // Agrega logs para debug
-  console.log('🔍 Debug - getDTO() resultados:');
-  console.log('generalData:', generalData);
-  console.log('paymentSchedule:', paymentSchedule);
-  console.log('profileDetail:', profileDetail);
-  console.log('resourcesLevel:', resourcesLevel);
-  console.log('serviceMode:', serviceMode);
-  console.log('knowledgeData:', knowledgeData);
+    console.log('🔍 Debug - getDTO() resultados:');
+    console.log('generalData:', generalData);
+    console.log('paymentSchedule:', paymentSchedule);
+    console.log('profileDetail:', profileDetail);
+    console.log('resourcesLevel:', resourcesLevel);
+    console.log('serviceMode:', serviceMode);
+    console.log('knowledgeData:', knowledgeData);
 
-  // Verifica cuál es null
-  if(!generalData) {
-    console.error('❌ generalData es null');
-    console.log('Estado del formulario general:', this.generalDataComponent?.generalDataForm?.valid);
-  }
-  if(!paymentSchedule) {
-    console.error('❌ paymentSchedule es null');
-    console.log('Estado del formulario payment:', this.paymentScheduleComponent?.paymentScheduleForm?.valid);
-  }
-  if(!profileDetail) {
-    console.error('❌ profileDetail es null');
-    console.log('Estado del formulario profile:', this.profileDetailComponent?.profileDetailForm?.valid);
-  }
-  if(!resourcesLevel) {
-    console.error('❌ resourcesLevel es null');
-    console.log('Total de recursos:', this.resourcesComponent?.total);
-  }
-  if(!serviceMode) {
-    console.error('❌ serviceMode es null');
-    console.log('Estado del formulario service:', this.serviceModeComponent?.serviceModeForm?.valid);
-  }
+    // Verifica cuál es null
+    if (!generalData) {
+      console.error('❌ generalData es null');
+      console.log(
+        'Estado del formulario general:',
+        this.generalDataComponent?.generalDataForm?.valid,
+      );
+    }
+    if (!paymentSchedule) {
+      console.error('❌ paymentSchedule es null');
+      console.log(
+        'Estado del formulario payment:',
+        this.paymentScheduleComponent?.paymentScheduleForm?.valid,
+      );
+    }
+    if (!profileDetail) {
+      console.error('❌ profileDetail es null');
+      console.log(
+        'Estado del formulario profile:',
+        this.profileDetailComponent?.profileDetailForm?.valid,
+      );
+    }
+    if (!resourcesLevel) {
+      console.error('❌ resourcesLevel es null');
+      console.log('Total de recursos:', this.resourcesComponent?.total);
+    }
+    if (!serviceMode) {
+      console.error('❌ serviceMode es null');
+      console.log(
+        'Estado del formulario service:',
+        this.serviceModeComponent?.serviceModeForm?.valid,
+      );
+    }
 
-    if(!generalData || !paymentSchedule || !profileDetail || !resourcesLevel || !serviceMode) {
+    if (
+      !generalData ||
+      !paymentSchedule ||
+      !profileDetail ||
+      !resourcesLevel ||
+      !serviceMode
+    ) {
       throw new Error('Datos no validos');
     }
 
@@ -244,36 +296,58 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
     };
   }
 
-  private saveEmployeeCategoryRequirement(requirementId: number,
-    categoriesForm: EmployeeCategoryRequirementRequestDTO[]): void {
-
-    const totalCategories =  categoriesForm.map(cat => ({
+  private saveEmployeeCategoryRequirement(
+    requirementId: number,
+    categoriesForm: EmployeeCategoryRequirementRequestDTO[],
+  ): void {
+    const totalCategories = categoriesForm.map((cat) => ({
       ...cat,
-      RequirementId: requirementId
+      RequirementId: requirementId,
     }));
 
-      this.resourcesService.postEmployeeCategoryRequirement(totalCategories).subscribe({
+    this.resourcesService
+      .postEmployeeCategoryRequirement(totalCategories)
+      .subscribe({
         next: () => {
           this.finishSuccess();
         },
         error: (err) => {
           this.isSaving = false;
-          this.modalService.showError('Error', 'Error al guardar una categoría de empleado.');
-        }
+          this.modalService.showError(
+            'Error',
+            'Error al guardar una categoría de empleado.',
+          );
+        },
       });
-    }
+  }
 
   private finishSuccess(): void {
     this.isSaving = false;
+
+    const dialogRef = this.dialog.open(RequirementResultDialogComponent, {
+      disableClose: true,
+      panelClass: 'result-dialog',
+      data: {
+        success: true,
+        message: 'El requerimiento se guardó correctamente.',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.stepper.reset(); // vuelve al paso 1
+      this.currentStep = 0;
+      this.solicitudRequerimeintoEvent.emit(true);
+    });
+
     this.modalService.showSuccess(
       'Éxito',
-      'Requerimiento creado correctamente.'
+      'Requerimiento creado correctamente.',
     );
     this.solicitudRequerimeintoEvent.emit(true);
     // aquí podrías resetear todo
   }
 
-   private sendRequirementBackend( requirement: RequirementRequestDTO): void {
+  private sendRequirementBackend(requirement: RequirementRequestDTO): void {
     console.log('Enviando requerimiento:', requirement);
 
     this.resourcesService.PostRequirement(requirement).subscribe({
@@ -285,24 +359,29 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
         console.log('Recursos a guardar:', resources);
 
         if (resources && resources.length > 0) {
-          console.log('Guardando recursos para el requerimiento ID:', requirementId, resources);
+          console.log(
+            'Guardando recursos para el requerimiento ID:',
+            requirementId,
+            resources,
+          );
           this.saveEmployeeCategoryRequirement(requirementId, resources);
         } else {
           console.log('No hay recursos para guardar, finalizando proceso.');
           this.finishSuccess();
         }
-    },
+      },
       error: (err) => {
         this.isSaving = false;
         console.error('Error al crear el requerimiento:', err);
-        this.modalService.showError('Error', 'Hubo un problema al crear el requerimiento. Por favor, inténtelo de nuevo.');
-      }
+        this.modalService.showError(
+          'Error',
+          'Hubo un problema al crear el requerimiento. Por favor, inténtelo de nuevo.',
+        );
+      },
     });
   }
 
   /*clearRequirement(): {
 
   }*/
-
-
 }

@@ -1,0 +1,23 @@
+<div class="result-container">
+  <div
+    class="icon-wrapper"
+    [class.success]="data.success"
+    [class.error]="!data.success"
+  >
+    <mat-icon>
+      {{ data.success ? "check_circle" : "error" }}
+    </mat-icon>
+  </div>
+
+  <h2>{{ data.success ? "¡Proceso completado!" : "Ocurrió un error" }}</h2>
+  <p>{{ data.message }}</p>
+
+  <button
+    class="result-btn"
+    [class.success]="data.success"
+    [class.error]="!data.success"
+    (click)="close()"
+  >
+    {{ data.success ? "Continuar" : "Cerrar" }}
+  </button>
+</div>
