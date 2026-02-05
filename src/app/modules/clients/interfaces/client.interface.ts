@@ -87,3 +87,8 @@ export interface PersonApiResponse {
   pageSize: number;
   totalPages: number;
 }
+
+export interface ClientGeneralData {
+  id: number;
+  legalName: string;
+}

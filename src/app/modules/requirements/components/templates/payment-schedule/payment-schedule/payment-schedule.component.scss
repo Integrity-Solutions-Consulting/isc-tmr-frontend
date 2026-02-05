@@ -1,0 +1,136 @@
+.payment-schedule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+}
+
+.header {
+  margin-bottom: 0.5rem;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+
+    .dollar-icon {
+      color: #333;
+      font-size: 1.8rem;
+      width: 1.8rem;
+      height: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+
+      small {
+        font-weight: 400;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+  }
+
+  .form-control {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-subtitle);
+    color: #666;
+    background-color: #fdfdfd;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 42px;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+      background-color: #fff;
+    }
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+}
+
+:host ::ng-deep ng-select {
+  padding-bottom: 0;
+
+  .ng-select-container {
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-height: 42px !important;
+    height: 42px !important;
+    align-items: center;
+  }
+
+  .ng-value-container .ng-value {
+    font-size: 1rem !important;
+    color: #333;
+    line-height: 42px !important;
+  }
+
+  .ng-placeholder {
+    font-size: 1rem !important;
+    color: #aaa !important;
+    font-weight: 400;
+    line-height: normal !important;
+    padding-top: 2px;
+  }
+
+  .ng-value-container {
+    padding: 0 1rem !important;
+  }
+
+  &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+    border-color: #3498db;
+    background-color: #fff;
+    box-shadow: none;
+  }
+
+  .ng-arrow-wrapper {
+    padding-right: 1rem;
+  }
+}
