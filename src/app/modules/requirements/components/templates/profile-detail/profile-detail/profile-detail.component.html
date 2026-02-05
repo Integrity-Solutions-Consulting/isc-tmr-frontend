@@ -13,7 +13,9 @@
     <div class="row-group">
       <div class="form-group">
         <label for="experiencia">Experiencia (Años) <span class="required">*</span></label>
-        <input type="number" class="form-control" placeholder="Años de experiencia" formControlName="experienceYears">
+        <input type="number" class="form-control" placeholder="Años de experiencia"
+               formControlName="experienceYears"
+               (keypress)="blockInvalidNumberKeys($event)">
       </div>
 
       <div class="form-group">
@@ -22,7 +24,8 @@
                    bindLabel="educationstatus_name"
                    bindValue="educationStatusID"
                    placeholder="Seleccione estado de estudios"
-                   formControlName="studyStatusId">
+                   formControlName="studyStatusId"
+                   (keypress)="onlyLettersValidator($event)">
         </ng-select>
       </div>
     </div>
@@ -33,7 +36,8 @@
                  bindLabel="careerName"
                  bindValue="id"
                  placeholder="Seleccione carrera"
-                 formControlName="careerId">
+                 formControlName="careerId"
+                 (keypress)="onlyLettersValidator($event);">
       </ng-select>
     </div>
 
