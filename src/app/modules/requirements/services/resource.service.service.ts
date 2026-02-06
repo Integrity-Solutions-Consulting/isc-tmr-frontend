@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO, ProfileDetailRequestDTO, ProfileDetailResponseDTO, RequirementRequestDTO, RequirementResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO, VacancyResponseDTO, WorkCityResponseDTO, WorkModeResponseDTO } from '../interfaces/requirement.interface';
+import { CareerResponseDTO, EmployeeCategoryRequirementRequestDTO, EmployeeCategoryRequirementResponseDTO, EmployeeCategoryResponseDTO, KnowledgeResponseDTO,
+  ProfileDetailRequestDTO, ProfileDetailResponseDTO, RequirementRequestDTO, RequirementResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO,
+  ToolResponseDTO, VacancyResponseDTO, WorkCityResponseDTO, WorkModeResponseDTO, ContactResponseDTO,  ContactRequestDTO} from '../interfaces/requirement.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -55,10 +57,15 @@ export class ResourceServiceService {
       `${this.urlBDE}/api/Catalog/get-all-vacancies?isActive=true`);
   }
 
-getContactsByClient(clientId: number): Observable<any> {
-    return this.http.get<any>(
+  getContactsByClient(clientId: number): Observable<ContactResponseDTO> {
+    return this.http.get<ContactResponseDTO>(
       `${this.urlBDE}/api/Contact/get-contact-by-client?clientId=${clientId}`
     );
+  }
+
+  createContact(request: ContactRequestDTO): Observable<ContactResponseDTO>{
+    return this.http.post<ContactResponseDTO>(
+      `${this.urlBDE}/api/Contact/create-contact`, request)
   }
 
   getWorkMode(): Observable<WorkModeResponseDTO[]> {
@@ -108,4 +115,6 @@ getContactsByClient(clientId: number): Observable<any> {
     return this.http.post<RequirementResponseDTO>(
       `${this.urlBDE}/api/Requirement/create-requirement`, request)
   }
+
+
 }
