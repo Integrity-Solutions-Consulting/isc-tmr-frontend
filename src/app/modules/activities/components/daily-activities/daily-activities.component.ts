@@ -91,11 +91,19 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     initialView: 'dayGridMonth', // alternatively, use the `events` setting to fetch from a feed
     weekends: true,
     editable: true,
+    eventStartEditable: true,
+    eventDurationEditable: false,
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
     dayMaxEventRows: 3,
     fixedWeekCount: false,
+    eventDragMinDistance: 5,
+    dragRevertDuration: 500,
+    dragScroll: true,
+    eventDragStart: this.handleEventDragStart.bind(this),
+    eventDragStop: this.handleEventDragStop.bind(this),
+    eventDrop: this.handleEventDrop.bind(this),
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
@@ -117,22 +125,23 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       // Aplicar colores personalizados aquí
       const eventColor = info.event.backgroundColor;
       if (eventColor) {
-        // Verificar si es una actividad aprobada usando la propiedad extendedProps
         const isApproved = info.event.extendedProps['isApproved'];
 
         if (isApproved) {
-          // Para actividades aprobadas (magenta), aplicar un efecto diferente
           info.el.style.backgroundColor = this.lightenColor(eventColor, 0.3);
           info.el.style.borderColor = eventColor;
           info.el.style.color = this.getTextColor(eventColor);
           info.el.style.fontWeight = 'bold';
-          // Opcional: añadir un borde más grueso para actividades aprobadas
           info.el.style.borderWidth = '2px';
+          info.el.style.cursor = 'not-allowed'; // No permitir drag en aprobadas
+
+          // Deshabilitar drag para eventos aprobados
+          info.event.setProp('editable', false);
         } else {
-          // Comportamiento normal para actividades no aprobadas
           info.el.style.backgroundColor = this.lightenColor(eventColor, 0.3);
           info.el.style.borderColor = eventColor;
           info.el.style.color = this.getTextColor(eventColor);
+          info.el.style.cursor = 'move'; // Cambiar cursor para indicar que es draggable
         }
       }
     },
@@ -177,7 +186,30 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     // Añade esta propiedad para validar selecciones
     selectAllow: (selectInfo) => {
       return true;
-    }
+    },
+    eventAllow: (dropInfo, draggedEvent) => {
+      if (!draggedEvent) {
+        return false;
+      }
+      // No permitir mover a días feriados
+      if (this.isHoliday(dropInfo.start)) {
+        return false;
+      }
+
+      // No permitir mover a fines de semana (opcional)
+      const isWeekend = dropInfo.start.getDay() === 0 || dropInfo.start.getDay() === 6;
+      if (isWeekend) {
+        return false;
+      }
+
+      // No permitir mover actividades aprobadas
+      const isApproved = draggedEvent.extendedProps['isApproved'];
+      if (isApproved) {
+        return false;
+      }
+
+      return true;
+    },
   });
   currentEvents = signal<EventApi[]>([]);
 
@@ -463,11 +495,9 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     const calendarApi = this.calendarComponent.getApi();
     calendarApi.removeAllEvents();
 
-    // Reiniciar contadores
     this.monthlyHours.set(0);
     this.dailyHoursMap.clear();
 
-    // Si no hay actividades, salir silenciosamente
     if (!activities || activities.length === 0) {
       calendarApi.render();
       this.updateMonthlyHoursButton();
@@ -497,16 +527,13 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
 
         const project = this.projectList.find(p => p.id === activity.projectID);
         const activityType = this.activityTypes.find(t => t.id === activity.activityTypeID);
-
-        // VERIFICAR SI LA ACTIVIDAD ESTÁ APROBADA (usando approvedByID)
         const isApproved = activity.approvedByID !== null && activity.approvedByID !== undefined;
 
-        // Si está aprobada, usar color magenta, sino el color normal del tipo de actividad
         let color: string;
         if (isApproved) {
-          color = '#FF00FF'; // Magenta para actividades aprobadas
+          color = '#FF00FF';
         } else {
-          color = activityType?.colorCode || '#9E9E9E'; // Color normal si no está aprobada
+          color = activityType?.colorCode || '#9E9E9E';
         }
 
         let rawTitle: string;
@@ -516,9 +543,8 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           rawTitle = `${activity.requirementCode} - ${project?.name || 'Sin proyecto'}`;
         }
 
-        // Añadir indicador de aprobación en el título si está aprobada
         if (isApproved) {
-          rawTitle = `✓ ${rawTitle}`; // Agregar un checkmark al inicio
+          rawTitle = `✓ ${rawTitle}`;
         }
 
         const truncatedTitle = rawTitle.length > 20 ? rawTitle.substring(0, 17) + '...' : rawTitle;
@@ -529,6 +555,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           start: startDate,
           end: endDate,
           allDay: allDayEvent,
+          editable: !isApproved, // Solo editable si no está aprobada
           backgroundColor: color,
           borderColor: color,
           textColor: this.getTextColor(color),
@@ -541,12 +568,26 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
             requirementCode: activity.requirementCode,
             employeeID: activity.employeeID,
             fullDay: allDayEvent,
-            isApproved: isApproved, // Añadir esta propiedad para referencia
-            approvedByID: activity.approvedByID // Mantener la referencia
+            isApproved: isApproved,
+            approvedByID: activity.approvedByID,
+            originalDate: startDate // Guardar la fecha original para posibles reversiones
           }
         };
 
         const addedEvent = calendarApi.addEvent(eventData);
+
+        // Aplicar estilo visual para eventos no arrastrables
+        if (addedEvent) {
+          // Aplicar estilo visual para eventos no arrastrables
+          if (isApproved) {
+            // Acceder al elemento DOM del evento correctamente
+            const eventEl = document.querySelector(`[data-event-id="${addedEvent.id}"]`);
+            if (eventEl) {
+              (eventEl as HTMLElement).style.cursor = 'not-allowed';
+            }
+          }
+        }
+
       } catch (error) {
         console.error(`Error procesando actividad ${activity.id}:`, activity, error);
       }
@@ -1314,5 +1355,228 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
     this.changeDetector.detectChanges(); // workaround for pressionChangedAfterItHasBeenCheckedError
+  }
+
+  handleEventDragStart(dragInfo: any): void {
+    //console.log('Drag started:', dragInfo.event.title);
+
+    // Cambiar estilo visual durante el drag
+    dragInfo.el.style.opacity = '0.7';
+    dragInfo.el.style.zIndex = '9999';
+  }
+
+  handleEventDragStop(dragInfo: any): void {
+    //console.log('Drag stopped:', dragInfo.event.title);
+
+    // Restaurar estilo
+    dragInfo.el.style.opacity = '1';
+    dragInfo.el.style.zIndex = '';
+  }
+
+  handleEventDrop(dropInfo: any): void {
+    const event = dropInfo.event;
+    const oldDate = dropInfo.oldEvent.start;
+    const newDate = dropInfo.event.start;
+
+    console.log('Event dropped:', {
+      event: event.title,
+      from: oldDate,
+      to: newDate
+    });
+
+    // Verificar si el evento está aprobado
+    const isApproved = event.extendedProps['isApproved'];
+    if (isApproved) {
+      this.snackBar.open('No se pueden mover actividades aprobadas', 'Cerrar', { duration: 3000 });
+      dropInfo.revert();
+      return;
+    }
+
+    // Verificar feriados
+    if (this.isHoliday(newDate)) {
+      this.snackBar.open('No se pueden mover actividades a días feriados', 'Cerrar', { duration: 3000 });
+      dropInfo.revert();
+      return;
+    }
+
+    // Verificar fin de semana
+    const isWeekend = newDate.getDay() === 0 || newDate.getDay() === 6;
+    if (isWeekend) {
+      this.snackBar.open('No se pueden mover actividades a fines de semana', 'Cerrar', { duration: 3000 });
+      dropInfo.revert();
+      return;
+    }
+
+    // Verificar límite de 8 horas por día
+    const oldDateString = oldDate.toISOString().split('T')[0];
+    const newDateString = newDate.toISOString().split('T')[0];
+    const eventHours = event.extendedProps['hoursQuantity'] || 0;
+
+    const oldDayHours = this.dailyHoursMap.get(oldDateString) || 0;
+    const newDayHours = this.dailyHoursMap.get(newDateString) || 0;
+
+    // Si es el mismo día, no hay problema de límite
+    if (oldDateString !== newDateString && newDayHours + eventHours > 8) {
+      this.snackBar.open('No se pueden agregar más de 8 horas en un día', 'Cerrar', { duration: 3000 });
+      dropInfo.revert();
+      return;
+    }
+
+    // Actualizar en el backend primero
+    this.updateActivityAfterDrag(event, oldDate, newDate);
+  }
+
+  private updateActivityAfterDrag(event: any, oldDate: Date, newDate: Date): void {
+    if (!event || !event.id) {
+      console.error('Evento no válido para actualizar');
+      return;
+    }
+
+    const activityId = Number(event.id);
+    const extendedProps = event.extendedProps || {};
+
+    if (isNaN(activityId)) {
+      console.error('ID de evento no válido:', event.id);
+      this.snackBar.open('Error: ID de actividad no válido', 'Cerrar');
+      return;
+    }
+
+    const updateData = {
+      projectID: extendedProps['projectID'],
+      activityTypeID: extendedProps['activityTypeID'],
+      hoursQuantity: extendedProps['hoursQuantity'] || 0,
+      activityDate: this.formatDate(newDate),
+      activityDescription: extendedProps['activityDescription'] || '',
+      notes: extendedProps['notes'] || '',
+      requirementCode: extendedProps['requirementCode'] || '',
+      employeeID: this.currentEmployeeId
+    };
+
+    const snackBarRef = this.snackBar.open('Actualizando actividad...', 'Cerrar');
+
+    this.activityService.updateActivity(activityId, updateData).subscribe({
+      next: () => {
+        snackBarRef.dismiss();
+        this.snackBar.open('Actividad movida correctamente', 'Cerrar', { duration: 2000 });
+
+        // Actualizar contadores inmediatamente
+        this.updateHoursCountersAfterDrag(extendedProps['hoursQuantity'] || 0, oldDate, newDate);
+
+        // Actualizar indicadores visuales
+        this.updateDayCellHours(oldDate);
+        this.updateDayCellHours(newDate);
+
+        // Recargar para asegurar consistencia
+        this.loadActivities();
+      },
+      error: (error) => {
+        console.error('Error al actualizar actividad por drag:', error);
+        snackBarRef.dismiss();
+
+        if (error.status === 401) {
+          this.snackBar.open('Sesión inválida. Por favor, inicie sesión nuevamente.', 'Cerrar');
+          this.router.navigate(['/login']);
+        } else if (error.status === 400 && error.error?.message?.includes('aprobada')) {
+          this.snackBar.open('No se puede mover una actividad aprobada', 'Cerrar', { duration: 3000 });
+        } else {
+          this.snackBar.open('Error al mover actividad: ' + (error.error?.message || error.message), 'Cerrar');
+        }
+
+        // Revertir contadores
+        this.loadActivities();
+      }
+    });
+  }
+
+  private updateHoursCountersAfterDrag(hoursQuantity: number, oldDate: Date, newDate: Date): void {
+    const oldDateString = oldDate.toISOString().split('T')[0];
+    const newDateString = newDate.toISOString().split('T')[0];
+
+    // Actualizar mapa de horas diarias
+    const oldHours = this.dailyHoursMap.get(oldDateString) || 0;
+    const newHours = this.dailyHoursMap.get(newDateString) || 0;
+
+    this.dailyHoursMap.set(oldDateString, Math.max(0, oldHours - hoursQuantity));
+    this.dailyHoursMap.set(newDateString, newHours + hoursQuantity);
+
+    // Actualizar horas mensuales (si el cambio es entre meses diferentes)
+    const isSameMonth = oldDate.getMonth() === newDate.getMonth() &&
+                      oldDate.getFullYear() === newDate.getFullYear();
+
+    if (!isSameMonth) {
+      // Si cambia de mes, recalcular todo
+      this.recalculateMonthlyHours();
+    }
+
+    // Actualizar botón de horas mensuales
+    this.updateMonthlyHoursButton();
+  }
+
+  private updateDayCellHours(date: Date): void {
+    const dateString = date.toISOString().split('T')[0];
+    const dayCell = this.findDayCellByDate(dateString);
+
+    if (dayCell) {
+      const hours = this.dailyHoursMap.get(dateString) || 0;
+
+      // Limpiar cualquier indicador existente
+      const existingIndicator = dayCell.querySelector('.daily-hours');
+      if (existingIndicator) {
+        existingIndicator.remove();
+      }
+
+      // Si hay horas, añadir nuevo indicador
+      if (hours > 0) {
+        this.addHoursToDayCell(dayCell, hours);
+      }
+
+      // Actualizar clase de día completado
+      if (hours >= 8) {
+        dayCell.classList.add('fc-day-completed');
+      } else {
+        dayCell.classList.remove('fc-day-completed');
+      }
+    }
+  }
+
+  private recalculateMonthlyHours(): void {
+    const calendarApi = this.calendarComponent.getApi();
+    if (!calendarApi) return;
+
+    const currentDate = calendarApi.getDate();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    let totalHours = 0;
+
+    this.dailyHoursMap.forEach((hours, dateString) => {
+      const date = new Date(dateString);
+      if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
+        totalHours += hours;
+      }
+    });
+
+    this.monthlyHours.set(totalHours);
+  }
+
+  private updateDailyHoursAfterDrag(event: any, newDate: string): void {
+    const extendedProps = event.extendedProps;
+    const hoursQuantity = extendedProps['hoursQuantity'] || 0;
+
+    // Obtener fecha original (si está almacenada)
+    const originalDate = extendedProps['originalDate'];
+    if (originalDate) {
+      const oldDateString = new Date(originalDate).toISOString().split('T')[0];
+      const oldHours = this.dailyHoursMap.get(oldDateString) || 0;
+      this.dailyHoursMap.set(oldDateString, Math.max(0, oldHours - hoursQuantity));
+    }
+
+    // Actualizar nueva fecha
+    const newDateString = newDate.split('T')[0];
+    const currentHours = this.dailyHoursMap.get(newDateString) || 0;
+    this.dailyHoursMap.set(newDateString, currentHours + hoursQuantity);
+
+    // Actualizar botón de horas mensuales
+    this.updateMonthlyHoursButton();
   }
 }

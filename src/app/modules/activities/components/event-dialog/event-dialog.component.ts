@@ -1,20 +1,43 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogModule,
+  MatDialog,
+} from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, provideNativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import {
+  MatNativeDateModule,
+  provideNativeDateAdapter,
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { Project, ProjectWithID } from '../../../projects/interfaces/project.interface';
+import {
+  Project,
+  ProjectWithID,
+} from '../../../projects/interfaces/project.interface';
 import { ProjectService } from '../../../projects/services/project.service';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivityService } from '../../services/activity.service';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter, MomentDateModule } from '@angular/material-moment-adapter';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+  MomentDateModule,
+} from '@angular/material-moment-adapter';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { ActivityType, Holiday } from '../../interfaces/activity.interface';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -47,24 +70,26 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    { provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'DD/MM/YYYY',
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: 'DD/MM/YYYY',
+        },
+        display: {
+          dateInput: 'DD/MM/YYYY',
+          monthYearLabel: 'MMMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
       },
-      display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY'
-      },
-    }}
+    },
   ],
   templateUrl: '../event-dialog/event-dialog.component.html',
   styleUrl: '../event-dialog/event-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventDialogComponent implements OnInit {
-
   projects: ProjectWithID[] = [];
   activityTypes: ActivityType[] = [];
   availableColors: { name: string; value: string }[] = [];
@@ -76,10 +101,10 @@ export class EventDialogComponent implements OnInit {
     activityDescription: '',
     activityDate: new Date(),
     hours: 4, // Valor por defecto cambiado a 4 horas
-    requirementCode: ''
+    requirementCode: '',
   };
 
-    // Variables para recurrencia
+  // Variables para recurrencia
   isRecurring: boolean = false;
   recurrenceStartDate: Date | null = null;
   recurrenceEndDate: Date | null = null;
@@ -97,7 +122,7 @@ export class EventDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<EventDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     if (data.event) {
       this.event = { ...this.event, ...data.event };
@@ -125,8 +150,7 @@ export class EventDialogComponent implements OnInit {
         ...this.event,
         ...this.data.event,
         // Asegurar que hours tenga el valor correcto
-        hours: this.data.event.hoursQuantity ?? this.data.event.hours ?? 4
-
+        hours: this.data.event.hoursQuantity ?? this.data.event.hours ?? 4,
       };
     }
 
@@ -162,7 +186,7 @@ export class EventDialogComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar feriados:', error);
-      }
+      },
     });
   }
 
@@ -238,9 +262,9 @@ export class EventDialogComponent implements OnInit {
 
     while (currentDate <= endDate) {
       // Saltar fines de semana si no están incluidos
-      if (this.includeWeekends || (!this.isWeekend(currentDate))) {
+      if (this.includeWeekends || !this.isWeekend(currentDate)) {
         // Saltar feriados si no están incluidos
-        if (this.includeHolidays || (!this.isHoliday(currentDate))) {
+        if (this.includeHolidays || !this.isHoliday(currentDate)) {
           count++;
         }
       }
@@ -253,7 +277,7 @@ export class EventDialogComponent implements OnInit {
   // Verificar si una fecha es feriado
   private isHoliday(date: Date): boolean {
     const dateString = date.toISOString().split('T')[0];
-    return this.holidays.some(holiday => holiday.holidayDate === dateString);
+    return this.holidays.some((holiday) => holiday.holidayDate === dateString);
   }
 
   // Verificar si una fecha es fin de semana
@@ -274,9 +298,10 @@ export class EventDialogComponent implements OnInit {
     const endDate = new Date(this.recurrenceEndDate);
 
     while (currentDate <= endDate) {
-      // Incluir según las opciones seleccionadas
-      const includeDate = (this.includeWeekends || !this.isWeekend(currentDate)) &&
-                        (this.includeHolidays || !this.isHoliday(currentDate));
+      // Incluir según las opciones seleccionada
+      const includeDate =
+        (this.includeWeekends || !this.isWeekend(currentDate)) &&
+        (this.includeHolidays || !this.isHoliday(currentDate));
 
       if (includeDate) {
         const payload = {
@@ -286,7 +311,7 @@ export class EventDialogComponent implements OnInit {
           activityDate: this.formatDate(new Date(currentDate)), // Usar formatDate
           activityDescription: this.event.activityDescription,
           requirementCode: this.event.requirementCode,
-          notes: this.event.details || ''
+          notes: this.event.details || '',
         };
         payloads.push(payload);
       }
@@ -306,7 +331,7 @@ export class EventDialogComponent implements OnInit {
       activityDate: this.event.activityDate,
       activityDescription: this.event.activityDescription,
       requirementCode: this.event.requirementCode,
-      notes: this.event.details || ''
+      notes: this.event.details || '',
     };
   }
 
@@ -317,11 +342,15 @@ export class EventDialogComponent implements OnInit {
           this.activityTypes = types;
           this.availableColors = types.map((type: ActivityType) => ({
             name: type.name,
-            value: type.colorCode
+            value: type.colorCode,
           }));
 
           // Si ya tenemos los proyectos pero no se ha establecido el default
-          if (this.projects.length > 0 && !this.data.isEdit && !this.event.projectID) {
+          if (
+            this.projects.length > 0 &&
+            !this.data.isEdit &&
+            !this.event.projectID
+          ) {
             this.setDefaultProject();
           }
         },
@@ -330,14 +359,22 @@ export class EventDialogComponent implements OnInit {
           this.setDefaultActivityTypes();
 
           // Mismo caso aquí
-          if (this.projects.length > 0 && !this.data.isEdit && !this.event.projectID) {
+          if (
+            this.projects.length > 0 &&
+            !this.data.isEdit &&
+            !this.event.projectID
+          ) {
             this.setDefaultProject();
           }
-        }
+        },
       });
     } else {
       // Si los tipos ya están cargados pero necesitamos establecer proyecto default
-      if (this.projects.length > 0 && !this.data.isEdit && !this.event.projectID) {
+      if (
+        this.projects.length > 0 &&
+        !this.data.isEdit &&
+        !this.event.projectID
+      ) {
         this.setDefaultProject();
       }
     }
@@ -345,19 +382,59 @@ export class EventDialogComponent implements OnInit {
 
   private setDefaultActivityTypes(): void {
     this.activityTypes = [
-      { id: 1, name: 'Desarrollo', description: 'Programación y desarrollo de software', colorCode: '#2E8B57' },
-      { id: 2, name: 'Reunión', description: 'Reuniones con clientes y equipo', colorCode: '#4169E1' },
-      { id: 3, name: 'Análisis', description: 'Análisis de requerimientos y diseño', colorCode: '#FF6347' },
-      { id: 4, name: 'Testing', description: 'Pruebas y control de calidad', colorCode: '#9370DB' },
-      { id: 5, name: 'Documentación', description: 'Creación de documentación', colorCode: '#DAA520' },
-      { id: 6, name: 'Soporte', description: 'Soporte técnico y mantenimiento', colorCode: '#DC143C' },
-      { id: 7, name: 'Capacitación', description: 'Entrenamiento y capacitación', colorCode: '#008B8B' },
-      { id: 1002, name: 'Auditoria', description: 'Auditoria Informática', colorCode: '#518B00' }
+      {
+        id: 1,
+        name: 'Desarrollo',
+        description: 'Programación y desarrollo de software',
+        colorCode: '#2E8B57',
+      },
+      {
+        id: 2,
+        name: 'Reunión',
+        description: 'Reuniones con clientes y equipo',
+        colorCode: '#4169E1',
+      },
+      {
+        id: 3,
+        name: 'Análisis',
+        description: 'Análisis de requerimientos y diseño',
+        colorCode: '#FF6347',
+      },
+      {
+        id: 4,
+        name: 'Testing',
+        description: 'Pruebas y control de calidad',
+        colorCode: '#9370DB',
+      },
+      {
+        id: 5,
+        name: 'Documentación',
+        description: 'Creación de documentación',
+        colorCode: '#DAA520',
+      },
+      {
+        id: 6,
+        name: 'Soporte',
+        description: 'Soporte técnico y mantenimiento',
+        colorCode: '#DC143C',
+      },
+      {
+        id: 7,
+        name: 'Capacitación',
+        description: 'Entrenamiento y capacitación',
+        colorCode: '#008B8B',
+      },
+      {
+        id: 1002,
+        name: 'Auditoria',
+        description: 'Auditoria Informática',
+        colorCode: '#518B00',
+      },
     ];
 
     this.availableColors = this.activityTypes.map((type: ActivityType) => ({
       name: type.name,
-      value: type.colorCode
+      value: type.colorCode,
     }));
   }
 
@@ -369,31 +446,37 @@ export class EventDialogComponent implements OnInit {
 
   private loadProjectsBasedOnRole(): void {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const isAdmin = userData?.data?.roles?.some((role: any) =>
-      role.id === 1 && role.roleName === "Administrador"
+    const isAdmin = userData?.data?.roles?.some(
+      (role: any) => role.id === 1 && role.roleName === 'Administrador',
     );
 
     if (isAdmin) {
-      this.projectService.getAllProjects().subscribe((projects: ProjectWithID[]) => {
-        this.projects = projects;
-        this.setDefaultProject(); // ← Añade esta línea
-      });
+      this.projectService
+        .getAllProjects()
+        .subscribe((projects: ProjectWithID[]) => {
+          this.projects = projects;
+          this.setDefaultProject(); // ← Añade esta línea
+        });
     } else if (this.currentEmployeeId) {
-      this.projectService.getProjectsByEmployee(this.currentEmployeeId, {
-        PageNumber: 1,
-        PageSize: 100,
-        search: '',
-        active: true
-      }).subscribe((response: any) => {
-        this.projects = response.items || [];
-        this.setDefaultProject(); // ← Añade esta línea
-      });
+      this.projectService
+        .getProjectsByEmployee(this.currentEmployeeId, {
+          PageNumber: 1,
+          PageSize: 100,
+          search: '',
+          active: true,
+        })
+        .subscribe((response: any) => {
+          this.projects = response.items || [];
+          this.setDefaultProject(); // ← Añade esta línea
+        });
     }
   }
 
   onProjectChange(projectId: number | null): void {
     if (projectId) {
-      const selectedProject = this.projects.find((p: ProjectWithID) => p.id === projectId);
+      const selectedProject = this.projects.find(
+        (p: ProjectWithID) => p.id === projectId,
+      );
       if (selectedProject && selectedProject.code) {
         this.event.requirementCode = selectedProject.code;
       } else {
@@ -414,36 +497,47 @@ export class EventDialogComponent implements OnInit {
 
       if (this.data.isEdit) {
         // Para edición, el diálogo podría hacer la llamada o dejar que el componente padre lo haga
-        await this.activityService.updateActivity(this.event.id, payload).toPromise();
-        this.snackBar.open('Actividad actualizada correctamente', 'Cerrar', { duration: 3000 });
+        await this.activityService
+          .updateActivity(this.event.id, payload)
+          .toPromise();
+        this.snackBar.open('Actividad actualizada correctamente', 'Cerrar', {
+          duration: 3000,
+        });
         this.dialogRef.close({
           ...payload,
           id: this.event.id,
           employeeID: this.currentEmployeeId,
-          success: true
+          success: true,
         });
       } else {
         // Para creación: SOLO preparar los datos, NO llamar al API
         if (Array.isArray(payload)) {
           // Para actividades recurrentes, enviar el array
-          this.dialogRef.close(payload.map(p => ({
-            ...p,
-            employeeID: this.currentEmployeeId
-          })));
+          this.dialogRef.close(
+            payload.map((p) => ({
+              ...p,
+              employeeID: this.currentEmployeeId,
+            })),
+          );
         } else {
           // Para actividad única, enviar los datos
           this.dialogRef.close({
             ...payload,
-            employeeID: this.currentEmployeeId
+            employeeID: this.currentEmployeeId,
           });
         }
       }
     } catch (error: any) {
       console.error('Error al guardar actividad', error);
-      if (error.error?.Code === 400 && error.error.Message.includes('aprobada')) {
+      if (
+        error.error?.Code === 400 &&
+        error.error.Message.includes('aprobada')
+      ) {
         this.showErrorDialog(error.error.Message);
       } else {
-        this.snackBar.open('Error al guardar actividad', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Error al guardar actividad', 'Cerrar', {
+          duration: 3000,
+        });
       }
     }
   }
@@ -459,31 +553,30 @@ export class EventDialogComponent implements OnInit {
   }
 
   validateHours(): void {
-  if (this.event.hours === '' || isNaN(Number(this.event.hours))) {
-    this.event.hours = null;
-    return;
+    if (this.event.hours === '' || isNaN(Number(this.event.hours))) {
+      this.event.hours = null;
+      return;
+    }
+
+    const hours = Number(this.event.hours);
+
+    const VACACIONES_ID = 4003;
+    const PERMISO_ID = 4004;
+
+    const allowZero =
+      this.event.activityTypeID === VACACIONES_ID ||
+      this.event.activityTypeID === PERMISO_ID;
+
+    if (allowZero) {
+      if (hours < 0) this.event.hours = 0;
+      else if (hours > 8) this.event.hours = 8;
+      else this.event.hours = hours;
+    } else {
+      if (hours < 0.5) this.event.hours = 0.5;
+      else if (hours > 8) this.event.hours = 8;
+      else this.event.hours = hours;
+    }
   }
-
-  const hours = Number(this.event.hours);
-
-
-  const VACACIONES_ID = 4003;
-  const PERMISO_ID = 4004;
-
-  const allowZero = this.event.activityTypeID === VACACIONES_ID ||
-                    this.event.activityTypeID === PERMISO_ID;
-
-  if (allowZero) {
-    if (hours < 0) this.event.hours = 0;
-    else if (hours > 8) this.event.hours = 8;
-    else this.event.hours = hours;
-  } else {
-    if (hours < 0.5) this.event.hours = 0.5;
-    else if (hours > 8) this.event.hours = 8;
-    else this.event.hours = hours;
-  }
-}
-
 
   private formatDate(dateInput: any): string {
     if (!dateInput) {
@@ -492,20 +585,32 @@ export class EventDialogComponent implements OnInit {
     if (dateInput instanceof Date) {
       return dateInput.toISOString().split('T')[0];
     }
-    if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+    if (
+      typeof dateInput === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(dateInput)
+    ) {
       return dateInput;
     }
     const date = new Date(dateInput);
     if (!isNaN(date.getTime())) {
       return date.toISOString().split('T')[0];
     }
-    console.warn('Formato de fecha no reconocido en formatDate (dialog):', dateInput);
+    console.warn(
+      'Formato de fecha no reconocido en formatDate (dialog):',
+      dateInput,
+    );
     return new Date().toISOString().split('T')[0];
   }
 
   trimDescription(): void {
-    if (this.event.activityDescription && this.event.activityDescription.length > 350) {
-      this.event.activityDescription = this.event.activityDescription.substring(0, 350);
+    if (
+      this.event.activityDescription &&
+      this.event.activityDescription.length > 350
+    ) {
+      this.event.activityDescription = this.event.activityDescription.substring(
+        0,
+        350,
+      );
     }
   }
 
@@ -516,8 +621,8 @@ export class EventDialogComponent implements OnInit {
         title: 'Confirmar eliminación',
         message: '¿Estás seguro de que deseas eliminar esta actividad?',
         confirmText: 'Eliminar',
-        cancelText: 'Cancelar'
-      }
+        cancelText: 'Cancelar',
+      },
     });
 
     const result = await confirmDialogRef.afterClosed().toPromise();
@@ -525,19 +630,26 @@ export class EventDialogComponent implements OnInit {
     if (result) {
       this.activityService.deleteActivity(this.event.id).subscribe({
         next: () => {
-          this.snackBar.open('Actividad eliminada correctamente', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Actividad eliminada correctamente', 'Cerrar', {
+            duration: 3000,
+          });
           this.dialogRef.close({ deleted: true });
         },
         error: (error) => {
           console.error('Error al eliminar actividad', error);
 
           // Mostrar mensaje de error específico si la actividad está aprobada
-          if (error.error?.Code === 400 && error.error.Message.includes('aprobada')) {
+          if (
+            error.error?.Code === 400 &&
+            error.error.Message.includes('aprobada')
+          ) {
             this.showErrorDialog(error.error.Message);
           } else {
-            this.snackBar.open('Error al eliminar actividad', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Error al eliminar actividad', 'Cerrar', {
+              duration: 3000,
+            });
           }
-        }
+        },
       });
     }
   }
@@ -549,28 +661,31 @@ export class EventDialogComponent implements OnInit {
         title: 'No se puede modificar la actividad',
         message: errorMessage,
         confirmText: 'Aceptar',
-        cancelText: null // Esto ocultará el botón de cancelar
-      }
+        cancelText: null, // Esto ocultará el botón de cancelar
+      },
     });
   }
 
   // Modificar isFormValid para incluir validación de recurrencia
   isFormValid(): boolean {
     // Validaciones básicas existentes
-    if (!this.event.activityTypeID ||
-        !this.event.projectID ||
-        !this.event.activityDescription ||
-        !this.event.activityDate) {
+    if (
+      !this.event.activityTypeID ||
+      !this.event.projectID ||
+      !this.event.activityDescription ||
+      !this.event.activityDate
+    ) {
       return false;
     }
 
-    const hours=Number(this.event.hours);
+    const hours = Number(this.event.hours);
 
     const VACACIONES_ID = 4003;
     const PERMISO_ID = 4004;
 
-    const allowZero = this.event.activityTypeID === VACACIONES_ID ||
-                      this.event.activityTypeID === PERMISO_ID;
+    const allowZero =
+      this.event.activityTypeID === VACACIONES_ID ||
+      this.event.activityTypeID === PERMISO_ID;
 
     if (
       isNaN(hours) ||
@@ -602,7 +717,9 @@ export class EventDialogComponent implements OnInit {
       // Advertencia si se crean muchas actividades
       if (this.recurrenceDaysCount > 30) {
         // Podrías mostrar una advertencia pero no impedir el envío
-        console.warn(`Se crearán ${this.recurrenceDaysCount} actividades, esto puede tomar un tiempo`);
+        console.warn(
+          `Se crearán ${this.recurrenceDaysCount} actividades, esto puede tomar un tiempo`,
+        );
       }
     }
 
@@ -622,7 +739,11 @@ export class EventDialogComponent implements OnInit {
       }
 
       const proposedHours = Number(this.event.hours);
-      if (proposedHours > 0 && (currentHoursForDay + proposedHours) > 8 && !this.data.isEdit) {
+      if (
+        proposedHours > 0 &&
+        currentHoursForDay + proposedHours > 8 &&
+        !this.data.isEdit
+      ) {
         return false;
       }
     }

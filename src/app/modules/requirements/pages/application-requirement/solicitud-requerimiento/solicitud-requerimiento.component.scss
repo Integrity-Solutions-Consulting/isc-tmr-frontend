@@ -37,7 +37,7 @@
   flex: auto;
   justify-content: center;
   display: flex;
-  pointer-events: none; // evita clicks (temporal)
+  pointer-events: auto; // evita clicks (temporal)
 }
 
 /* ===== CONTENEDOR DEL ÍCONO ===== */
@@ -76,22 +76,44 @@
   border-top-color: #e0e0e0;
 }
 
-/*BOTONES DE NAVEGACIÓN*/
+/* ===== BOTONES DE NAVEGACIÓN ===== */
 .step-actions {
   display: flex;
-  align-items: center;          // misma altura
+  align-items: center; // misma altura
   justify-content: space-between; // uno izquierda, otro derecha
   margin-top: 24px;
 }
 
-/* PRIMER BOTON */
+/* En pasos con solo un botón */
 .step-actions-first {
   justify-content: flex-end; // botón a la derecha
 }
-
-/*BOTON DE COMPLETAR*/
-.itg-primary-btn--tall {
-  min-height: 35px;          // controla el alto real
-  padding: 0.6rem 1.5rem;    // más aire vertical
-  font-size: 0.85rem;        // opcional
+.custom-stepper ::ng-deep .mat-step-icon {
+  background-color: #e0e0e0;
+  color: #555;
+  width: 50px;
+  height: 50px;
+  font-size: 25px;
+}
+.custom-stepper ::ng-deep .mat-step-header.mat-active .mat-step-icon {
+  background-color: #1976d2;
+  color: #fff;
+}
+.custom-stepper ::ng-deep .mat-step-header.mat-completed .mat-step-icon {
+  background-color: #1976d2;
+  color: #fff;
+}
+.custom-stepper
+  ::ng-deep
+  .mat-step-header.mat-completed
+  .mat-step-icon
+  mat-icon {
+  color: white !important;
+}
+.custom-stepper
+  ::ng-deep
+  .mat-step-header.mat-completed
+  .mat-step-icon
+  mat-icon {
+  color: #0d47a1 !important;
 }
