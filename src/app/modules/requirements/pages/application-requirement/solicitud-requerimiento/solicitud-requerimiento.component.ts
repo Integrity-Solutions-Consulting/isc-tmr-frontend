@@ -237,7 +237,7 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
     const serviceMode = this.serviceModeComponent.getDTO();
     const knowledgeData = this.knowledgeForm.value;
 
-    // Agrega logs para debug
+    /*     // Agrega logs para debug
     console.log('🔍 Debug - getDTO() resultados:');
     console.log('generalData:', generalData);
     console.log('paymentSchedule:', paymentSchedule);
@@ -278,7 +278,7 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
         'Estado del formulario service:',
         this.serviceModeComponent?.serviceModeForm?.valid,
       );
-    }
+    } */
 
     if (
       !generalData ||
