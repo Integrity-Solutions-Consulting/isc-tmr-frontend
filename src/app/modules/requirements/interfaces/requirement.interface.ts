@@ -72,6 +72,10 @@ export interface TemplateResponseDTO {
   templateID: number;
   template_name: string;
 }
+export interface CreateTemplateResponseDTO {
+  TemplateID: number;
+  message: string;
+}
 
 export interface TemplateDetailResponseDTO {
   id: number;
@@ -120,7 +124,7 @@ export interface ClientResponseDTO {
   legalName: string;
 }
 
-export interface VacancyResponseDTO  {
+export interface VacancyResponseDTO {
   id: number;
   vacancyTitle: string;
 }
@@ -135,7 +139,7 @@ export interface WorkCityResponseDTO {
   cityNaworkcity_name: string;
 }
 
-export interface WorkModeResponseDTO{
+export interface WorkModeResponseDTO {
   Id: number;
   Name: string;
 }

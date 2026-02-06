@@ -1,19 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CareerResponseDTO, KnowledgeResponseDTO, StudyStatuResponseDTO, TemplateDetailResponseDTO, TemplateResponseDTO, ToolResponseDTO } from '../../../../interfaces/requirement.interface';
+import {
+  CareerResponseDTO,
+  KnowledgeResponseDTO,
+  StudyStatuResponseDTO,
+  TemplateDetailResponseDTO,
+  TemplateResponseDTO,
+  ToolResponseDTO,
+} from '../../../../interfaces/requirement.interface';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
-import { MatIconModule } from "@angular/material/icon";
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'profile-detail',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIconModule],
   templateUrl: './profile-detail.component.html',
-  styleUrl: './profile-detail.component.scss'
+  styleUrl: './profile-detail.component.scss',
 })
-export class ProfileDetailComponent implements OnInit{
+export class ProfileDetailComponent implements OnInit {
   private fb = inject(FormBuilder);
   private resourceService = inject(ResourceServiceService);
 
@@ -37,7 +49,7 @@ export class ProfileDetailComponent implements OnInit{
   templateForm: FormGroup = this.fb.group({
     templateName: ['', Validators.required],
     knowledgeIds: [[], Validators.required],
-    toolIds: [[], Validators.required]
+    toolIds: [[], Validators.required],
   });
 
   ngOnInit(): void {
@@ -53,7 +65,7 @@ export class ProfileDetailComponent implements OnInit{
       next: (response: StudyStatuResponseDTO[]) => {
         this.studyStatus.set(response);
       },
-      error: (err) => console.error('Error loading study status:', err)
+      error: (err) => console.error('Error loading study status:', err),
     });
   }
 
@@ -62,7 +74,7 @@ export class ProfileDetailComponent implements OnInit{
       next: (response: CareerResponseDTO[]) => {
         this.availableCareers.set(response);
       },
-      error: (err) => console.error('Error loading careers:', err)
+      error: (err) => console.error('Error loading careers:', err),
     });
   }
 
@@ -71,7 +83,7 @@ export class ProfileDetailComponent implements OnInit{
       next: (response: KnowledgeResponseDTO[]) => {
         this.knowledgeList.set(response);
       },
-      error: (err) => console.error('Error loading knowledge:', err)
+      error: (err) => console.error('Error loading knowledge:', err),
     });
   }
 
@@ -80,7 +92,7 @@ export class ProfileDetailComponent implements OnInit{
       next: (response: ToolResponseDTO[]) => {
         this.toolsList.set(response);
       },
-      error: (err) => console.error('Error loading tools:', err)
+      error: (err) => console.error('Error loading tools:', err),
     });
   }
 
@@ -89,7 +101,7 @@ export class ProfileDetailComponent implements OnInit{
       next: (response: TemplateResponseDTO[]) => {
         this.templates.set(response);
       },
-      error: (err) => console.error('Error loading templates:', err)
+      error: (err) => console.error('Error loading templates:', err),
     });
   }
 
@@ -104,11 +116,11 @@ export class ProfileDetailComponent implements OnInit{
     this.profileDetailForm.patchValue({ templateId: templateId });
 
     this.resourceService.getTemplateById(templateId).subscribe({
-      next: res => {
+      next: (res) => {
         this.selectedTemplateDetail.set(res);
         this.createTemplate.set(false);
       },
-      error: err => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
@@ -117,17 +129,19 @@ export class ProfileDetailComponent implements OnInit{
   }
 
   getKnowledgeName(id: number): string {
-    const item = this.knowledgeList().find(k => k.knowledgeID === id)?.knowledgeName ?? '';
+    const item =
+      this.knowledgeList().find((k) => k.knowledgeID === id)?.knowledgeName ??
+      '';
     return item;
   }
 
   getToolName(id: number): string {
-    const item = this.toolsList().find(t => t.toolID === id)?.toolName ?? '';
+    const item = this.toolsList().find((t) => t.toolID === id)?.toolName ?? '';
     return item;
   }
 
   toggleCreateTemplate() {
-    this.createTemplate.update(v => !v);
+    this.createTemplate.update((v) => !v);
 
     const template = this.profileDetailForm.get('templateId');
 
@@ -136,13 +150,12 @@ export class ProfileDetailComponent implements OnInit{
       template?.setValue(null);
     } else {
       template?.setValidators([Validators.required]);
-
     }
     template?.updateValueAndValidity();
   }
 
   saveTemplate() {
-    if (this.templateForm.invalid){
+    if (this.templateForm.invalid) {
       this.templateForm.markAllAsTouched();
       console.error('Form is invalid', this.templateForm.value);
       return;
@@ -150,18 +163,20 @@ export class ProfileDetailComponent implements OnInit{
 
     const { templateName, knowledgeIds, toolIds } = this.templateForm.value;
 
-    this.resourceService.postTemplate(templateName, knowledgeIds, toolIds).subscribe({
-      next: () => {
-        this.loadTemplates();
-        this.createTemplate.set(false);
-        this.templateForm.reset({
-          templateName: '',
-          knowledgeIds: [],
-          toolIds: []
-        });
-      },
-      error: err => console.error(err)
-    });
+    this.resourceService
+      .postTemplate(templateName, knowledgeIds, toolIds)
+      .subscribe({
+        next: () => {
+          this.loadTemplates();
+          this.createTemplate.set(false);
+          this.templateForm.reset({
+            templateName: '',
+            knowledgeIds: [],
+            toolIds: [],
+          });
+        },
+        error: (err) => console.error(err),
+      });
   }
 
   getDTO(): any {
