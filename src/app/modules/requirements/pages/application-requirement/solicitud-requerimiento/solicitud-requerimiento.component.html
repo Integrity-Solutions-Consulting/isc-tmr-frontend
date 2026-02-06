@@ -4,8 +4,42 @@
   <p class="font-subtitle">Complete la información requerida en cada paso</p>
   <!-- Stepper para navegación paso a paso -->
   <mat-stepper #stepper linear class="custom-stepper">
+    <ng-template matStepperIcon="number" let-index="index">
+      <!-- Paso completado -->
+      <span *ngIf="completedSteps[index]" class="step-circle">
+        <mat-icon class="step-completed">check</mat-icon>
+      </span>
+
+      <!-- Paso activo sin completar -->
+      <span
+        *ngIf="!completedSteps[index] && stepper.selectedIndex === index"
+        class="step-active"
+      >
+        {{ index + 1 }}
+      </span>
+
+      <!-- Paso no completado -->
+      <span
+        *ngIf="!completedSteps[index] && stepper.selectedIndex !== index"
+        class="step-number"
+      >
+        {{ index + 1 }}
+      </span>
+    </ng-template>
+
+    <ng-template matStepperIcon="edit" let-index="index">
+      <mat-icon *ngIf="completedSteps[index]" class="step-completed">
+        check
+      </mat-icon>
+    </ng-template>
+
     <!-- Paso 1: Datos Generales -->
-    <mat-step [completed]="isStepComplete(0)" [stepControl]="generalDataForm">
+    <mat-step
+      [completed]="completedSteps[0]"
+      [stepControl]="generalDataForm"
+      [editable]="true"
+      [state]="getStepState(0) ? 'done' : 'number'"
+    >
       <ng-template matStepLabel> </ng-template>
 
       <div class="step-content">
@@ -25,7 +59,12 @@
     </mat-step>
 
     <!-- Paso 2: Servicios y modalidad -->
-    <mat-step [completed]="isStepComplete(1)" [stepControl]="serviceModeForm">
+    <mat-step
+      [completed]="completedSteps[1]"
+      [stepControl]="serviceModeForm"
+      [editable]="true"
+      [state]="getStepState(1) ? 'done' : 'number'"
+    >
       <!-- -->
       <ng-template matStepLabel> </ng-template>
 
@@ -34,7 +73,7 @@
       </div>
 
       <div class="step-actions">
-        <button mat-button matStepperPrevious class="itg-primary-btn">
+        <button mat-button (click)="previousStep()" class="itg-primary-btn">
           <mat-icon class="arrow-icon">arrow_back</mat-icon>
         </button>
         <button
@@ -51,8 +90,10 @@
 
     <!-- Paso 3: Pago y horario -->
     <mat-step
-      [completed]="isStepComplete(2)"
+      [completed]="completedSteps[2]"
       [stepControl]="paymentScheduleForm"
+      [editable]="true"
+      [state]="getStepState(2) ? 'done' : 'number'"
     >
       <!-- -->
       <ng-template matStepLabel> </ng-template>
@@ -62,7 +103,7 @@
       </div>
 
       <div class="step-actions">
-        <button mat-button matStepperPrevious class="itg-primary-btn">
+        <button mat-button (click)="previousStep()" class="itg-primary-btn">
           <mat-icon class="arrow-icon">arrow_back</mat-icon>
         </button>
         <button
@@ -78,7 +119,12 @@
     </mat-step>
 
     <!-- Paso 4: Nivel Recursos -->
-    <mat-step [completed]="isStepComplete(3)" [stepControl]="resourcesForm">
+    <mat-step
+      [completed]="completedSteps[3]"
+      [stepControl]="resourcesForm"
+      [editable]="true"
+      [state]="getStepState(3) ? 'done' : 'number'"
+    >
       <!-- -->
       <ng-template matStepLabel> </ng-template>
 
@@ -87,7 +133,7 @@
       </div>
 
       <div class="step-actions">
-        <button mat-button matStepperPrevious class="itg-primary-btn">
+        <button mat-button (click)="previousStep()" class="itg-primary-btn">
           <mat-icon class="arrow-icon">arrow_back</mat-icon>
         </button>
         <button
@@ -103,7 +149,12 @@
     </mat-step>
 
     <!-- Paso 5: Detalle perfil -->
-    <mat-step [completed]="isStepComplete(4)" [stepControl]="profileDetailForm">
+    <mat-step
+      [completed]="completedSteps[4]"
+      [stepControl]="profileDetailForm"
+      [editable]="true"
+      [state]="getStepState(4) ? 'done' : 'number'"
+    >
       <!-- -->
       <ng-template matStepLabel> </ng-template>
 
@@ -112,7 +163,7 @@
       </div>
 
       <div class="step-actions">
-        <button mat-button matStepperPrevious class="itg-primary-btn">
+        <button mat-button (click)="previousStep()" class="itg-primary-btn">
           <mat-icon class="arrow-icon">arrow_back</mat-icon>
         </button>
         <button
@@ -128,7 +179,12 @@
     </mat-step>
 
     <!-- Paso 6: Otros conocimientos -->
-    <mat-step [completed]="isStepComplete(5)" [stepControl]="knowledgeForm">
+    <mat-step
+      [completed]="completedSteps[5]"
+      [stepControl]="knowledgeForm"
+      [editable]="true"
+      [state]="getStepState(5) ? 'done' : 'number'"
+    >
       <!-- -->
       <ng-template matStepLabel> </ng-template>
 
@@ -137,7 +193,7 @@
       </div>
 
       <div class="step-actions">
-        <button mat-button matStepperPrevious class="itg-primary-btn">
+        <button mat-button (click)="previousStep()" class="itg-primary-btn">
           <mat-icon class="arrow-icon">arrow_back</mat-icon>
         </button>
 

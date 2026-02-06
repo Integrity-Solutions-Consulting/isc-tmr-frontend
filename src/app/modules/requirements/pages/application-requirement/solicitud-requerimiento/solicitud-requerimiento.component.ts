@@ -91,6 +91,7 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   currentStep: number = 0;
   isSaving: boolean = false;
   isRequirementLoaded = false;
+  completedSteps: boolean[] = [false, false, false, false, false, false];
 
   isManuallyActive(index: number): boolean {
     return this.stepper?.selectedIndex === index;
@@ -183,14 +184,22 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
   // Control del stepper
   nextStep(): void {
     if (this.stepper) {
+      const currentIndex = this.stepper.selectedIndex;
+
+      // Marcar paso como completado
+      this.completedSteps[currentIndex] = true;
+
       this.stepper.next();
       this.currentStep = this.stepper.selectedIndex;
+
+      // Forzar refresco de íconos
+      this.cdr.detectChanges();
     }
   }
 
   previousStep(): void {
-    if (this.stepper) {
-      this.stepper.previous();
+    if (this.stepper.selectedIndex > 0) {
+      this.stepper.selectedIndex--;
       this.currentStep = this.stepper.selectedIndex;
     }
   }
@@ -215,6 +224,9 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
       default:
         return false;
     }
+  }
+  getStepState(index: number): 'number' | 'done' {
+    return this.completedSteps[index] ? 'done' : 'number';
   }
 
   private completeRequirementData(): RequirementRequestDTO {
@@ -334,8 +346,14 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(() => {
+      // Reiniciar stepper
+      this.completedSteps = [false, false, false, false, false, false];
       this.stepper.reset(); // vuelve al paso 1
       this.currentStep = 0;
+
+      // Forzar refresco de Angular Material
+      this.cdr.detectChanges();
+
       this.solicitudRequerimeintoEvent.emit(true);
     });
 
@@ -344,7 +362,6 @@ export class SolicitudRequerimientoComponent implements OnInit, AfterViewInit {
       'Requerimiento creado correctamente.',
     );
     this.solicitudRequerimeintoEvent.emit(true);
-    // aquí podrías resetear todo
   }
 
   private sendRequirementBackend(requirement: RequirementRequestDTO): void {

@@ -5,23 +5,10 @@
   margin-bottom: 24px;
 }
 
-/* ===== CONTENEDOR GENERAL =====*/
+/* ===== CONTENEDOR GENERAL ===== */
 .custom-stepper {
   background: transparent;
   margin-left: 1rem;
-}
-
-.stepper-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  margin-left: rem;
-}
-
-.stepper-subtitle {
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 16px;
 }
 
 /* ===== HEADER DEL STEPPER ===== */
@@ -37,83 +24,82 @@
   flex: auto;
   justify-content: center;
   display: flex;
-  pointer-events: auto; // evita clicks (temporal)
+  pointer-events: none; // temporal
 }
 
-/* ===== CONTENEDOR DEL ÍCONO ===== */
+/* ===== ÍCONO DEL PASO ===== */
 .custom-stepper ::ng-deep .mat-step-icon-container {
   margin: 0;
 }
 
-/* ===== CÍRCULO DEL PASO ===== */
-.custom-stepper ::ng-deep .mat-step-icon {
-  background-color: #e0e0e0;
-  color: #555;
+/* Paso no completado */
+.step-number {
+  background-color: #e0e0e0; /* gris */
+  color: #555; /* número gris */
   width: 50px;
   height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 25px;
 }
 
-.custom-stepper ::ng-deep .mat-stepper-horizontal-line {
-  display: none;
+/* Paso completado */
+.step-circle {
+  background-color: #1c4d8c; /* azul */
+  color: #1c4d8c; /* check blanco */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ===== PASO ACTIVO ===== */
-.custom-stepper ::ng-deep .mat-step-header.mat-active .mat-step-icon {
-  background-color: #1976d2;
-  color: #fff;
+/* PARA EL CHECK DENTRO DEL TEMPLATE */
+.step-completed {
+  color: #ffffff !important; /* check blanco */
+  font-size: 24px;
 }
 
-/* ===== PASO COMPLETADO ===== */
-.custom-stepper ::ng-deep .mat-step-header.mat-completed .mat-step-icon {
-  background-color: #1976d2;
-  color: #fff;
-}
-
-/* ===== LÍNEA ENTRE PASOS ===== */
+/* LINEAS ENTRE PASOS */
 .custom-stepper ::ng-deep .mat-stepper-horizontal-line {
   border-top-width: 2px;
   border-top-color: #e0e0e0;
+  display: none;
 }
 
-/* ===== BOTONES DE NAVEGACIÓN ===== */
+::ng-deep .custom-stepper .mat-step-header {
+  background: transparent !important;
+}
+
+::ng-deep .custom-stepper .mat-step-header.mat-active {
+  background: transparent !important;
+}
+
+/* BOTONES DE NAVEGACIÓN */
 .step-actions {
   display: flex;
-  align-items: center; // misma altura
-  justify-content: space-between; // uno izquierda, otro derecha
+  align-items: center;
+  justify-content: space-between;
   margin-top: 24px;
 }
 
-/* En pasos con solo un botón */
 .step-actions-first {
-  justify-content: flex-end; // botón a la derecha
+  justify-content: flex-end;
+}
+
+.itg-primary-btn--tall {
+  min-height: 35px;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.85rem;
 }
 .custom-stepper ::ng-deep .mat-step-icon {
-  background-color: #e0e0e0;
-  color: #555;
-  width: 50px;
-  height: 50px;
-  font-size: 25px;
-}
-.custom-stepper ::ng-deep .mat-step-header.mat-active .mat-step-icon {
-  background-color: #1976d2;
-  color: #fff;
-}
-.custom-stepper ::ng-deep .mat-step-header.mat-completed .mat-step-icon {
-  background-color: #1976d2;
-  color: #fff;
-}
-.custom-stepper
-  ::ng-deep
-  .mat-step-header.mat-completed
-  .mat-step-icon
-  mat-icon {
-  color: white !important;
-}
-.custom-stepper
-  ::ng-deep
-  .mat-step-header.mat-completed
-  .mat-step-icon
-  mat-icon {
-  color: #0d47a1 !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px !important;
 }
