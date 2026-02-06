@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
@@ -26,9 +26,9 @@ export class PaymentScheduleComponent implements OnInit {
   cities = signal<any[]>([]);
 
   paymentScheduleForm: FormGroup = this.fb.group({
-    budget: [''],
-    workCityId: [null],
-    schedule: ['']
+    budget: ['', [Validators.required]],
+    workCityId: [null, [Validators.required]],
+    schedule: ['', [Validators.required]]
   });
 
   ngOnInit(): void {

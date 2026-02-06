@@ -117,3 +117,10 @@
   mat-icon {
   color: #0d47a1 !important;
 }
+
+/*BOTON DE COMPLETAR*/
+.itg-primary-btn--tall {
+  min-height: 35px;          // controla el alto real
+  padding: 0.6rem 1.5rem;    // más aire vertical
+  font-size: 0.85rem;        // opcional
+}
