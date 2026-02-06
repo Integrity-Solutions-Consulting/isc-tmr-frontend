@@ -106,6 +106,34 @@
   }
 }
 
+/*CONTACTO*/
+.contact-person-header {
+  display: flex;
+  gap: 0.5rem;
+
+  label {
+    margin: 0;
+  }
+
+  .btn-add  {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 25px; /* Cuadrado */
+    border-radius: 6px;
+    font-size: 0.5rem;
+    cursor: pointer;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    margin-bottom: 2px;
+  }
+
+}
+
 :host ::ng-deep ng-select {
   padding-bottom: 0;
 
@@ -143,5 +171,9 @@
     border-color: #3498db;
     background-color: #fff;
     box-shadow: none;
+  }
+
+  .error-text{
+    color: #e74c3c;
   }
 }

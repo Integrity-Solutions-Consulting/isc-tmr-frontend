@@ -43,14 +43,18 @@
       <section class="panel right-column" *ngIf ="generalDataForm.get('clientId')?.value">
 
         <div class="form-group horizontal-group">
-          <label>Persona de Contacto</label>
+          <div class="contact-person-header">
+            <label>Persona de Contacto</label>
+            <button mat-icon-button type="button" class="btn-add" (click)="createContact()"
+               [disabled]="!canCreateContact()"><mat-icon>add</mat-icon> </button>
+          </div>
           <ng-select
             [items]="contacts()"
             bindLabel="fullName"
             bindValue="id"
             formControlName="contactId"
             placeholder="Seleccione de la lista o deje vacío para crear nuevo"
-            (change)="onContactSelect($event)"
+
             [clearable]="true"
             [readonly]="!generalDataForm.get('clientId')?.value">
           </ng-select>
@@ -58,7 +62,7 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="nombres">Nombres <span class="required">*</span></label>
+            <label for="nombres">Nombres<span class="required">*</span></label>
             <input
               type="text"
               id="nombres"
@@ -84,7 +88,7 @@
         </div>
 
         <div class="form-group">
-          <label for="correo">Correo Electrónico (Opcional)</label>
+          <label for="correo">Correo Electrónico</label>
           <input
             type="email"
             id="correo"
@@ -92,6 +96,13 @@
             placeholder="correo@ejemplo.com"
             formControlName="contactEmail"
             [readonly]="!!generalDataForm.get('contactId')?.value">
+            <small class="error-text"
+              *ngIf="
+                generalDataForm.get('contactEmail')?.invalid &&
+                generalDataForm.get('contactEmail')?.touched
+              ">
+              El correo electrónico no es válido
+            </small>
           <div>
             <span>
 

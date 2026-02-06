@@ -6,12 +6,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { map } from 'rxjs';
 import { ClientService } from '../../../../../clients/services/client.service';
 import { ResourceServiceService } from '../../../../services/resource.service.service';
-import { MatIcon } from "@angular/material/icon";
+import { ContactRequestDTO, ContactResponseDTO } from '../../../../interfaces/requirement.interface';
+
 
 @Component({
   selector: 'general-data',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIcon, MatIconModule],
+  imports: [ReactiveFormsModule, CommonModule, NgSelectModule, MatIconModule],
   templateUrl: './general-data.component.html',
   styleUrl: './general-data.component.scss'
 })
@@ -31,13 +32,14 @@ export class GeneralDataComponent implements OnInit {
     contactId: [null],
     contactFirstName: ['', [Validators.required]],
     contactLastName: ['', [Validators.required]],
-    contactEmail: ['', [Validators.email]]
+    contactEmail: ['', [Validators.required, Validators.email]]
   });
 
   ngOnInit(): void {
     this.loadClients();
     this.loadVacancies();
     this.onClientChange();
+    this.onContactChange();
   }
 
   loadClients() {
@@ -87,6 +89,26 @@ export class GeneralDataComponent implements OnInit {
     });
   }
 
+  onContactChange() {
+  this.generalDataForm.get('contactId')?.valueChanges.subscribe((contactId) => {
+    const contact = this.contacts().find(c => c.id === contactId);
+
+    if (contact) {
+      this.generalDataForm.patchValue({
+        contactFirstName: contact.firstName,
+        contactLastName: contact.lastName,
+        contactEmail: contact.email
+      }, { emitEvent: false });
+    } else {
+      this.generalDataForm.patchValue({
+        contactFirstName: '',
+        contactLastName: '',
+        contactEmail: ''
+      }, { emitEvent: false });
+    }
+  });
+}
+
 loadContacts(clientId: number) {
     this.resourceService.getContactsByClient(clientId).subscribe({
       next: (response: any) => {
@@ -127,6 +149,58 @@ onContactSelect(contact: any) {
       });
     }
   }
+
+  canCreateContact(): boolean {
+    return !!(
+      this.generalDataForm.get('clientId')?.value &&            // cliente seleccionado
+      !this.generalDataForm.get('contactId')?.value &&          // no hay contacto ya creado
+      this.generalDataForm.get('contactFirstName')?.valid &&
+      this.generalDataForm.get('contactLastName')?.valid &&
+      this.generalDataForm.get('contactEmail')?.valid           // requerido + email válido
+    );
+  }
+
+  createContact(): void {
+  const clientId = this.generalDataForm.get('clientId')?.value;
+  if (!clientId) return;
+
+  const request: ContactRequestDTO = {
+    ClientID: clientId,
+    ContactName: this.generalDataForm.get('contactFirstName')?.value,
+    ContactLastName: this.generalDataForm.get('contactLastName')?.value,
+    ContactEmail: this.generalDataForm.get('contactEmail')?.value || ''
+  };
+
+  this.resourceService.createContact(request).subscribe({
+    next: (response) => {
+
+      this.resourceService.getContactsByClient(clientId).subscribe({
+        next: (res: any) => {
+
+          const lista = Array.isArray(res) ? res : (res.data || []);
+
+          const contactosMapeados = lista.map((c: any) => ({
+            id: c.contactID,
+            fullName: `${c.first_name} ${c.last_name}`,
+            firstName: c.first_name,
+            lastName: c.last_name,
+            email: c.email
+          }));
+
+          this.contacts.set(contactosMapeados);
+
+          // 🔥 AHORA SÍ se selecciona
+          setTimeout(() => {
+          this.generalDataForm.patchValue({
+            contactId: response.ContactID
+          });
+        }, 0);
+        }
+      });
+    },
+    error: (err) => console.error('Error creando contacto:', err)
+  });
+}
 
   getDTO(): any {
     return this.generalDataForm.valid ? this.generalDataForm.value : null;

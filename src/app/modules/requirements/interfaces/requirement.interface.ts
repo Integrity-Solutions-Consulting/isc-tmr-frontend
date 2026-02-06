@@ -25,6 +25,21 @@ export interface CareerResponseDTO {
   CareerName: string;
 }
 
+export interface ContactResponseDTO {
+  ContactID: number;
+  ClientID: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+export interface ContactRequestDTO {
+  ClientID: number;
+  ContactName: string;
+  ContactLastName: string;
+  ContactEmail: string;
+}
+
 export interface EmployeeCategoryResponseDTO {
   id: number;
   categoryName: string;

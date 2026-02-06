@@ -4,6 +4,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   CareerResponseDTO,
+  ContactRequestDTO,
+  ContactResponseDTO,
   EmployeeCategoryRequirementRequestDTO,
   EmployeeCategoryRequirementResponseDTO,
   EmployeeCategoryResponseDTO,
@@ -94,9 +96,16 @@ export class ResourceServiceService {
     );
   }
 
-  getContactsByClient(clientId: number): Observable<any> {
-    return this.http.get<any>(
+  getContactsByClient(clientId: number): Observable<ContactResponseDTO> {
+    return this.http.get<ContactResponseDTO>(
       `${this.urlBDE}/api/Contact/get-contact-by-client?clientId=${clientId}`,
+    );
+  }
+
+  createContact(request: ContactRequestDTO): Observable<ContactResponseDTO> {
+    return this.http.post<ContactResponseDTO>(
+      `${this.urlBDE}/api/Contact/create-contact`,
+      request,
     );
   }
 
