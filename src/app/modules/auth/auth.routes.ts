@@ -4,24 +4,27 @@ import { SigninPage } from './pages/signin/signin.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { RecoveryPasswordComponent } from './components/recovery-password/recovery-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { NotAuthorizedComponent } from './pages/not-authorized-component/not-authorized.component';
 
 export const authRoutes: Routes = [
-    {
-        path: '',
-        component: LoginPage,
-    },
-    {
-        path: 'login',
-        component: LoginPage,
-    },
-    {
-        path: 'signin',
-        component: SigninPage,
-    },
-    {
-      path: 'change-password',
-      component: ChangePasswordComponent
-    },
-    { path: 'forgot-password', component: RecoveryPasswordComponent },
-    { path: 'reset-password', component: ResetPasswordComponent },
+  {
+    path: '',
+    component: LoginPage,
+  },
+  {
+    path: 'login',
+    component: LoginPage,
+  },
+  {
+    path: 'signin',
+    component: SigninPage,
+  },
+  { path: 'not-authorized', component: NotAuthorizedComponent },
+
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
+  },
+  { path: 'forgot-password', component: RecoveryPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
 ];
