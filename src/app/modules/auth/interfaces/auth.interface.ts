@@ -1,4 +1,4 @@
-import { User } from "../../roles/interfaces/role.interface";
+import { User } from '../../roles/interfaces/role.interface';
 
 export interface LoginRequest {
   username: string;

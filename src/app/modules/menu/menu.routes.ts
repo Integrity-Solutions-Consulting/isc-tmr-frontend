@@ -18,7 +18,7 @@ export const menuRoutes: Routes = [
         path: 'dashboard',
         loadChildren: () =>
           import('../dashboard/dashboard.routes').then(
-            (m) => m.dashboardRoutes
+            (m) => m.dashboardRoutes,
           ),
         //data: { roles: ['Administrador'] }
       },
@@ -47,7 +47,7 @@ export const menuRoutes: Routes = [
         path: 'employees',
         loadChildren: () =>
           import('../employees/employees.routes').then(
-            (m) => m.employeesRoutes
+            (m) => m.employeesRoutes,
           ),
         //canActivate: [RoleGuard],
         //data: { roles: ['Administrador'] }
@@ -63,7 +63,7 @@ export const menuRoutes: Routes = [
         path: 'projection',
         loadChildren: () =>
           import('../projection/projection.routes').then(
-            (m) => m.projectionRoutes
+            (m) => m.projectionRoutes,
           ),
         //canActivate: [RoleGuard],
         //data: { roles: ['Administrador', 'Gerente', 'Lider'] }
@@ -72,7 +72,7 @@ export const menuRoutes: Routes = [
         path: 'activities',
         loadChildren: () =>
           import('../activities/activities.routes').then(
-            (m) => m.activitiesRoutes
+            (m) => m.activitiesRoutes,
           ),
         //canActivate: [RoleGuard],
         //data: { roles: ['Administrador', 'Gerente', 'Lider', 'Colaborador'] }
@@ -81,7 +81,7 @@ export const menuRoutes: Routes = [
         path: 'assignments',
         loadChildren: () =>
           import('../assigments/assigment.routes').then(
-            (m) => m.assignmentsRoutes
+            (m) => m.assignmentsRoutes,
           ),
         //canActivate: [RoleGuard],
         //data: { roles: ['Administrador', 'Gerente', 'Lider'] }
@@ -111,12 +111,16 @@ export const menuRoutes: Routes = [
       {
         path: 'requirements',
         loadChildren: () =>
-          import('../requirements/requirements.routes').then((m) => m.requirementsRoutes),
+          import('../requirements/requirements.routes').then(
+            (m) => m.requirementsRoutes,
+          ),
       },
       {
         path: 'humanResources',
         loadChildren: () =>
-          import('../humanResources/humanResources.routes').then((m) => m.HUMAN_RESOURCES_ROUTES),
+          import('../humanResources/humanResources.routes').then(
+            (m) => m.HUMAN_RESOURCES_ROUTES,
+          ),
       },
     ],
   },

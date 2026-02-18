@@ -24,7 +24,10 @@ import { AuthService } from '../../modules/auth/services/auth.service';
 export class MenuComponent implements OnInit {
   menuItems: any[] = [];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   onPanelClick(item: any, event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -52,9 +55,10 @@ export class MenuComponent implements OnInit {
   }
 
   private generateMenu(): void {
-    const allowed = this.authService.getAllowedModules();
-    this.menuItems = this.createMenuStructure(allowed);
+    const modules = this.authService.getUserModules();
+    this.menuItems = this.createMenuStructure(modules);
   }
+
   private createMenuStructure(modules: any[]): any[] {
     const processed = modules.map((m) => ({
       ...m,
@@ -64,7 +68,7 @@ export class MenuComponent implements OnInit {
     }));
 
     const sorted = [...processed].sort(
-      (a, b) => a.displayOrder - b.displayOrder
+      (a, b) => a.displayOrder - b.displayOrder,
     );
 
     const menuItems: any[] = [];
@@ -77,8 +81,6 @@ export class MenuComponent implements OnInit {
       'Clientes',
       'Líderes',
       'Proyecciones',
-
-
     ];
 
     // Ítems principales
@@ -100,7 +102,7 @@ export class MenuComponent implements OnInit {
     const timeModules = sorted.filter(
       (m) =>
         ['Actividades', 'Seguimiento'].includes(m.moduleName) &&
-        !added.has(m.id)
+        !added.has(m.id),
     );
 
     if (timeModules.length > 0) {
@@ -121,8 +123,9 @@ export class MenuComponent implements OnInit {
     // Procesar módulos que van en el panel de Requerimiento
     const requirementManagement = sorted.filter(
       (m) =>
-        ['Solicitud de requerimiento', 'Historial de requerimiento'].includes(m.moduleName) &&
-        !added.has(m.id)
+        ['Solicitud de requerimiento', 'Historial de requerimiento'].includes(
+          m.moduleName,
+        ) && !added.has(m.id),
     );
 
     if (requirementManagement.length > 0) {
@@ -130,7 +133,9 @@ export class MenuComponent implements OnInit {
         type: 'expansion',
         moduleName: 'Requerimientos',
         icon: 'playlist_add_check',
-        displayOrder: Math.min(...requirementManagement.map((m) => m.displayOrder)),
+        displayOrder: Math.min(
+          ...requirementManagement.map((m) => m.displayOrder),
+        ),
         options: requirementManagement.map((m) => ({
           type: 'item',
           ...m,
@@ -143,8 +148,12 @@ export class MenuComponent implements OnInit {
     // Procesar módulos que van en el panel de Talento Humano
     const humanResourcesModules = sorted.filter(
       (m) =>
-        ['Dashboard TH', 'Gestión de vacantes', 'Revisión de candidatos', 'Nueva vacante'].includes(m.moduleName) &&
-        !added.has(m.id)
+        [
+          'Dashboard TH',
+          'Gestión de vacantes',
+          'Revisión de candidatos',
+          'Nueva vacante',
+        ].includes(m.moduleName) && !added.has(m.id),
     );
 
     if (humanResourcesModules.length > 0) {
@@ -152,7 +161,9 @@ export class MenuComponent implements OnInit {
         type: 'expansion',
         moduleName: 'Talento Humano',
         icon: 'people',
-        displayOrder: Math.min(...humanResourcesModules.map((m) => m.displayOrder)),
+        displayOrder: Math.min(
+          ...humanResourcesModules.map((m) => m.displayOrder),
+        ),
         options: humanResourcesModules.map((m) => ({
           type: 'item',
           ...m,
@@ -166,7 +177,7 @@ export class MenuComponent implements OnInit {
     const configModules = sorted.filter(
       (m) =>
         ['Roles', 'Usuarios', 'Días Festivos'].includes(m.moduleName) &&
-        !added.has(m.id)
+        !added.has(m.id),
     );
 
     if (configModules.length > 0) {
@@ -186,7 +197,7 @@ export class MenuComponent implements OnInit {
     const reportModules = sorted.filter(
       (m) =>
         ['Proyecto por horas', 'Proyecto por fechas'].includes(m.moduleName) &&
-        !added.has(m.id)
+        !added.has(m.id),
     );
 
     if (reportModules.length > 0) {
