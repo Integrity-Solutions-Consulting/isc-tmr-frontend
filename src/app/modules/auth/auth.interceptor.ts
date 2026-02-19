@@ -1,48 +1,68 @@
-// auth.interceptor.ts
-import { Injectable } from '@angular/core';
 import {
-  HttpRequest,
-  HttpHandler,
+  HttpErrorResponse,
   HttpEvent,
+  HttpHandler,
   HttpInterceptor,
-  HttpErrorResponse
+  HttpRequest,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, Observable, throwError } from 'rxjs';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
-  // auth.interceptor.ts (versión mejorada)
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Verificar si el token está expirado antes de hacer la solicitud
-    if (this.authService.isAuthenticated() && this.authService.isTokenExpired()) {
+  intercept(
+    request: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
+    const token = this.authService.getToken();
+
+    // Validar expiración antes de enviar request
+    if (token && this.authService.isTokenExpired()) {
       this.authService.logout();
       this.router.navigate(['/auth/login']);
       return throwError(() => new Error('Token expired'));
     }
 
-    // Clonar la request y agregar el token
-    const token = this.authService.getToken();
+    //  Agregar token
     if (token) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
     }
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
+        //  NO AUTENTICADO
         if (error.status === 401) {
           this.authService.logout();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
+          return throwError(() => error);
         }
+
+        //  SIN PERMISOS POR MÓDULO (TU BACKEND)
+        if (error.status === 403) {
+          const message = error.error?.message || 'Sin acceso al módulo';
+
+          //console.warn('Acceso denegado:', message);
+
+          this.router.navigate(['/auth/not-authorized'], {
+            queryParams: { reason: message },
+          });
+
+          return throwError(() => error);
+        }
+
         return throwError(() => error);
-      })
+      }),
     );
   }
 }
