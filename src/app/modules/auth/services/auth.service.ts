@@ -68,18 +68,15 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    const encryptedData = encryptPayload(credentials);
+    const payload = encryptPayload(credentials); // ahora retorna {data, iv}
 
     return this._httpClient
-      .post<AuthResponse>(`${this.urlBase}/api/auth/login`, {
-        data: encryptedData,
-      })
+      .post<AuthResponse>(`${this.urlBase}/api/auth/login`, payload)
       .pipe(
         switchMap((response: AuthResponse) => {
           if (response.code !== 200) {
             throw new Error(response.message);
           }
-
           return this.setSession(response).pipe(
             map(() => {
               this._isAuthenticated.set(true);
