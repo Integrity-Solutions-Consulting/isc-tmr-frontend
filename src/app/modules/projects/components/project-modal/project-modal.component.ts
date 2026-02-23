@@ -272,7 +272,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     this.isLoadingLeaders = true;
     this.leaderService.getAllLeaders().subscribe({
       next: (resp) => {
-        this.leaders = resp.items ?? resp; // Manejar ambos casos: con o sin wrapper "items"
+        //this.leaders = resp.items ?? resp; // Manejar ambos casos: con o sin wrapper "items"
         this.formattedLeaders = this.leaders.map(leader => ({
           id: leader.id,
           fullName: `${leader.person.firstName} ${leader.person.lastName}`
@@ -378,7 +378,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     const formValue = this.projectForm.getRawValue();
     const selectedType = this.projectTypes.find(t => t.id === formValue.projectTypeId);
 
-    const projectData: Project = {
+    /*const projectData: Project = {
       clientID: formValue.clientId,
       projectStatusID: Number(formValue.projectStatusId),
       projectTypeID: formValue.projectTypeId,
@@ -396,15 +396,15 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       waitingStartDate: formValue.waitStartDate ? new Date(formValue.waitStartDate).toISOString() : null,
       waitingEndDate: formValue.waitEndDate ? new Date(formValue.waitEndDate).toISOString() : null,
       observation: formValue.observations || ''
-    };
+    };*/
 
-    console.log('Datos del proyecto a enviar:', projectData);
+    //console.log('Datos del proyecto a enviar:', projectData);
 
-    const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
+    /*const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
       ? this.projectService.updateProject(this.data.project.id, projectData)
-      : this.projectService.createProject(projectData);
+      : this.projectService.createProject(projectData);*/
 
-    request$.subscribe({
+    /*request$.subscribe({
       next: (response: any) => {
         this.projectService.hideLoading();
         this.isSubmitting = false;
@@ -415,7 +415,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         console.error('Error al guardar el proyecto:', err);
       }
-    });
+    });*/
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {

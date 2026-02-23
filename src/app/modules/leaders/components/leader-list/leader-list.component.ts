@@ -1,7 +1,7 @@
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { LeadersService } from './../../services/leaders.service';
 import { Component, inject, Injectable, OnInit, ViewChild } from '@angular/core';
-import { Leader, LeaderWithIDandPerson, LeaderWithPerson} from '../../interfaces/leader.interface';
+import { Leader} from '../../interfaces/leader.interface';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -174,7 +174,7 @@ export class LeaderListComponent implements OnInit{
       // mantenemos la estructura de carga y luego inicializamos Fuse.js
       this.leaderService.getAllLeaders().subscribe({
           next: (response) => {
-              if (response?.items) {
+              /*if (response?.items) {
                   this.allLeaders = this.removeDuplicateLeaders(response.items);
                   this.totalItems = this.allLeaders.length;
 
@@ -194,7 +194,7 @@ export class LeaderListComponent implements OnInit{
                           this.dataSource.sort = this.sort;
                       }
                   });
-              }
+              }*/
           },
           error: (err) => {
               console.error('Error:', err);
@@ -210,11 +210,11 @@ export class LeaderListComponent implements OnInit{
         // ... (La implementación existente es correcta y no se toca)
         const uniqueLeadersMap = new Map<number, Leader>();
 
-        leaders.forEach(leader => {
+        /*leaders.forEach(leader => {
             if (!uniqueLeadersMap.has(leader.person.id)) {
                 uniqueLeadersMap.set(leader.person.id, leader);
             }
-        });
+        });*/
 
         return Array.from(uniqueLeadersMap.values());
     }
@@ -293,7 +293,7 @@ export class LeaderListComponent implements OnInit{
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
           if (result.type === 'withPerson') {
-            this.leaderService.createLeaderWithPerson(result.data).subscribe({
+            /*his.leaderService.createLeaderWithPerson(result.data).subscribe({
               next: () => {
                 this.snackBar.open("Líder creado con éxito", "Cerrar", {duration: 5000});
                 this.loadAllLeaders(); // Recargar todos los líderes
@@ -301,9 +301,9 @@ export class LeaderListComponent implements OnInit{
               error: (err) => {
                 this.snackBar.open("Error al crear líder: " + err.message, "Cerrar", {duration: 5000});
               }
-            });
+            });*/
           } else if (result.type === 'withPersonID') {
-            this.leaderService.createLeaderWithPersonID(result.data).subscribe({
+            /*this.leaderService.createLeaderWithPersonID(result.data).subscribe({
               next: () => {
                 this.snackBar.open("Líder creado con éxito", "Cerrar", {duration: 5000});
                 this.loadAllLeaders(); // Recargar todos los líderes
@@ -311,7 +311,7 @@ export class LeaderListComponent implements OnInit{
               error: (err) => {
                 this.snackBar.open("Error al crear líder: " + err.message, "Cerrar", {duration: 5000});
               }
-            });
+            });*/
           }
         }
       });
@@ -322,11 +322,11 @@ export class LeaderListComponent implements OnInit{
       width: '800px',
       disableClose: true,
       data: {
-        leader: {
+        /*leader: {
           ...leader,
           personType: leader.person.personType,
           endDate: leader.endDate ? new Date(leader.endDate) : null
-        },
+        },*/
         isEdit: true
       }
     });
@@ -365,7 +365,7 @@ export class LeaderListComponent implements OnInit{
     this.selection.select(...this.allLeaders);
   }
 
-  toggleLeaderStatus(leader: LeaderWithIDandPerson): void {
+  /*toggleLeaderStatus(leader: LeaderWithIDandPerson): void {
     const confirmationMessage = leader.status
       ? '¿Estás seguro de que deseas desactivar este líder?'
       : '¿Estás seguro de que deseas activar este líder?';
@@ -423,7 +423,7 @@ export class LeaderListComponent implements OnInit{
         this.snackBar.open('Acción cancelada', 'Cerrar', { duration: 2000 });
       }
     });
-  }
+  }*/
 
   viewLeaderDetails(projectId: number): void {
     this.router.navigate([projectId], { relativeTo: this.route });

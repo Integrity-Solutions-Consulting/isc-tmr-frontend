@@ -54,7 +54,7 @@ export class LeaderDetailsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.leaderService.getLeaderId(id).subscribe({
+    /*this.leaderService.getLeaderId(id).subscribe({
       next: (response) => {
         console.log('Datos recibidos:', response);
 
@@ -72,7 +72,7 @@ export class LeaderDetailsComponent implements OnInit {
         this.showError('Error al cargar datos del líder');
         this.isLoading = false;
       }
-    });
+    });*/
   }
 
   getLeadershipType(type: boolean): string {

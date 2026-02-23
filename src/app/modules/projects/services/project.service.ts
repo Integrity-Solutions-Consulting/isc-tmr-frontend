@@ -303,7 +303,7 @@ export class ProjectService {
     );
   }
 
-  createProject(projectData: Project): Observable<ProjectWithID> {
+  /*createProject(projectData: Project): Observable<ProjectWithID> {
     this.showLoading();
     // 1. Crear copia segura sin ID
     const payload: Omit<ProjectWithID, 'id'> = {
@@ -333,7 +333,7 @@ export class ProjectService {
     return this.http
       .post<ProjectWithID>(`${this.urlBase}/api/Project/CreateProject`, payload)
       .pipe(finalize(() => this.hideLoading()));
-  }
+  }*/
 
   updateProject(
     id: number,

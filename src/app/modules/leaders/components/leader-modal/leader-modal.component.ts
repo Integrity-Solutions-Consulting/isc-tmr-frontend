@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { LeadersService } from '../../services/leaders.service';
-import { LeaderWithPerson, Person, PersonApiResponse } from '../../interfaces/leader.interface';
+import { Person } from '../../interfaces/leader.interface';
 import { PersonService } from '../../services/person.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -379,7 +379,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response) {
           this.patchFormValues(response);
-          this.originalStatus = response.status;
+          //this.originalStatus = response.status;
           this.updateEditModeFields(); // Añadir esta línea
         }
       },
@@ -572,7 +572,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
     if (this.isEditMode) {
 
-      this.leaderService.updateLeader(this.leaderId, request).subscribe({
+      /*this.leaderService.updateLeader(this.leaderId, request).subscribe({
         next: () => {
           this.dialogRef.close({ success: true });
           this.leaderService.hideLoading();
@@ -581,9 +581,9 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
           console.error('Error updating leader:', err);
           this.leaderService.hideLoading();
         }
-      });
+      });*/
     } else {
-      this.leaderService.createLeader(request).subscribe({
+      /*this.leaderService.createLeader(request).subscribe({
         next: () => {
           this.dialogRef.close({ success: true });
           this.leaderService.hideLoading();
@@ -592,7 +592,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
           console.error('Error creating leader:', err);
           this.leaderService.hideLoading();
         }
-      });
+      });*/
     }
   }
 

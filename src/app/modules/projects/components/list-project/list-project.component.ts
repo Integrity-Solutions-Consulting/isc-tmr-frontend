@@ -139,7 +139,7 @@ export class ListProjectComponent implements OnInit{
     ) {
       // Ya corregido, usa ProjectWithID
       this.dataSource = new MatTableDataSource<ProjectWithID>();
-      this.dataSource.sortingDataAccessor = (item: ProjectWithIndex, property: string) => {
+     /* this.dataSource.sortingDataAccessor = (item: ProjectWithIndex, property: string) => {
         switch (property) {
           case 'startDate':
           case 'endDate':
@@ -153,7 +153,7 @@ export class ListProjectComponent implements OnInit{
           default:
             return item[property];
         }
-      };
+      };*/
 
     }
 

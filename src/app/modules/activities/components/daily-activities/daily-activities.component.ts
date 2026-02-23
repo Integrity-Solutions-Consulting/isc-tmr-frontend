@@ -270,7 +270,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.loadActivityTypes();
     this.loadHolidays();
-    this.loadProjects()
+    /*this.loadProjects()
       .pipe(take(1))
       .subscribe(() => {
         this.loadInitialData();
@@ -284,7 +284,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
             this.loadActivities(); // Recargar actividades para el nuevo mes
           });
         }, 500);
-      });
+      });*/
   }
 
   ngOnDestroy(): void {
@@ -483,7 +483,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     await this.loadActivities();
   }
 
-  loadProjects(): Observable<Project[]> {
+  /*loadProjects(): Observable<Project[]> {
     this.isLoadingProjects = true;
 
     if (!this.currentEmployeeId) {
@@ -503,7 +503,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
         return throwError(() => new Error('Error al cargar proyectos'));
       }),
     );
-  }
+  }*/
 
   private async loadActivities(retryCount = 0): Promise<void> {
     try {

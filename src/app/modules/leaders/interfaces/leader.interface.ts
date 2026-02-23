@@ -1,6 +1,15 @@
 import { GetPersonResponse } from "../../persons/interfaces/person.interface";
 import { Project } from "../../projects/interfaces/project.interface";
 
+//Leader Utilizado para mostrar la información de los líderes en la vista de líderes
+export interface Leader {
+  FirstName: string;
+  LastName: string;
+  Phone: string;
+  Email: string;
+  LeadershipType: boolean;
+}
+
 export interface CreateLeaderRequest {
   FirstName: string;
   LastName: string;
@@ -136,15 +145,7 @@ export interface LeaderWithIDandPerson{
 
 }*/
 
-/*export interface Leader {
-  person: Person;
-  projectID: number;
-  leadershipType: boolean;
-  startDate: Date;
-  endDate: Date;
-  status: boolean;
-  responsibilities: string;
-}*/
+
 
 export interface Person {
   id: number;

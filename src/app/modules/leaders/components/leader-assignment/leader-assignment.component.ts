@@ -178,7 +178,7 @@ export class AssignmentLeaderDialogComponent implements OnInit {
 
     console.log('Payload enviado:', JSON.stringify(payload, null, 2));
 
-    this.leaderService.assignLeaderToProject(payload).subscribe({
+    /*this.leaderService.assignLeaderToProject(payload).subscribe({
       next: () => {
         this.saving = false;
         this.snackBar.open('Se guardaron los cambios correctamente', 'Cerrar', { duration: 3000 });
@@ -196,7 +196,7 @@ export class AssignmentLeaderDialogComponent implements OnInit {
 
         this.snackBar.open(errorMessage, 'Cerrar', { duration: 5000 });
       }
-    });
+    });*/
   }
 
   private resetForm(): void {
