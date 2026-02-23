@@ -310,6 +310,7 @@ export class ProjectService {
       clientID: projectData.clientID,
       projectStatusID: projectData.projectStatusID,
       projectTypeID: projectData.projectTypeID,
+      leaderId: projectData.leaderId, // Asegúrate de incluir el líder en el payload
       code: projectData.code,
       name: projectData.name,
       description: projectData.description,

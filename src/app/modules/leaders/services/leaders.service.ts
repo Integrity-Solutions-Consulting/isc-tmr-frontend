@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { Leader, LeaderWithPerson, LeaderWithPersonID, ApiResponse, LeaderAssignmentPayload, LeaderGroup } from '../interfaces/leader.interface';
+import { LeaderGroup, CreateLeaderRequest, UpdateLeaderRequest, AssignLeaderToProjectRequest, AssignLeaderToProjectResponse, GetLeaderDetailsResponse, CreateLeaderResponse, UpdateLeaderResponse, ActivateInactivateLeaderResponse } from '../interfaces/leader.interface';
 import { BehaviorSubject, catchError, finalize, forkJoin, map, Observable, tap, throwError } from 'rxjs';
 import { SuccessResponse } from '../../../shared/interfaces/response.interface';
 import { Project } from '../../projects/interfaces/project.interface';
@@ -28,7 +28,45 @@ export class LeadersService {
     this.loadingSubject.next(false);
   }
 
-  getLeaders(pageNumber: number, pageSize: number, search: string = ''):Observable<ApiResponse>{
+  getAllLeaders(): Observable<SuccessResponse<GetLeaderDetailsResponse>> {
+    return this.http.get<SuccessResponse<GetLeaderDetailsResponse>>(`${this.urlBase}/api/Leader/GetAllLeaders`);
+  }
+
+  getLeaderByID(id: number): Observable<SuccessResponse<GetLeaderDetailsResponse>> {
+    return this.http.get<SuccessResponse<GetLeaderDetailsResponse>>(`${this.urlBase}/api/Leader/GetLeaderByID/${id}`);
+  }
+
+  createLeader(request: CreateLeaderRequest): Observable<SuccessResponse<CreateLeaderResponse>> {
+    this.showLoading();
+    return this.http.post<SuccessResponse<CreateLeaderResponse>>(`${this.urlBase}/api/Leader/CreateLeader`, request).pipe(
+      finalize(() => this.hideLoading())
+    );
+  }
+
+  updateLeader(id: number, request: UpdateLeaderRequest): Observable<SuccessResponse<UpdateLeaderResponse>> {
+    this.showLoading();
+    return this.http.put<SuccessResponse<UpdateLeaderResponse>>(`${this.urlBase}/api/Leader/UpdateLeader/${id}`, request).pipe(
+      finalize(() => this.hideLoading())
+    );
+  }
+
+  inactivateLeader(id: number): Observable<SuccessResponse<ActivateInactivateLeaderResponse>> {
+    return this.http.delete<SuccessResponse<ActivateInactivateLeaderResponse>>(`${this.urlBase}/api/Leader/InactivateLeaderByID/${id}`);
+  }
+
+  activateLeader(id: number): Observable<SuccessResponse<ActivateInactivateLeaderResponse>> {
+    return this.http.delete<SuccessResponse<ActivateInactivateLeaderResponse>>(`${this.urlBase}/api/Leader/ActivateLeaderByID/${id}`);
+  }
+
+  assignLeaderToProject(request: AssignLeaderToProjectRequest): Observable<SuccessResponse<AssignLeaderToProjectResponse>> {
+    this.showLoading();
+
+    // El payload ya viene con la estructura { request: ... }
+    return this.http.post<SuccessResponse<AssignLeaderToProjectResponse>>(`${this.urlBase}/api/Leader/assign-leader-to-project`, request)
+      .pipe(finalize(() => this.hideLoading()));
+  }
+
+  /*getLeaders(pageNumber: number, pageSize: number, search: string = ''):Observable<ApiResponse>{
       let params = new HttpParams()
         .set('PageNumber', pageNumber.toString())
         .set('PageSize', pageSize.toString());
@@ -37,17 +75,9 @@ export class LeadersService {
         params = params.set('search', search);
       }
       return this.http.get<ApiResponse>(`${this.urlBase}/api/Leader/GetAllLeaders`, { params });
-  }
+  }*/
 
-  getAllLeaders(): Observable<any> {
-    return this.http.get<any>(`${this.urlBase}/api/Leader/GetAllLeaders?PageNumber=1&PageSize=9999`);
-  }
-
-  getLeaderByID(id: number): Observable<Leader> {
-    return this.http.get<Leader>(`${this.urlBase}/api/Leader/GetLeaderByID/${id}`);
-  }
-
-  getLeaderId(id: number): Observable<any> {
+  /*getLeaderId(id: number): Observable<any> {
     return this.http.get<any>(`${this.urlBase}/api/Leader/GetLeaderByID/${id}`).pipe(
       tap(response => console.log('Respuesta cruda del API:', response)),
       map(response => {
@@ -61,16 +91,16 @@ export class LeadersService {
         return throwError(() => new Error(error));
       })
     );
-  }
+  }*/
 
-  createLeaderWithPerson(leaderWithPersonRequest: LeaderWithPerson): Observable<SuccessResponse<Leader>> {
+  /*createLeaderWithPerson(leaderWithPersonRequest: LeaderWithPerson): Observable<SuccessResponse<Leader>> {
     this.showLoading();
     return this.http.post<SuccessResponse<Leader>>(`${this.urlBase}/api/Leader/CreateLeaderWithPerson`, leaderWithPersonRequest).pipe(
       finalize(() => this.hideLoading())
     );
-  }
+  }*/
 
-  createLeaderWithPersonID(leaderWithPersonIDRequest: LeaderWithPersonID): Observable<SuccessResponse<Leader>> {
+ /* createLeaderWithPersonID(leaderWithPersonIDRequest: LeaderWithPersonID): Observable<SuccessResponse<Leader>> {
     this.showLoading();
     return this.http.post<SuccessResponse<Leader>>(`${this.urlBase}/api/Leader/CreateLeaderWithPersonID`, leaderWithPersonIDRequest).pipe(
       finalize(() => this.hideLoading())
@@ -82,16 +112,7 @@ export class LeadersService {
     return this.http.put<SuccessResponse<Leader>>(`${this.urlBase}/api/Leader/UpdateLeaderWithPerson/${id}`, updateWithPersonRequest).pipe(
       finalize(() => this.hideLoading())
     );
-  }
-
-  inactivateLeader(id: number, data: any): Observable<any> {
-    console.log(data)
-    return this.http.delete(`${this.urlBase}/api/Leader/InactivateLeaderByID/${id}`);
-  }
-
-  activateLeader(id: number, data: any): Observable<any> {
-    return this.http.delete(`${this.urlBase}/api/Leader/ActivateLeaderByID/${id}`);
-  }
+  }*/
 
   getIdentificationTypes(): Observable<{ id: number, name: string }[]> {
         return this.http.get<any[]>(`${this.urlBase}/api/Catalog/identification-types`).pipe(
@@ -153,14 +174,6 @@ export class LeadersService {
         projectTypes: this.getProyectTypes(),
         projectStatus: this.getProyectStatus()
       });
-  }
-
-  assignLeaderToProject(payload: any): Observable<any> {
-    this.showLoading();
-
-    // El payload ya viene con la estructura { request: ... }
-    return this.http.post(`${this.urlBase}/api/Leader/assign-leader-to-project`, payload)
-      .pipe(finalize(() => this.hideLoading()));
   }
 
   getAllLeadersGrouped(): Observable<LeaderGroup[]> {

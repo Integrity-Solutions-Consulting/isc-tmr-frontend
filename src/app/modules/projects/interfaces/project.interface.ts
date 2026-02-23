@@ -1,20 +1,26 @@
+import { CreateLeaderResponse } from "../../leaders/interfaces/leader.interface";
+
+// GetAllProjectsResponse
 export interface Project {
-  clientID: number;
-  projectStatusID: number;
-  projectTypeID: number;
-  code: string;
-  name: string;
-  description: string;
-  startDate: string; // ISO string
-  endDate: string;   // ISO string
-  actualStartDate: string | null;
-  actualEndDate: string | null;
-  budget: number;
-  hours: number;
-  status: boolean;
-  waitingStartDate?: string | null; // New optional field
-  waitingEndDate?: string | null;   // New optional field
-  observation?: string | null;  // New optional field
+  Id: number;
+  ClientID: number;
+  ProjectStatusID: number;
+  ProjectTypeID?: number;
+  LeaderId?: number; // Nuevo campo para el líder asignado
+  Code: string;
+  Name: string;
+  Description?: string;
+  StartDate?: string; // ISO string
+  EndDate?: string; // ISO string
+  ActualStartDate?: string | null;
+  ActualEndDate?: string | null;
+  Budget?: number;
+  Hours: number;
+  Status?: boolean;
+  WaitingStartDate?: string | null; // New optional field
+  WaitingEndDate?: string | null; // New optional field
+  Observation?: string | null; // New optional field
+  Leader?: CreateLeaderResponse;
 }
 
 export interface ProjectWithID {
@@ -22,6 +28,7 @@ export interface ProjectWithID {
   clientID: number;
   projectStatusID: number;
   projectTypeID: number;
+  leaderId: number
   code: string;
   name: string;
   description: string;
