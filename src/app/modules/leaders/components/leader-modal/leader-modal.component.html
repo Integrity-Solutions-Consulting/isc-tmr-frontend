@@ -1,8 +1,9 @@
 <h4 mat-dialog-title style="margin: 10px; font-family: 'Poppins'">
   {{ isEditMode ? 'Editar Líder' : 'Crear Nuevo Líder' }}
 </h4>
-<mat-dialog-content>
-  <form [formGroup]="leaderForm" (ngSubmit)="onSubmit()" class="customer-form" style="margin-top: 6px;">
+<form [formGroup]="leaderForm" (ngSubmit)="onSubmit()" class="customer-form" style="margin-top: 6px;">
+  <mat-dialog-content>
+
 
     <div class="section-title" style="font-family: 'Poppins';">Datos del Líder</div>
     <div class="form-row">
@@ -10,14 +11,14 @@
       <div class="field-with-help">
         <mat-form-field appearance="outline" class="form-field-half">
           <mat-label style="font-family: 'Poppins';">Tipo de Líder</mat-label>
-          <mat-select formControlName="leadershipType">
+          <mat-select formControlName="LeadershipType">
             @for (type of leaderTypes; track type) {
               <mat-option [value]="type.id">
                 {{type.name}}
               </mat-option>
             }
           </mat-select>
-          <mat-error *ngIf="leaderForm.get('leadershipType')?.hasError('required') && leaderForm.get('leadershipType')?.touched">
+          <mat-error *ngIf="leaderForm.get('LeadershipType')?.hasError('required') && leaderForm.get('LeadershipType')?.touched">
             Este campo es requerido
           </mat-error>
         </mat-form-field>
@@ -27,7 +28,7 @@
       </div>
 
       <!-- Persona Existente -->
-      <div class="field-with-help" *ngIf="leaderForm.get('leadershipType')?.value === true">
+      <div class="field-with-help" *ngIf="leaderForm.get('LeadershipType')?.value === true">
         <mat-form-field appearance="outline" class="full-width">
           <mat-select formControlName="existingPerson" (selectionChange)="onPersonSelected($event)" placeholder="Persona">
             <!-- Campo de búsqueda para personas -->
@@ -61,14 +62,14 @@
       </div>
     </div>
 
-    <div formGroupName="person">
+
       <div class="section-title" style="font-family: 'Poppins';">Datos de Contacto</div>
 
       <div class="form-row">
         <!-- Nombres -->
         <div class="field-with-help">
           <mat-form-field appearance="outline" class="form-field-half">
-            <input matInput formControlName="firstName" placeholder="Nombres">
+            <input matInput formControlName="FirstName" placeholder="Nombres">
           </mat-form-field>
           <div class="help-icon" [matTooltip]="'Ingresa los nombres del líder'" matTooltipPosition="right">
             ?
@@ -78,7 +79,7 @@
         <!-- Apellidos -->
         <div class="field-with-help">
           <mat-form-field appearance="outline" class="form-field-half">
-            <input matInput formControlName="lastName" placeholder="Apellidos">
+            <input matInput formControlName="LastName" placeholder="Apellidos">
           </mat-form-field>
           <div class="help-icon" [matTooltip]="'Ingresa los apellidos del líder'" matTooltipPosition="right">
             ?
@@ -90,8 +91,8 @@
         <!-- Correo Electrónico -->
         <div class="field-with-help">
           <mat-form-field appearance="outline" class="form-field-half">
-            <input matInput formControlName="email" type="email" placeholder="Correo Electrónico">
-            <mat-error *ngIf="leaderForm.get('person.email')?.hasError('email')">
+            <input matInput formControlName="Email" type="email" placeholder="Correo Electrónico">
+            <mat-error *ngIf="leaderForm.get('Email')?.hasError('email')">
               Formato de email inválido
             </mat-error>
           </mat-form-field>
@@ -105,11 +106,11 @@
         <!-- Teléfono -->
         <div class="field-with-help">
           <mat-form-field appearance="outline" class="form-field-half">
-            <input matInput formControlName="phone" placeholder="Número de Teléfono">
-            <mat-error *ngIf="leaderForm.get('person.phone')?.hasError('required')">
+            <input matInput formControlName="Phone" placeholder="Número de Teléfono">
+            <mat-error *ngIf="leaderForm.get('Phone')?.hasError('required')">
               Este campo es requerido
             </mat-error>
-            <mat-error *ngIf="leaderForm.get('person.phone')?.hasError('pattern')">
+            <mat-error *ngIf="leaderForm.get('Phone')?.hasError('pattern')">
               El teléfono debe contener solo números (máximo 10 dígitos)
             </mat-error>
           </mat-form-field>
@@ -121,10 +122,8 @@
 
       <div class="form-row">
       </div>
-    </div>
-  </form>
 </mat-dialog-content>
-<mat-dialog-actions>
+<mat-dialog-actions align="end">
   <button mat-raised-button (click)="onCancel()">Cancelar</button>
   <button mat-raised-button
           style="background-color: var(--itg-primary); color: var(--itg-bg)"
@@ -134,3 +133,4 @@
     Guardar
   </button>
 </mat-dialog-actions>
+</form>

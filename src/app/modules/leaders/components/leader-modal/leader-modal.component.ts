@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { LeadersService } from '../../services/leaders.service';
-import { Person } from '../../interfaces/leader.interface';
+import { CreateLeaderRequest, Person } from '../../interfaces/leader.interface';
 import { PersonService } from '../../services/person.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -67,11 +67,11 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
 
 
-  identificationTypes: { id: number, name: string }[] = [];
+  /*identificationTypes: { id: number, name: string }[] = [];
   genders: { id: number, name: string }[] = [];
   nationalities: { id: number, name: string }[] = [];
   positions: { id: number, name: string }[] = [];
-  departments: { id: number, name: string }[] = [];
+  departments: { id: number, name: string }[] = [];*/
 
   leaderTypes = [
     { id: true, name: 'Integrity' },
@@ -111,7 +111,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     if (this.data.isEdit && this.data.leader) {
       this.loadLeaderData(this.data.leader);
     }
-    //this.loadProjects();
+    this.loadProjects();
     this.setupPersonFilter();
     this.setupProjectFilter();
 
@@ -129,28 +129,30 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   private initializeForm(leaderData: any): void {
     this.leaderForm = this.fb.group({
       existingPerson: [null],
-      leadershipType: [leaderData?.leadershipType ?? true, Validators.required], // Agregado Validators.required
 
+      LeadershipType: [leaderData?.LeadershipType ?? true, Validators.required], // Agregado Validators.required
+      FirstName: [leaderData.FirstName || '', Validators.required],
+      LastName: [leaderData.LastName || '', Validators.required],
+      Email: [leaderData.Email || '', [Validators.required, Validators.email]],
+      Phone: [leaderData.Phone || '', [Validators.pattern(/^[0-9]{10}$/)]],
 
-      // Grupo anidado para 'person'
-      person: this.fb.group({
-        firstName: [leaderData.person?.firstName || '', Validators.required],
-        lastName: [leaderData.person?.lastName || '', Validators.required],
-        email: [leaderData.person?.email || '', [Validators.required, Validators.email]],
-        phone: [leaderData.person?.phone || '', [Validators.pattern(/^[0-9]+$/)]],
-      })
     });
 
-    this.leaderForm.get('leadershipType')?.valueChanges.subscribe(value => {
+    this.leaderForm.get('LeadershipType')?.valueChanges.subscribe(value => {
       const isIntegrity = value === true;
       this.useExistingPerson = isIntegrity;
 
       const existingPersonControl = this.leaderForm.get('existingPerson');
-      const personGroup = this.leaderForm.get('person') as FormGroup;
 
        // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
       existingPersonControl?.setValue(null);
-      personGroup.reset();
+
+      this.leaderForm.patchValue({
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        Phone: ''
+      });
 
       if (isIntegrity) {
         existingPersonControl?.setValidators(Validators.required);
@@ -160,15 +162,13 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
         existingPersonControl?.setValue(null);
 
       }
-
       existingPersonControl?.updateValueAndValidity();
-      personGroup.enable(); // Habilitar el grupo de persona para ambos casos
     });
   }
 
   private updateEditModeFields(): void {
     if (this.isEditMode) {
-      const isIntegrityLeader = this.leaderForm.get('leadershipType')?.value === true;
+      const isIntegrityLeader = this.leaderForm.get('LeadershipType')?.value === true;
       const personGroup = this.leaderForm.get('person') as FormGroup;
 
       if (isIntegrityLeader) {
@@ -187,11 +187,11 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   loadCatalogs(): void {
     this.leaderService.getAllCatalogs().subscribe({
       next: (data) => {
-        this.identificationTypes = data.identificationTypes;
+        /*this.identificationTypes = data.identificationTypes;
         this.genders = data.genders;
         this.nationalities = data.nationalities;
         this.positions = data.positions;
-        this.departments = data.departments;
+        this.departments = data.departments;*/
         this.loading = false;
       },
       error: (err) => {
@@ -204,7 +204,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
   private identificationNumberValidator(control: FormControl): { [key: string]: any } | null {
 
-    const leadershipType = this.leaderForm?.get('leadershipType')?.value;
+    const leadershipType = this.leaderForm?.get('LeadershipType')?.value;
 
     if (leadershipType === false) {
       return null;
@@ -433,11 +433,11 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
     if (!selectedPerson) return;
 
-    this.leaderForm.get('person')?.patchValue({
-      firstName: selectedPerson.firstName,
-      lastName: selectedPerson.lastName,
-      email: selectedPerson.email,
-      phone: selectedPerson.phone
+    this.leaderForm.patchValue({
+      FirstName: selectedPerson.firstName,
+      LastName: selectedPerson.lastName,
+      Email: selectedPerson.email,
+      Phone: selectedPerson.phone
     });
   }
 
@@ -524,7 +524,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  /*private loadProjects() {
+  private loadProjects() {
     this.isLoadingProjects = true;
 
     // Usamos valores grandes para pageSize para obtener todos los proyectos
@@ -543,7 +543,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
         this.filteredProjects.next([]);
       }
     });
-  }*/
+  }
 
   onCancel(): void {
     this.dialogRef.close();
@@ -561,18 +561,20 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     this.leaderService.showLoading();
 
     const formValue = this.leaderForm?.getRawValue(); // Usa getRawValue() para incluir campos deshabilitados
+    console.log("FORM VALUE:", formValue);
 
-    const request = {
-      FirstName: formValue.person.firstName,
-      LastName: formValue.person.lastName,
-      Phone: formValue.person.phone,
-      Email: formValue.person.email,
-      leadershipType: formValue.leadershipType
+    const request: CreateLeaderRequest  = {
+      firstName: formValue.FirstName,
+      lastName: formValue.LastName,
+      phone: formValue.Phone ,
+      email: formValue.Email,
+      leadershipType: formValue.LeadershipType
     }
 
-    if (this.isEditMode) {
+    console.log("REQUEST ENVIADO:", request);
 
-      /*this.leaderService.updateLeader(this.leaderId, request).subscribe({
+    if (this.isEditMode) {
+      this.leaderService.updateLeader(this.leaderId, request).subscribe({
         next: () => {
           this.dialogRef.close({ success: true });
           this.leaderService.hideLoading();
@@ -581,9 +583,9 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
           console.error('Error updating leader:', err);
           this.leaderService.hideLoading();
         }
-      });*/
+      });
     } else {
-      /*this.leaderService.createLeader(request).subscribe({
+      this.leaderService.createLeader(request).subscribe({
         next: () => {
           this.dialogRef.close({ success: true });
           this.leaderService.hideLoading();
@@ -592,7 +594,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
           console.error('Error creating leader:', err);
           this.leaderService.hideLoading();
         }
-      });*/
+      });
     }
   }
 

@@ -15,17 +15,17 @@ export interface Person {
 
 //Despues del cambio
 export interface GetPersonResponse {
-  Id: number;
-  GenderID?: number;
-  NationalityID?: number;
-  IdentificationTypeID?: number;
-  IdentificationNumber: string;
-  PersonType: 'NATURAL' | 'JURIDICA';
-  FirstName: string;
-  LastName: string;
-  BirthDate?: Date;
-  Email?: string;
-  Phone?: string;
-  Address?: string;
-  Status: boolean;
+  id: number;
+  genderID?: number;
+  nationalityID?: number;
+  identificationTypeID?: number;
+  identificationNumber: string;
+  personType: 'NATURAL' | 'JURIDICA';
+  firstName: string;
+  lastName: string;
+  birthDate?: Date;
+  email?: string;
+  phone?: string;
+  address?: string;
+  status: boolean;
 }

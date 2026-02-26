@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { GetLeaderDetailsResponse } from '../../interfaces/leader.interface';
 
 @Component({
   selector: 'app-leader-details',
@@ -25,7 +26,7 @@ import { MatDividerModule } from '@angular/material/divider';
   ]
 })
 export class LeaderDetailsComponent implements OnInit {
-  leader: any;
+  leader?: GetLeaderDetailsResponse;
   isLoading = true;
   error: string | null = null;
 
@@ -54,11 +55,10 @@ export class LeaderDetailsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    /*this.leaderService.getLeaderId(id).subscribe({
+    this.leaderService.getLeaderByID(id).subscribe({
       next: (response) => {
         console.log('Datos recibidos:', response);
-
-        if (response && (response.id || response.person)) {
+        if (response && (response.id)) {
           this.leader = response;
         } else {
           console.error('Estructura inesperada:', response);
@@ -72,7 +72,7 @@ export class LeaderDetailsComponent implements OnInit {
         this.showError('Error al cargar datos del líder');
         this.isLoading = false;
       }
-    });*/
+    });
   }
 
   getLeadershipType(type: boolean): string {

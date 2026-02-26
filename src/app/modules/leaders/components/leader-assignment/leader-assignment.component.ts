@@ -13,17 +13,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
-import { Subject, takeUntil } from 'rxjs';
+import { forkJoin, Observable, Subject, takeUntil } from 'rxjs';
+import { Project, UpdateProjectRequest } from '../../../projects/interfaces/project.interface';
 
 export interface LeaderAssignment {
   id: number;
   projectID: number;
-  responsibility: string;
   leadershipType: boolean;
   status: boolean;
   projectName?: string;
-  startDate?: string; // Solo para visualización
-  endDate?: string;   // Solo para visualización
+  startDate?: string;
+  endDate?: string;
 }
 
 @Component({
@@ -47,8 +47,9 @@ export interface LeaderAssignment {
 export class AssignmentLeaderDialogComponent implements OnInit {
   assignmentForm: FormGroup;
   leader: any = null;
-  allProjects: any[] = [];
+  allProjects: Project[] = [];
   assignedProjects: LeaderAssignment[] = [];
+  removedProjectIds: number[] = [];
   loading = false;
   saving = false;
 
@@ -64,36 +65,57 @@ export class AssignmentLeaderDialogComponent implements OnInit {
   ) {
     this.assignmentForm = this.fb.group({
       selectedProject: [null, Validators.required],
-      responsibility: ['', Validators.required],
-      leadershipType: [true, Validators.required],
-      status: [true, Validators.required]
+      //responsibility: ['', Validators.required],
+      //leadershipType: [' '],
+      //status: ['']
     });
     this.leader = data.leader;
   }
 
   ngOnInit(): void {
     this.loadProjectsAndAssignments();
+    //this.loadProjects();
+  }
+
+  loadProjects(): void {
+    this.loading = true;
+
+    this.projectService.getAllProjects().subscribe({
+    next: (projects: any) => {
+      console.log('Proyectos cargados:', projects);
+      this.allProjects = projects;
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error loading projects:', error);
+      this.snackBar.open('Error al cargar proyectos', 'Cerrar', { duration: 3000 });
+      this.loading = false;
+    }
+  });
   }
 
   loadProjectsAndAssignments(): void {
     this.loading = true;
 
-    this.leaderService.getLeadersWithProjects().subscribe({
-      next: ({ leaders, projects }) => {
+    this.projectService.getAllProjects().subscribe({
+      next: (projects) => {
         this.allProjects = projects;
 
-        const foundLeader = leaders.find(l => l.person.id === this.leader.person.id);
+        const leaderProjects = this.allProjects.filter(
+          p => p.leaderID === this.leader.id
+        );
 
-        if (foundLeader) {
-          this.assignedProjects = foundLeader.leaderMiddle.map(assignment => ({
-            ...assignment,
-            projectID: assignment.projectId || assignment.id,
-            projectName: this.getProjectName(assignment.projectId || assignment.id),
+          this.assignedProjects = leaderProjects.map(assignment => ({
+            id: 0,
+            projectID: assignment.id,
+            projectName: assignment.name,
+            leadershipType: assignment.leader?.leadershipType || false,
+            status: assignment.status || false,
             // Agregar fechas del proyecto para visualización
-            startDate: this.getProjectStartDate(assignment.projectId || assignment.id),
-            endDate: this.getProjectEndDate(assignment.projectId || assignment.id)
+            startDate: this.formatDateDisplay(assignment.startDate),
+            endDate: this.formatDateDisplay(assignment.endDate)
           }));
-        }
+
 
         this.loading = false;
       },
@@ -123,39 +145,57 @@ export class AssignmentLeaderDialogComponent implements OnInit {
   getAvailableProjects(): any[] {
     const assignedProjectIds = this.assignedProjects.map(ap => ap.projectID);
     return this.allProjects.filter(project =>
-      !assignedProjectIds.includes(project.id) && project.status === true
+      !assignedProjectIds.includes(project.id) && project.status !== false
     );
   }
 
   addAssignment(): void {
-    if (this.assignmentForm.valid) {
-      const formValue = this.assignmentForm.value;
-
-      const newAssignment: LeaderAssignment = {
-        id: 0,
-        projectID: formValue.selectedProject,
-        responsibility: formValue.responsibility,
-        leadershipType: formValue.leadershipType,
-        status: formValue.status,
-        projectName: this.getProjectName(formValue.selectedProject),
-        // Solo para visualización, no se envían al backend
-        startDate: this.getProjectStartDate(formValue.selectedProject),
-        endDate: this.getProjectEndDate(formValue.selectedProject)
-      };
-
-      this.assignedProjects.push(newAssignment);
-      this.resetForm();
-    } else {
+    if (!this.assignmentForm.valid) {
       this.markFormGroupTouched(this.assignmentForm);
+      return;
     }
+
+    const projectId = this.assignmentForm.value.selectedProject;
+
+    // evitar duplicados
+    const alreadyExists = this.assignedProjects.some(
+      p => p.projectID === projectId
+    );
+
+    if (alreadyExists) {
+      this.snackBar.open('Este proyecto ya está asignado', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    const project = this.allProjects.find(p => p.id === projectId);
+
+    if (!project) return;
+
+    const newAssignment: LeaderAssignment = {
+      id: 0,
+      projectID: project.id,
+      projectName: `${project.code} - ${project.name}`,
+      leadershipType: true, // solo visual si lo necesitas
+      status: true,
+      startDate: this.formatDateDisplay(project.startDate),
+      endDate: this.formatDateDisplay(project.endDate)
+    };
+
+    this.assignedProjects = [...this.assignedProjects, newAssignment];
+
+    this.resetForm();
   }
 
   removeAssignment(index: number): void {
-    this.assignedProjects.splice(index, 1);
+    const assignment = this.assignedProjects[index];
+    this.removedProjectIds.push(assignment.projectID);
+    this.assignedProjects = this.assignedProjects.filter(
+      (_, i) => i !== index
+    );
   }
 
   getActiveAssignments(): LeaderAssignment[] {
-    return this.assignedProjects.filter(assignment => assignment.status === true);
+    return this.assignedProjects;
   }
 
   onSubmit(): void {
@@ -166,55 +206,98 @@ export class AssignmentLeaderDialogComponent implements OnInit {
 
     this.saving = true;
 
-    const payload = {
-        personID: this.leader.person.id,
-        personProjectMiddle: this.assignedProjects.map(assignment => ({
-          projectID: assignment.projectID,
-          leadershipType: assignment.leadershipType,
-          responsibilities: assignment.responsibility,
-          status: assignment.status
-        }))
+    const updateCalls: Observable<any>[] = [];
+
+  // 🔹 Asignar proyectos seleccionados
+  this.assignedProjects.forEach(assignment => {
+    const project = this.allProjects.find(p => p.id === assignment.projectID);
+    if (!project) return;
+
+    const request: UpdateProjectRequest = {
+      clientID: project.clientID,
+      projectStatusID: project.projectStatusID,
+      projectTypeID: project.projectTypeID,
+      leaderID: this.leader.id, // ✅ asignar líder
+      code: project.code,
+      name: project.name,
+      description: project.description,
+      startDate: project.startDate,
+      endDate: project.endDate,
+      actualStartDate: project.actualStartDate,
+      actualEndDate: project.actualEndDate,
+      budget: project.budget,
+      hours: project.hours,
+      waitingStartDate: project.waitingStartDate,
+      waitingEndDate: project.waitingEndDate,
+      observation: project.observation
     };
 
-    console.log('Payload enviado:', JSON.stringify(payload, null, 2));
+    updateCalls.push(this.projectService.updateProject(project.id, request));
+  });
 
-    /*this.leaderService.assignLeaderToProject(payload).subscribe({
-      next: () => {
-        this.saving = false;
-        this.snackBar.open('Se guardaron los cambios correctamente', 'Cerrar', { duration: 3000 });
-        this.dialogRef.close(true);
-      },
-      error: (error) => {
-        this.saving = false;
-        console.error('Error saving assignments:', error);
+  // 🔹 Desasignar proyectos eliminados
+  this.removedProjectIds.forEach(projectId => {
+    const project = this.allProjects.find(p => p.id === projectId);
+    if (!project) return;
 
-        let errorMessage = 'Error al guardar asignaciones';
-        if (error.error?.errors) {
-          const errors = Object.values(error.error.errors).flat();
-          errorMessage += `: ${errors.join(', ')}`;
-        }
+    const request: UpdateProjectRequest = {
+      clientID: project.clientID,
+      projectStatusID: project.projectStatusID,
+      projectTypeID: project.projectTypeID,
+      leaderID: undefined, // ❌ quitar líder
+      code: project.code,
+      name: project.name,
+      description: project.description,
+      startDate: project.startDate,
+      endDate: project.endDate,
+      actualStartDate: project.actualStartDate,
+      actualEndDate: project.actualEndDate,
+      budget: project.budget,
+      hours: project.hours,
+      waitingStartDate: project.waitingStartDate,
+      waitingEndDate: project.waitingEndDate,
+      observation: project.observation
+    };
 
-        this.snackBar.open(errorMessage, 'Cerrar', { duration: 5000 });
-      }
-    });*/
+    updateCalls.push(this.projectService.updateProject(project.id, request));
+  });
+
+  if (updateCalls.length === 0) {
+    this.saving = false;
+    this.snackBar.open('No hay cambios para guardar', 'Cerrar', { duration: 3000 });
+    return;
+  }
+
+  forkJoin(updateCalls).subscribe({
+    next: () => {
+      this.saving = false;
+      this.snackBar.open('Cambios guardados correctamente', 'Cerrar', { duration: 3000 });
+      this.dialogRef.close(true);
+    },
+    error: (error) => {
+      this.saving = false;
+      console.error(error);
+      this.snackBar.open('Error al guardar cambios', 'Cerrar', { duration: 4000 });
+    }
+  });
   }
 
   private resetForm(): void {
     this.assignmentForm.reset({
       selectedProject: null,
-      responsibility: '',
-      leadershipType: true,
-      status: true
+      //responsibility: '',
+      //leadershipType: true,
+      //status: true
     });
   }
 
-  formatDateDisplay(dateString: string): string {
-    if (!dateString) return 'N/A';
+  formatDateDisplay(date?: string): string {
+    if (!date) return 'N/A';
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('es-ES'); // Formato DD/MM/YYYY
-    } catch {
-      return dateString;
+      const dateObj = new Date(date);
+      return dateObj.toLocaleDateString('es-ES'); // Formato DD/MM/YYYY
+    } catch (error) {
+      return date;
     }
   }
 

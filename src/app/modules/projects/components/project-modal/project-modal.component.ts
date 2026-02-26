@@ -91,6 +91,10 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   formattedLeaders: any[] = [];
   isLoadingLeaders = false;
 
+  pageSize: number = 10;
+  currentPage: number = 0;
+  currentSearch: string = '';
+
   showClientWaitingFields: boolean = false;
 
   public clientFilterCtrl: FormControl<string | null> = new FormControl<string>('');
@@ -270,7 +274,11 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
 
   private loadLeaders(): void {
     this.isLoadingLeaders = true;
-    this.leaderService.getAllLeaders().subscribe({
+    this.leaderService.getAllLeaders(
+      this.currentPage + 1,
+      this.pageSize,
+      this.currentSearch
+    ).subscribe({
       next: (resp) => {
         //this.leaders = resp.items ?? resp; // Manejar ambos casos: con o sin wrapper "items"
         this.formattedLeaders = this.leaders.map(leader => ({

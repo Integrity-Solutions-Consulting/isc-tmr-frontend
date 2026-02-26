@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { LeaderGroup, CreateLeaderRequest, UpdateLeaderRequest, AssignLeaderToProjectRequest, AssignLeaderToProjectResponse, GetLeaderDetailsResponse, CreateLeaderResponse, UpdateLeaderResponse, ActivateInactivateLeaderResponse } from '../interfaces/leader.interface';
+import { LeaderGroup, CreateLeaderRequest, UpdateLeaderRequest, AssignLeaderToProjectRequest, AssignLeaderToProjectResponse, GetLeaderDetailsResponse, CreateLeaderResponse, UpdateLeaderResponse, ActivateInactivateLeaderResponse, PagedResult } from '../interfaces/leader.interface';
 import { BehaviorSubject, catchError, finalize, forkJoin, map, Observable, tap, throwError } from 'rxjs';
 import { SuccessResponse } from '../../../shared/interfaces/response.interface';
 import { Project } from '../../projects/interfaces/project.interface';
@@ -28,12 +28,20 @@ export class LeadersService {
     this.loadingSubject.next(false);
   }
 
-  getAllLeaders(): Observable<SuccessResponse<GetLeaderDetailsResponse>> {
-    return this.http.get<SuccessResponse<GetLeaderDetailsResponse>>(`${this.urlBase}/api/Leader/GetAllLeaders`);
+  getAllLeaders(pageNumber: number, pageSize: number, search: string = ''): Observable<PagedResult<GetLeaderDetailsResponse>> {
+    let params = new HttpParams()
+      .set('PageNumber', pageNumber.toString())
+      .set('PageSize', pageSize.toString());
+
+    if (search) {
+      params = params.set('Search', search);
+    }
+
+    return this.http.get<PagedResult<GetLeaderDetailsResponse>>(`${this.urlBase}/api/Leader/GetAllLeaders`, { params });
   }
 
-  getLeaderByID(id: number): Observable<SuccessResponse<GetLeaderDetailsResponse>> {
-    return this.http.get<SuccessResponse<GetLeaderDetailsResponse>>(`${this.urlBase}/api/Leader/GetLeaderByID/${id}`);
+  getLeaderByID(id: number): Observable<GetLeaderDetailsResponse> {
+    return this.http.get<GetLeaderDetailsResponse>(`${this.urlBase}/api/Leader/GetLeaderByID/${id}`);
   }
 
   createLeader(request: CreateLeaderRequest): Observable<SuccessResponse<CreateLeaderResponse>> {
@@ -59,6 +67,7 @@ export class LeadersService {
   }
 
   assignLeaderToProject(request: AssignLeaderToProjectRequest): Observable<SuccessResponse<AssignLeaderToProjectResponse>> {
+    console.log("ENVIANDO AL BACK:", request);
     this.showLoading();
 
     // El payload ya viene con la estructura { request: ... }

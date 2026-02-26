@@ -2,90 +2,104 @@ import { GetPersonResponse } from "../../persons/interfaces/person.interface";
 import { Project } from "../../projects/interfaces/project.interface";
 
 //Leader Utilizado para mostrar la información de los líderes en la vista de líderes
+//Estoy convencido de que mejor es LeaderData, pero no me confim¿rma la gente
 export interface Leader {
-  FirstName: string;
-  LastName: string;
-  Phone: string;
-  Email: string;
-  LeadershipType: boolean;
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+  startDate: string;
+  endDate?: string;
+  status: boolean;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalItems: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export interface CreateLeaderRequest {
-  FirstName: string;
-  LastName: string;
-  Phone: string;
-  Email: string;
-  LeadershipType: boolean;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
 }
 
 export interface CreateLeaderResponse {
-  Id: number;
-  FirstName: string;
-  LastName: string;
-  Phone: string;
-  Email: string;
-  LeadershipType: boolean;
+  id  : number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
 }
 
 export interface UpdateLeaderRequest {
-  FirstName: string;
-  LastName: string;
-  Phone: string;
-  Email: string;
-  LeadershipType: boolean;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
 }
 
 export interface UpdateLeaderResponse {
-  Id: number;
-  FirstName: string;
-  LastName: string;
-  Phone: string;
-  Email: string;
-  LeadershipType: boolean;
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
 }
 
 export interface GetLeaderDetailsResponse {
-  FirstName : string;
-  LastName : string;
-  Phone : string;
-  Email : string;
-  LeadershipType : boolean;
-  Status: boolean;
+  id: number;
+  firstName   : string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+  status: boolean;
 }
 
 export interface ActivateInactivateLeaderResponse {
-  Id: number;
-  FirstName: string;
-  LastName: string;
-  Phone: string;
-  Email: string;
-  LeadershipType: boolean;
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
 }
 
 export interface AssignLeaderToProjectRequest {
-  LeaderID: number;
-  ProjectID: number;
+  leaderID: number;
+  projectID: number;
 }
 
 export interface AssignLeaderToProjectResponse {
-  LeaderID: number;
-  ProjectID: number;
-  Message: string;
+  leaderID: number;
+  projectID: number;
+  message: string;
 }
 
 export interface GetAllLeaderProjectByPersonIdResponse {
-  Person?: GetPersonResponse;
-  LeaderMiddle: LeaderData[];
+  person?: GetPersonResponse;
+  leaderMiddle: LeaderData[];
 }
 
 export interface LeaderData {
-  Id: number;
-  Responsability: string;
-  StartDate: string;
-  EndDate?: string;
-  LeadershipType: boolean;
-  Status: boolean;
-  Projectos?: Project;
+  id: number;
+  responsibility: string;
+  startDate: string;
+  endDate?: string;
+  leadershipType: boolean;
+  status: boolean;
+  projectos?: Project;
 }
 
 /*export interface LeaderWithPerson {
