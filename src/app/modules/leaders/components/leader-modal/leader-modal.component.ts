@@ -84,7 +84,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   loading = true;
   error: string | null = null;
 
-  private leaderId: number;
+  private leaderId: number ;
 
   constructor(
     private leaderService: LeadersService,
@@ -105,20 +105,19 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadPersons();
     this.loadCatalogs();
+
     if (this.isEditMode && this.leaderId) {
       this.loadLeaderData(this.leaderId);
     }
-    if (this.data.isEdit && this.data.leader) {
-      this.loadLeaderData(this.data.leader);
-    }
+
     this.loadProjects();
     this.setupPersonFilter();
     this.setupProjectFilter();
 
     // Actualizar campos después de cargar todo
-    setTimeout(() => {
+   /* setTimeout(() => {
       this.updateEditModeFields();
-    });
+    });*/
   }
 
   ngOnDestroy(): void {
@@ -166,7 +165,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateEditModeFields(): void {
+  /*private updateEditModeFields(): void {
     if (this.isEditMode) {
       const isIntegrityLeader = this.leaderForm.get('LeadershipType')?.value === true;
       const personGroup = this.leaderForm.get('person') as FormGroup;
@@ -182,7 +181,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
         personGroup.get('identificationNumber')?.disable();
       }
     }
-  }
+  }*/
 
   loadCatalogs(): void {
     this.leaderService.getAllCatalogs().subscribe({
@@ -202,7 +201,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  private identificationNumberValidator(control: FormControl): { [key: string]: any } | null {
+  /*private identificationNumberValidator(control: FormControl): { [key: string]: any } | null {
 
     const leadershipType = this.leaderForm?.get('LeadershipType')?.value;
 
@@ -237,7 +236,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     }
 
     return null;
-  }
+  }*/
 
     private setupProjectFilter(): void {
       // Cargar set inicial
@@ -251,7 +250,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
         });
     }
 
-  private updateIdentificationValidators(personType: string): void {
+  /*private updateIdentificationValidators(personType: string): void {
     const identificationTypeControl = this.leaderForm.get('person.identificationTypeId');
     const identificationNumberControl = this.leaderForm.get('person.identificationNumber');
 
@@ -280,7 +279,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     identificationNumberControl?.updateValueAndValidity();
 
     this.leaderForm.get('person')?.updateValueAndValidity();
-  }
+  }*/
 
   private setupPersonFilter(): void {
     // Cargar set inicial
@@ -342,7 +341,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     this.filteredPersons.next(filteredPersons);
   }
 
-  private updateIdentificationRequiredStatus(isIntegrityLeader: boolean): void {
+  /*private updateIdentificationRequiredStatus(isIntegrityLeader: boolean): void {
     const personGroup = this.leaderForm.get('person') as FormGroup;
     const identificationNumberControl = personGroup.get('identificationNumber');
     const personTypeControl = personGroup.get('personType');
@@ -372,7 +371,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     }
 
     identificationNumberControl?.updateValueAndValidity();
-  }
+  }*/
 
   private loadLeaderData(leaderId: number): void {
     this.leaderService.getLeaderByID(leaderId).subscribe({
@@ -380,7 +379,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
         if (response) {
           this.patchFormValues(response);
           //this.originalStatus = response.status;
-          this.updateEditModeFields(); // Añadir esta línea
+          //this.updateEditModeFields(); // Añadir esta línea
         }
       },
       error: (err) => {
@@ -393,7 +392,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     return person ? `${person.firstName} ${person.lastName} (${person.identificationNumber})` : '';
   }
 
-  private togglePersonFields(): void {
+  /*private togglePersonFields(): void {
     const personGroup = this.leaderForm.get('person') as FormGroup;
     const existingPersonControl = this.leaderForm.get('existingPerson');
 
@@ -424,7 +423,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     }
     // Forzar la revalidación del formulario completo
     this.leaderForm.updateValueAndValidity();
-  }
+  }*/
 
   // Se añade esta función para manejar la selección de persona existente
   onPersonSelected(event: any): void {
@@ -443,8 +442,15 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
 
   private patchFormValues(leaderData: any): void {
+    this.leaderForm.patchValue({
+      LeadershipType: leaderData.leadershipType,
+      FirstName: leaderData.firstName ?? '',
+      LastName: leaderData.lastName ?? '',
+      Email: leaderData.email ?? '',
+      Phone: leaderData.phone ?? ''
+    });
     // Formatea la fecha si existe
-    const birthDateValue = leaderData.person?.birthDate
+    /*const birthDateValue = leaderData.person?.birthDate
       ? formatDate(leaderData.person.birthDate, 'yyyy-MM-dd', 'en-US')
       : '';
 
@@ -454,40 +460,19 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
     const endDateValue = leaderData.endDate
       ? formatDate(leaderData.endDate, 'yyyy-MM-dd', 'en-US')
-      : '';
-
-    this.leaderForm.patchValue({
-      projectID: leaderData.projectID,
-      leadershipType: leaderData.leadershipType,
-      startDate: startDateValue,
-      endDate: endDateValue,
-      responsibilities: leaderData.responsibilities,
-      person: {
-        personType: leaderData.person?.personType || 'NATURAL',
-        identificationTypeId: leaderData.person?.identificationTypeId,
-        identificationNumber: leaderData.person?.identificationNumber,
-        firstName: leaderData.person?.firstName,
-        lastName: leaderData.person?.lastName,
-        birthDate: birthDateValue,
-        email: leaderData.person?.email,
-        phone: leaderData.person?.phone,
-        address: leaderData.person?.address,
-        genderId: leaderData.person?.genderId,
-        nationalityId: leaderData.person?.nationalityId
-      }
-    });
+      : '';*/
 
     // Si estamos editando, deshabilitamos la opción de cambiar persona
-    this.leaderForm.get('personOption')?.disable();
+    /*this.leaderForm.get('personOption')?.disable();
     // También deshabilita existingPerson si se está editando y ya hay una persona asociada
     if (this.isEditMode && leaderData.personID) {
       this.leaderForm.get('existingPerson')?.disable();
       this.leaderForm.patchValue({ personOption: 'existing', existingPerson: leaderData.personID });
       this.useExistingPerson = true;
-      this.togglePersonFields(); // Asegura que los campos de persona se deshabiliten
-    }
+     // this.togglePersonFields(); // Asegura que los campos de persona se deshabiliten
+    }*/
 
-    this.updateEditModeFields();
+    //this.updateEditModeFields();
   }
 
 

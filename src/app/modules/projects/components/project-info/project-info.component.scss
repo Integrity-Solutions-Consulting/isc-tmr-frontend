@@ -126,6 +126,16 @@
   }
 }
 
+.client-row {
+  display: flex;
+  gap: 48px;
+  margin-top: 16px;
+}
+
+.client-block {
+  flex: 1;
+}
+
 .project-actions {
   display: flex;
   justify-content: space-between;
@@ -164,6 +174,11 @@
   }
 
   .timeline-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .client-row {
     flex-direction: column;
     gap: 16px;
   }
