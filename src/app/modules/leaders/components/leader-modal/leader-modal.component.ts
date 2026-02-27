@@ -490,6 +490,8 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     this.updateEditModeFields();
   }
 
+
+
   private loadPersons(): void {
     this.isLoadingPersons = true;
 

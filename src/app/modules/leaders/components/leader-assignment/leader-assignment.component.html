@@ -186,7 +186,8 @@
   <button mat-button (click)="onClose()" class="cancel-btn">
     Cancelar
   </button>
-  <button mat-raised-button style="background-color: var(--itg-primary); color: var(--itg-bg);" (click)="onSubmit()" [disabled]="saving || assignedProjects.length === 0" class="save-btn">
+  <button mat-raised-button style="background-color: var(--itg-primary); color: var(--itg-bg);"
+          (click)="onSubmit()" [disabled]="saving || assignedProjects.length === 0" class="save-btn">
     {{saving ? 'Guardando...' : 'Guardar Cambios'}}
   </button>
 </mat-dialog-actions>
