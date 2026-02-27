@@ -3,7 +3,7 @@
   <div *ngIf="error" class="error-message">
     <mat-icon>error_outline</mat-icon>
     {{error}}
-    <button mat-button color="warn" (click)="loadLeaderDetails(leader?.id || getRoute().snapshot.paramMap.get('id'))">
+    <button mat-button color="warn" (click)="loadLeaderDetails(leader?.id || 0)">
       Reintentar
     </button>
   </div>
@@ -17,12 +17,13 @@
 
       <div class="leader-main-info">
         <mat-card-title class="leader-name">
-          {{leader.person?.firstName}} {{leader.person?.lastName}}
+          {{leader.firstName}} {{leader.lastName}}
         </mat-card-title>
 
         <mat-card-subtitle class="leader-position">
           {{getLeadershipType(leader.leadershipType)}}
-          <span *ngIf="leader.projectID"> • Proyecto ID: {{leader.projectID}}</span>
+          <!-- <span *ngIf="leader.projectID"> • Proyecto ID: {{leader.projectID}}</span> -->
+           {{leader.leadershipType}}
         </mat-card-subtitle>
 
         <div class="leader-status">
@@ -45,22 +46,22 @@
         <div class="leader-section personal-data">
           <h3 class="section-title">DATOS PERSONALES</h3>
 
-          <div class="info-item">
+          <!--<div class="info-item">
             <mat-icon class="info-icon">fingerprint</mat-icon>
             <div class="info-content">
               <span class="info-label">Identificación</span>
               <span class="info-value">
-                {{leader.person?.identificationNumber}}
-                ({{getIdentificationType(leader.person?.identificationTypeId)}})
+                {{leader.id}}
+                ({{getIdentificationType(leader.id)}})
               </span>
             </div>
-          </div>
+          </div>-->
 
-          <div class="info-item">
+          <!-- <div class="info-item">
             <mat-icon class="info-icon">cake</mat-icon>
             <div class="info-content">
               <span class="info-label">Fecha Nacimiento</span>
-              <span class="info-value">{{formatDate(leader.person?.birthDate)}}</span>
+              <span class="info-value">{{formatDate(leader.birthDate)}}</span>
             </div>
           </div>
 
@@ -71,10 +72,10 @@
               <span class="info-value">{{getGender(leader.person?.genderId)}}</span>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Columna derecha - Datos de liderazgo -->
-        <div class="leader-section leadership-data">
+        <!-- <div class="leader-section leadership-data">
           <h3 class="section-title">INFORMACIÓN DE LIDERAZGO</h3>
 
           <div class="info-item">
@@ -93,13 +94,13 @@
               <span class="info-label">Responsabilidades</span>
               <span class="info-value">{{leader.responsibilities || 'No especificado'}}</span>
             </div>
-          </div>
+          </div>-->
 
           <div class="info-item">
             <mat-icon class="info-icon">mail</mat-icon>
             <div class="info-content">
               <span class="info-label">Email</span>
-              <span class="info-value">{{leader.person?.email || 'No especificado'}}</span>
+              <span class="info-value">{{leader.email || 'No especificado'}}</span>
             </div>
           </div>
 
@@ -107,7 +108,7 @@
             <mat-icon class="info-icon">phone</mat-icon>
             <div class="info-content">
               <span class="info-label">Teléfono</span>
-              <span class="info-value">{{leader.person?.phone || 'No especificado'}}</span>
+              <span class="info-value">{{leader.phone || 'No especificado'}}</span>
             </div>
           </div>
         </div>

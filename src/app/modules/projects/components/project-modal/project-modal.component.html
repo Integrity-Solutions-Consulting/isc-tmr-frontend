@@ -28,6 +28,36 @@
     </div>
 
     <div class="form-row">
+      <!-- Tipo de proyecto -->
+      <div class="field-with-help">
+        <mat-form-field class="form-field-half" appearance="outline">
+          <mat-label>Tipo de proyecto</mat-label>
+          <mat-select formControlName="projectTypeId" required>
+            <mat-option *ngFor="let type of formattedProjectTypes" [value]="type.id">
+              {{ type.displayName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="help-icon" [matTooltip]="'Selecciona el tipo de proyecto (Facturable, No Facturable, Interno, etc.)'" matTooltipPosition="right">
+          ?
+        </div>
+      </div>
+      <!-- Lider Asignado -->
+      <div class="field-with-help">
+        <mat-form-field class="form-field-half" appearance="outline">
+          <mat-select formControlName="leaderId" placeholder="Líder Asignado" required>
+            <mat-option *ngFor="let leader of formattedLeaders" [value]="leader.id">
+              {{ leader.fullName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="help-icon" [matTooltip]="'Selecciona el líder asignado al proyecto'" matTooltipPosition="right">
+          ?
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
       <!-- Descripción -->
       <div class="field-with-help">
         <mat-form-field appearance="outline" class="full-width">
@@ -84,23 +114,6 @@
           </mat-select>
         </mat-form-field>
         <div class="help-icon" [matTooltip]="'Selecciona el estado actual del proyecto (Planificación, En Progreso, Completado, etc.)'" matTooltipPosition="right">
-          ?
-        </div>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <!-- Tipo de proyecto -->
-      <div class="field-with-help">
-        <mat-form-field class="form-field-half" appearance="outline">
-          <mat-label>Tipo de proyecto</mat-label>
-          <mat-select formControlName="projectTypeId" required>
-            <mat-option *ngFor="let type of formattedProjectTypes" [value]="type.id">
-              {{ type.displayName }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <div class="help-icon" [matTooltip]="'Selecciona el tipo de proyecto (Facturable, No Facturable, Interno, etc.)'" matTooltipPosition="right">
           ?
         </div>
       </div>

@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { LeadersService } from '../../services/leaders.service';
-import { LeaderWithPerson, Person, PersonApiResponse } from '../../interfaces/leader.interface';
+import { CreateLeaderRequest, Person } from '../../interfaces/leader.interface';
 import { PersonService } from '../../services/person.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -47,7 +47,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './leader-modal.component.scss'
 })
 export class LeaderModalComponent implements OnInit, OnDestroy {
-
   leaderForm!: FormGroup;
   personsList: Person[] = [];
   projectsList: any[] = [];
@@ -66,16 +65,13 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
   protected _onDestroy = new Subject<void>();
 
-  personTypes = [
-    { value: 'NATURAL', viewValue: 'Natural' },
-    { value: 'JURIDICA', viewValue: 'Jurídica' }
-  ];
 
-  identificationTypes: { id: number, name: string }[] = [];
+
+  /*identificationTypes: { id: number, name: string }[] = [];
   genders: { id: number, name: string }[] = [];
   nationalities: { id: number, name: string }[] = [];
   positions: { id: number, name: string }[] = [];
-  departments: { id: number, name: string }[] = [];
+  departments: { id: number, name: string }[] = [];*/
 
   leaderTypes = [
     { id: true, name: 'Integrity' },
@@ -131,102 +127,48 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   }
 
   private initializeForm(leaderData: any): void {
-
-    const birthDateValue = leaderData.person?.birthDate
-      ? formatDate(leaderData.person.birthDate, 'yyyy-MM-dd', 'en-US')
-      : '';
-
-    const startDateValue = leaderData.startDate
-      ? formatDate(leaderData.startDate, 'yyyy-MM-dd', 'en-US')
-      : '';
-
-    const endDateValue = leaderData.endDate
-      ? formatDate(leaderData.endDate, 'yyyy-MM-dd', 'en-US')
-      : '';
-
     this.leaderForm = this.fb.group({
-      // Controles principales
-      personOption: ['new'],
       existingPerson: [null],
-      projectID: [leaderData?.projectID || '', Validators.required], // Agregado Validators.required
-      leadershipType: [leaderData?.leadershipType || true, Validators.required], // Agregado Validators.required
-      responsibilities: [leaderData?.responsibilities || ''],
-      startDate: [new Date()],
-      endDate: [new Date()],
 
-      // Grupo anidado para 'person'
-      person: this.fb.group({
-        personType: [leaderData.person?.personType || 'NATURAL', Validators.required],
-        identificationTypeId: [leaderData.person?.identificationTypeId || 1, Validators.required],
-        identificationNumber: [leaderData.person?.identificationNumber || '', [Validators.required, this.identificationNumberValidator.bind(this)]],
-        firstName: [leaderData.person?.firstName || '', Validators.required],
-        lastName: [leaderData.person?.lastName || '', Validators.required],
-        birthDate: [birthDateValue],
-        email: [leaderData.person?.email || '', [Validators.required, Validators.email]],
-        phone: [leaderData.person?.phone || '', [Validators.pattern(/^[0-9]+$/)]],
-        address: [leaderData.person?.address || ''],
-        genderId: [leaderData.person?.genderId || null],
-        nationalityId: [leaderData.person?.nationalityId || null]
-      })
+      LeadershipType: [leaderData?.LeadershipType ?? true, Validators.required], // Agregado Validators.required
+      FirstName: [leaderData.FirstName || '', Validators.required],
+      LastName: [leaderData.LastName || '', Validators.required],
+      Email: [leaderData.Email || '', [Validators.required, Validators.email]],
+      Phone: [leaderData.Phone || '', [Validators.pattern(/^[0-9]{10}$/)]],
+
     });
 
-    this.leaderForm.get('person.personType')?.valueChanges.subscribe(personType => {
-      this.updateIdentificationValidators(personType);
-    });
+    this.leaderForm.get('LeadershipType')?.valueChanges.subscribe(value => {
+      const isIntegrity = value === true;
+      this.useExistingPerson = isIntegrity;
 
-    this.leaderForm.get('person.identificationTypeId')?.valueChanges.subscribe(() => {
-      const personType = this.leaderForm.get('person.personType')?.value;
-      this.updateIdentificationValidators(personType);
-    });
+      const existingPersonControl = this.leaderForm.get('existingPerson');
 
-    this.leaderForm.get('leadershipType')?.valueChanges.subscribe(value => {
-      this.isIdentificationTypeDisabled = value === false;
-      const identificationTypeControl = this.leaderForm.get('person.identificationTypeId');
-      if (value === false) { // Externo
-        identificationTypeControl?.disable();
-      } else { // Integrity
-        identificationTypeControl?.enable();
+       // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
+      existingPersonControl?.setValue(null);
+
+      this.leaderForm.patchValue({
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        Phone: ''
+      });
+
+      if (isIntegrity) {
+        existingPersonControl?.setValidators(Validators.required);
+
+      } else {
+        existingPersonControl?.clearValidators();
+        existingPersonControl?.setValue(null);
+
       }
-      this.updateIdentificationRequiredStatus(value);
-      // También actualiza los validadores del número de identificación
-      const personType = this.leaderForm.get('person.personType')?.value;
-      this.updateIdentificationValidators(personType);
-
-      this.updateEditModeFields(); // Añadir esta línea
+      existingPersonControl?.updateValueAndValidity();
     });
-
-    this.updateIdentificationRequiredStatus(this.leaderForm.get('leadershipType')?.value);
-
-    this.leaderForm.get('personOption')?.valueChanges.subscribe(value => {
-      this.useExistingPerson = value === 'existing';
-      this.togglePersonFields();
-    });
-
-    // Añadir listener para el cambio en existingPerson
-    this.leaderForm.get('existingPerson')?.valueChanges.subscribe(value => {
-      if (this.useExistingPerson) { // Solo si estamos en modo "existing"
-        if (value) {
-          this.leaderForm.get('existingPerson')?.setErrors(null);
-        } else {
-          this.leaderForm.get('existingPerson')?.setErrors({ 'required': true });
-        }
-        this.leaderForm.updateValueAndValidity(); // Forzar la revalidación del formulario completo
-      }
-    });
-
-    const initialLeadershipType = this.leaderForm.get('leadershipType')?.value;
-    this.isIdentificationTypeDisabled = initialLeadershipType === false;
-
-    const initialPersonType = this.leaderForm.get('person.personType')?.value;
-    this.updateIdentificationValidators(initialPersonType);
-
-    // Inicializa los campos de persona según el modo
-    this.togglePersonFields();
   }
 
   private updateEditModeFields(): void {
     if (this.isEditMode) {
-      const isIntegrityLeader = this.leaderForm.get('leadershipType')?.value === true;
+      const isIntegrityLeader = this.leaderForm.get('LeadershipType')?.value === true;
       const personGroup = this.leaderForm.get('person') as FormGroup;
 
       if (isIntegrityLeader) {
@@ -245,11 +187,11 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   loadCatalogs(): void {
     this.leaderService.getAllCatalogs().subscribe({
       next: (data) => {
-        this.identificationTypes = data.identificationTypes;
+        /*this.identificationTypes = data.identificationTypes;
         this.genders = data.genders;
         this.nationalities = data.nationalities;
         this.positions = data.positions;
-        this.departments = data.departments;
+        this.departments = data.departments;*/
         this.loading = false;
       },
       error: (err) => {
@@ -262,7 +204,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
   private identificationNumberValidator(control: FormControl): { [key: string]: any } | null {
 
-    const leadershipType = this.leaderForm?.get('leadershipType')?.value;
+    const leadershipType = this.leaderForm?.get('LeadershipType')?.value;
 
     if (leadershipType === false) {
       return null;
@@ -437,7 +379,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response) {
           this.patchFormValues(response);
-          this.originalStatus = response.status;
+          //this.originalStatus = response.status;
           this.updateEditModeFields(); // Añadir esta línea
         }
       },
@@ -486,14 +428,17 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
   // Se añade esta función para manejar la selección de persona existente
   onPersonSelected(event: any): void {
-    // No necesitas almacenar selectedPerson si solo es para la validación
-    // this.selectedPerson = event.value;
-    if (event.value) {
-      this.leaderForm.get('existingPerson')?.setErrors(null);
-    } else {
-      this.leaderForm.get('existingPerson')?.setErrors({ 'required': true });
-    }
-    this.leaderForm.updateValueAndValidity();
+    const personId = event.value;
+    const selectedPerson = this.personsList.find(p => p.id === personId);
+
+    if (!selectedPerson) return;
+
+    this.leaderForm.patchValue({
+      FirstName: selectedPerson.firstName,
+      LastName: selectedPerson.lastName,
+      Email: selectedPerson.email,
+      Phone: selectedPerson.phone
+    });
   }
 
 
@@ -544,6 +489,8 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
     this.updateEditModeFields();
   }
+
+
 
   private loadPersons(): void {
     this.isLoadingPersons = true;
@@ -606,20 +553,6 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
 
-    const isIntegrityLeader = this.leaderForm.get('leadershipType')?.value;
-
-    if (!isIntegrityLeader) {
-      // Para líderes externos, limpiar errores de validación en los campos deshabilitados
-      const personGroup = this.leaderForm.get('person') as FormGroup;
-      personGroup.get('personType')?.setErrors(null);
-      personGroup.get('identificationTypeId')?.setErrors(null);
-      personGroup.get('identificationNumber')?.setErrors(null);
-    }
-
-    if (this.leaderForm.get('leadershipType')?.value === false) {
-      this.leaderForm.get('person.identificationNumber')?.setErrors(null);
-    }
-
     this.markFormGroupTouched(this.leaderForm);
 
     if (this.leaderForm.invalid) {
@@ -630,36 +563,20 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
     this.leaderService.showLoading();
 
     const formValue = this.leaderForm?.getRawValue(); // Usa getRawValue() para incluir campos deshabilitados
+    console.log("FORM VALUE:", formValue);
 
-    formValue.person.birthDate = formValue.person?.birthDate
-      ? formatDate(formValue.person.birthDate, 'yyyy-MM-dd', 'en-US')
-      : null;
-
-    if (formValue.startDate) {
-      formValue.startDate = formatDate(formValue.startDate, 'yyyy-MM-dd', 'en-US');
-    } else {
-      formValue.startDate = null;
+    const request: CreateLeaderRequest  = {
+      firstName: formValue.FirstName,
+      lastName: formValue.LastName,
+      phone: formValue.Phone ,
+      email: formValue.Email,
+      leadershipType: formValue.LeadershipType
     }
 
-    if (formValue.endDate) {
-      formValue.endDate = formatDate(formValue.endDate, 'yyyy-MM-dd', 'en-US');
-    } else {
-      formValue.endDate = null;
-    }
+    console.log("REQUEST ENVIADO:", request);
 
     if (this.isEditMode) {
-
-      const leaderData = {
-        projectID: formValue.projectID,
-        leadershipType: formValue.leadershipType,
-        startDate: formValue.startDate,
-        endDate: formValue.endDate,
-        responsibilities: formValue.responsibilities, // Corregido: responsibilities
-        status: this.originalStatus,
-        person: formValue.person
-      };
-
-      this.leaderService.updateLeaderWithPerson(this.leaderId, leaderData).subscribe({
+      this.leaderService.updateLeader(this.leaderId, request).subscribe({
         next: () => {
           this.dialogRef.close({ success: true });
           this.leaderService.hideLoading();
@@ -669,30 +586,17 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
           this.leaderService.hideLoading();
         }
       });
-    } else if (this.useExistingPerson) {
-      // Lógica para persona existente
-      const leaderData = {
-        personID: formValue.existingPerson,
-        projectID: formValue.projectID,
-        leadershipType: formValue.leadershipType,
-        startDate: formValue.startDate,
-        endDate: formValue.endDate,
-        responsibilities: formValue.responsibilities
-      };
-      this.dialogRef.close({ type: 'withPersonID', data: leaderData });
-      this.leaderService.hideLoading();
     } else {
-      // Lógica para nueva persona
-      const leaderData = {
-        projectID: formValue.projectID,
-        leadershipType: formValue.leadershipType,
-        startDate: formValue.startDate,
-        endDate: formValue.endDate,
-        responsibilities: formValue.responsibilities,
-        person: formValue.person // Ahora viene en la estructura correcta
-      };
-      this.dialogRef.close({ type: 'withPerson', data: leaderData });
-      this.leaderService.hideLoading();
+      this.leaderService.createLeader(request).subscribe({
+        next: () => {
+          this.dialogRef.close({ success: true });
+          this.leaderService.hideLoading();
+        },
+        error: (err) => {
+          console.error('Error creating leader:', err);
+          this.leaderService.hideLoading();
+        }
+      });
     }
   }
 

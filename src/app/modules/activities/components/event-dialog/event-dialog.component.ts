@@ -90,7 +90,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventDialogComponent implements OnInit {
-  projects: ProjectWithID[] = [];
+  projects: Project[] = [];
   activityTypes: ActivityType[] = [];
   availableColors: { name: string; value: string }[] = [];
 
@@ -453,7 +453,7 @@ export class EventDialogComponent implements OnInit {
     if (isAdmin) {
       this.projectService
         .getAllProjects()
-        .subscribe((projects: ProjectWithID[]) => {
+        .subscribe((projects: Project[]) => {
           this.projects = projects;
           this.setDefaultProject(); // ← Añade esta línea
         });
@@ -475,7 +475,7 @@ export class EventDialogComponent implements OnInit {
   onProjectChange(projectId: number | null): void {
     if (projectId) {
       const selectedProject = this.projects.find(
-        (p: ProjectWithID) => p.id === projectId,
+        (p: Project) => p.id === projectId,
       );
       if (selectedProject && selectedProject.code) {
         this.event.requirementCode = selectedProject.code;

@@ -1,5 +1,108 @@
+import { GetPersonResponse } from "../../persons/interfaces/person.interface";
+import { Project } from "../../projects/interfaces/project.interface";
 
-export interface LeaderWithPerson {
+//Leader Utilizado para mostrar la información de los líderes en la vista de líderes
+//Estoy convencido de que mejor es LeaderData, pero no me confim¿rma la gente
+export interface Leader {
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+  startDate: string;
+  endDate?: string;
+  status: boolean;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalItems: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface CreateLeaderRequest {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+}
+
+export interface CreateLeaderResponse {
+  id  : number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+}
+
+export interface UpdateLeaderRequest {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+}
+
+export interface UpdateLeaderResponse {
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+}
+
+export interface GetLeaderDetailsResponse {
+  id: number;
+  firstName   : string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+  status: boolean;
+}
+
+export interface ActivateInactivateLeaderResponse {
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  leadershipType: boolean;
+}
+
+export interface AssignLeaderToProjectRequest {
+  leaderID: number;
+  projectID: number;
+}
+
+export interface AssignLeaderToProjectResponse {
+  leaderID: number;
+  projectID: number;
+  message: string;
+}
+
+export interface GetAllLeaderProjectByPersonIdResponse {
+  person?: GetPersonResponse;
+  leaderMiddle: LeaderData[];
+}
+
+export interface LeaderData {
+  id: number;
+  responsibility: string;
+  startDate: string;
+  endDate?: string;
+  leadershipType: boolean;
+  status: boolean;
+  projectos?: Project;
+}
+
+/*export interface LeaderWithPerson {
   projectID: number;
   leadershipType: boolean;
   startDate: Date | null;
@@ -43,9 +146,9 @@ export interface LeaderWithIDandPerson{
     phone: string;
     address: string;
   }
-}
+}*/
 
-export interface LeaderWithPersonID {
+/*export interface LeaderWithPersonID {
   personID: number;
   projectID: number;
   leadershipType: boolean;
@@ -54,17 +157,9 @@ export interface LeaderWithPersonID {
   responsibilities: string;
   status: boolean;
 
-}
+}*/
 
-export interface Leader {
-  person: Person;
-  projectID: number;
-  leadershipType: boolean;
-  startDate: Date;
-  endDate: Date;
-  status: boolean;
-  responsibilities: string;
-}
+
 
 export interface Person {
   id: number;
@@ -81,13 +176,13 @@ export interface Person {
   address: string;
 }
 
-export interface ApiResponse {
+/*export interface ApiResponse {
   items: LeaderWithIDandPerson[];
   totalItems: number;
   pageNumber: number;
   pageSize: number;
   totalPages: number;
-}
+}*/
 
 export interface PersonApiResponse {
   items: Person[];
@@ -97,10 +192,11 @@ export interface PersonApiResponse {
   totalPages: number;
 }
 
-export interface LeaderAssignmentPayload {
+/*export interface LeaderAssignmentPayload {
   personID: number;
   personProjectMiddle: PersonProjectMiddle[];
-}
+}*/
+
 
 export interface PersonProjectMiddle {
   projectID: number;
@@ -142,7 +238,7 @@ export interface LeaderGroup {
   leaderMiddle: LeaderAssignment[];
 }
 
-export interface Project {
+/*export interface Project {
   id: number;
   clientID: number;
   projectStatusID: number;
@@ -157,7 +253,7 @@ export interface Project {
   budget: number;
   hours: number;
   status: boolean;
-}
+}*/
 
 export interface UniqueLeader {
   id: number;

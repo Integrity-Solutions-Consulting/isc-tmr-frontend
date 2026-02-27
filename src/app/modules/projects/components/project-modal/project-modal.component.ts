@@ -19,6 +19,7 @@ import { SuccessResponse } from '../../../../shared/interfaces/response.interfac
 import { LoadingComponent } from '../../../auth/components/login-loading/login-loading.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LeadersService } from '../../../leaders/services/leaders.service';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -86,6 +87,14 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   projectStatuses: any[] = [];
   isLoadingStatuses = false;
 
+  leaders: any[] = [];
+  formattedLeaders: any[] = [];
+  isLoadingLeaders = false;
+
+  pageSize: number = 10;
+  currentPage: number = 0;
+  currentSearch: string = '';
+
   showClientWaitingFields: boolean = false;
 
   public clientFilterCtrl: FormControl<string | null> = new FormControl<string>('');
@@ -96,6 +105,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private projectService: ProjectService,
     private clientService: ClientService,
+    private leaderService: LeadersService,
     private dialogRef: MatDialogRef<ProjectModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { project?: ProjectWithID }
   ) {
@@ -106,6 +116,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     this.loadClients();
     this.loadProjectTypes();
     this.loadProjectStatuses();
+    this.loadLeaders();
 
     if (this.data?.project) {
       this.isEditMode = true;
@@ -154,6 +165,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       clientId: ['', Validators.required],
       projectStatusId: ['', Validators.required],
       projectTypeId: [null, Validators.required],
+      leaderId: [null, Validators.required], // Nuevo campo para el líder asignado
       code: ['', [Validators.required, Validators.maxLength(50)]],
       name: ['', [Validators.required, Validators.maxLength(150)]],
       description: [''],
@@ -260,6 +272,28 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadLeaders(): void {
+    this.isLoadingLeaders = true;
+    this.leaderService.getAllLeaders(
+      this.currentPage + 1,
+      this.pageSize,
+      this.currentSearch
+    ).subscribe({
+      next: (resp) => {
+        //this.leaders = resp.items ?? resp; // Manejar ambos casos: con o sin wrapper "items"
+        this.formattedLeaders = this.leaders.map(leader => ({
+          id: leader.id,
+          fullName: `${leader.person.firstName} ${leader.person.lastName}`
+        }));
+        this.isLoadingLeaders = false;
+      },
+      error: (err) => {
+        console.error('Error loading leaders:', err);
+        this.isLoadingLeaders = false;
+      }
+    });
+  }
+
   private loadClients(): void {
     this.isLoadingClients = true;
     this.clientService.getClients(1, 1000, '').subscribe({
@@ -352,10 +386,11 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     const formValue = this.projectForm.getRawValue();
     const selectedType = this.projectTypes.find(t => t.id === formValue.projectTypeId);
 
-    const projectData: Project = {
+    /*const projectData: Project = {
       clientID: formValue.clientId,
       projectStatusID: Number(formValue.projectStatusId),
       projectTypeID: formValue.projectTypeId,
+      leaderId: formValue.leaderId, // Asignar el líder seleccionado
       code: formValue.code,
       name: formValue.name,
       description: formValue.description || '',
@@ -369,15 +404,15 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       waitingStartDate: formValue.waitStartDate ? new Date(formValue.waitStartDate).toISOString() : null,
       waitingEndDate: formValue.waitEndDate ? new Date(formValue.waitEndDate).toISOString() : null,
       observation: formValue.observations || ''
-    };
+    };*/
 
-    console.log('Datos del proyecto a enviar:', projectData);
+    //console.log('Datos del proyecto a enviar:', projectData);
 
-    const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
+    /*const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
       ? this.projectService.updateProject(this.data.project.id, projectData)
-      : this.projectService.createProject(projectData);
+      : this.projectService.createProject(projectData);*/
 
-    request$.subscribe({
+    /*request$.subscribe({
       next: (response: any) => {
         this.projectService.hideLoading();
         this.isSubmitting = false;
@@ -388,7 +423,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         console.error('Error al guardar el proyecto:', err);
       }
-    });
+    });*/
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {

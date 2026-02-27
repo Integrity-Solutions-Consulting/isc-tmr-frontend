@@ -32,6 +32,7 @@ export class ResourceServiceService {
 
   constructor(private http: HttpClient) {}
 
+/*Solicitud Requerimiento*/
   getEmployeeCategory(): Observable<EmployeeCategoryResponseDTO[]> {
     return this.http.get<EmployeeCategoryResponseDTO[]>(
       `${this.urlBase}/api/Catalog/employee-category`,
@@ -169,4 +170,10 @@ export class ResourceServiceService {
       request,
     );
   }
+
+  /*Ambos requerimientos*/
+
+
+  /*Historial Requerimiento*/
+
 }
