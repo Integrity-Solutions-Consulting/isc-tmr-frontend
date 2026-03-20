@@ -57,17 +57,19 @@ export const MY_DATE_FORMATS = {
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    { provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'DD/MM/YYYY',
-      },
-      display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY'
-      },
-    }}
+    {
+      provide: MAT_DATE_FORMATS, useValue: {
+        parse: {
+          dateInput: 'DD/MM/YYYY',
+        },
+        display: {
+          dateInput: 'DD/MM/YYYY',
+          monthYearLabel: 'MMMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY'
+        },
+      }
+    }
   ],
   selector: 'app-project-modal',
   templateUrl: './project-modal.component.html',
@@ -279,6 +281,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       this.pageSize,
       this.currentSearch
     ).subscribe({
+
       next: (resp) => {
         //this.leaders = resp.items ?? resp; // Manejar ambos casos: con o sin wrapper "items"
         this.formattedLeaders = this.leaders.map(leader => ({

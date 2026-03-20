@@ -126,6 +126,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   }
 
   private initializeForm(leaderData: any): void {
+
     this.leaderForm = this.fb.group({
       existingPerson: [null],
 
@@ -142,6 +143,7 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
       this.useExistingPerson = isIntegrity;
 
       const existingPersonControl = this.leaderForm.get('existingPerson');
+
 
        // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
       existingPersonControl?.setValue(null);
