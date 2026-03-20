@@ -143,7 +143,7 @@ export class ProjectInfoComponent implements OnInit {
         },
       });
   }
-
+ //a
   formatDate(date: string): string {
     return this.datePipe.transform(date, 'dd/MM/yyyy') || '';
   }
