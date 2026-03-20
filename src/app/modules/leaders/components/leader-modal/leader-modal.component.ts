@@ -126,12 +126,11 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   }
 
   private initializeForm(leaderData: any): void {
-    const initialLeadershipType = leaderData?.LeadershipType ?? true;
 
     this.leaderForm = this.fb.group({
-      existingPerson: [null, (!this.isEditMode && initialLeadershipType) ? Validators.required : null],
+      existingPerson: [null],
 
-      LeadershipType: [initialLeadershipType, Validators.required], // Agregado Validators.required
+      LeadershipType: [leaderData?.LeadershipType ?? true, Validators.required], // Agregado Validators.required
       FirstName: [leaderData.FirstName || '', Validators.required],
       LastName: [leaderData.LastName || '', Validators.required],
       Email: [leaderData.Email || '', [Validators.required, Validators.email]],
@@ -145,25 +144,24 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
       const existingPersonControl = this.leaderForm.get('existingPerson');
 
-      if (!this.isEditMode) {
-        // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
-        existingPersonControl?.setValue(null);
 
-        this.leaderForm.patchValue({
-          FirstName: '',
-          LastName: '',
-          Email: '',
-          Phone: ''
-        });
+       // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
+      existingPersonControl?.setValue(null);
 
-        if (isIntegrity) {
-          existingPersonControl?.setValidators(Validators.required);
-        } else {
-          existingPersonControl?.clearValidators();
-          existingPersonControl?.setValue(null);
-        }
+      this.leaderForm.patchValue({
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        Phone: ''
+      });
+
+      if (isIntegrity) {
+        existingPersonControl?.setValidators(Validators.required);
+
       } else {
         existingPersonControl?.clearValidators();
+        existingPersonControl?.setValue(null);
+
       }
       existingPersonControl?.updateValueAndValidity();
     });
