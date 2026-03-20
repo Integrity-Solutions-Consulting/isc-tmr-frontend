@@ -12,7 +12,7 @@
           }">
             {{project.status ? 'ACTIVO' : 'INACTIVO'}}
             <!-- O alternativamente: -->
-            <!-- {{project.projectStatusID === 3 ? 'ACTIVO' : 'INACTIVO'}} -->
+            {{project.projectStatusID === 3 ? 'ACTIVO' : 'INACTIVO'}}
           </mat-chip>
         </mat-card-subtitle>
       </div>
@@ -44,12 +44,26 @@
       </div>
 
       <div class="client-section">
-        <h3 class="section-title">CLIENTE</h3>
-        <div class="client-info">
-          <mat-icon class="client-icon">business</mat-icon>
-          <span class="client-name">{{client?.tradeName}}</span>
+        <div class=" client-row">
+          <div class="client-block">
+            <h3 class="section-title">CLIENTE</h3>
+            <div class="client-info">
+              <mat-icon class="client-icon">business</mat-icon>
+              <span class="client-name">{{client?.tradeName}}</span>
+            </div>
+          </div>
+
+            <div class="client-block">
+              <h3 class="section-title">Lider</h3>
+              <div class="client-info">
+                <mat-icon class="client-icon">groups</mat-icon>
+                <span class="client-name">{{leader?.firstName}} {{leader?.lastName}}</span>
+              </div>
+            </div>
         </div>
       </div>
+
+
 
       <mat-divider style="margin-top: 20px; margin-bottom: 20px;"></mat-divider>
 

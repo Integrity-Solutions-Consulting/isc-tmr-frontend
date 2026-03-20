@@ -1,7 +1,24 @@
-import { Component , signal, ChangeDetectorRef, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  signal,
+  ChangeDetectorRef,
+  ViewChild,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
-import { CalendarOptions, DateSelectArg, EventClickArg, EventApi, EventContentArg } from '@fullcalendar/core';
+import {
+  FullCalendarModule,
+  FullCalendarComponent,
+} from '@fullcalendar/angular';
+import {
+  CalendarOptions,
+  DateSelectArg,
+  EventClickArg,
+  EventApi,
+  EventContentArg,
+} from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -12,15 +29,39 @@ import { EventDialogComponent } from '../event-dialog/event-dialog.component';
 import { ActivityService } from '../../services/activity.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
-import { Project, ProjectWithID } from '../../../projects/interfaces/project.interface';
+import {
+  Project,
+  ProjectWithID,
+} from '../../../projects/interfaces/project.interface';
 import { ProjectService } from '../../../projects/services/project.service';
-import { Activity, ActivityType, Holiday } from '../../interfaces/activity.interface';
-import { Observable, take, map, catchError, throwError, of, Subscription } from 'rxjs';
+import {
+  Activity,
+  ActivityType,
+  Holiday,
+} from '../../interfaces/activity.interface';
+import {
+  Observable,
+  take,
+  map,
+  catchError,
+  throwError,
+  of,
+  Subscription,
+} from 'rxjs';
 import { ApiResponse } from '../../interfaces/activity.interface';
 import { ReportDialogComponent } from '../report-dialog/report-dialog.component';
 import { AuthService } from '../../../auth/services/auth.service';
-import { provideNativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter, MomentDateModule } from '@angular/material-moment-adapter';
+import {
+  provideNativeDateAdapter,
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from '@angular/material/core';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+  MomentDateModule,
+} from '@angular/material-moment-adapter';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -33,7 +74,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
     MatButtonModule,
     MatSnackBarModule,
     RouterModule,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
   ],
   providers: [
     ActivityService,
@@ -43,20 +84,23 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    { provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'DD/MM/YYYY',
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: 'DD/MM/YYYY',
+        },
+        display: {
+          dateInput: 'DD/MM/YYYY',
+          monthYearLabel: 'MMMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
       },
-      display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY'
-      },
-    }}
+    },
   ],
   templateUrl: './daily-activities.component.html',
-  styleUrl: './daily-activities.component.scss'
+  styleUrl: './daily-activities.component.scss',
 })
 export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   currentEmployeeId: number | null = null;
@@ -72,67 +116,72 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
 
   private isHoliday(date: Date): boolean {
     const dateString = date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-    return this.holidays.some(holiday => holiday.holidayDate === dateString);
+    return this.holidays.some((holiday) => holiday.holidayDate === dateString);
   }
 
   calendarOptions = signal<CalendarOptions>({
-    plugins: [
-      interactionPlugin,
-      dayGridPlugin,
-      timeGridPlugin,
-      listPlugin,
-    ],
+    plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     headerToolbar: {
       left: 'prev,next generateReport today',
       center: 'title',
-      right: 'monthlyHours addActivity'
+      right: 'monthlyHours addActivity',
     },
     locale: 'es',
     initialView: 'dayGridMonth', // alternatively, use the `events` setting to fetch from a feed
     weekends: true,
     editable: true,
+    eventStartEditable: true,
+    eventDurationEditable: false,
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
     dayMaxEventRows: 3,
     fixedWeekCount: false,
+    eventDragMinDistance: 5,
+    dragRevertDuration: 500,
+    dragScroll: true,
+    eventDragStart: this.handleEventDragStart.bind(this),
+    eventDragStop: this.handleEventDragStop.bind(this),
+    eventDrop: this.handleEventDrop.bind(this),
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
     customButtons: {
       addActivity: {
         text: 'Agregar Actividad',
-        click: this.handleAddActivity.bind(this)
+        click: this.handleAddActivity.bind(this),
       },
-      monthlyHours: { // Nuevo botón para horas mensuales (solo visual)
+      monthlyHours: {
+        // Nuevo botón para horas mensuales (solo visual)
         text: '', // Texto inicial
-        click: () => {} // Función vacía para deshabilitar el clic
+        click: () => {}, // Función vacía para deshabilitar el clic
       },
       generateReport: {
         text: 'Generar Reporte',
-        click: this.handleGenerateReport.bind(this)
-      }
+        click: this.handleGenerateReport.bind(this),
+      },
     },
     eventDidMount: (info) => {
       // Aplicar colores personalizados aquí
       const eventColor = info.event.backgroundColor;
       if (eventColor) {
-        // Verificar si es una actividad aprobada usando la propiedad extendedProps
         const isApproved = info.event.extendedProps['isApproved'];
 
         if (isApproved) {
-          // Para actividades aprobadas (magenta), aplicar un efecto diferente
           info.el.style.backgroundColor = this.lightenColor(eventColor, 0.3);
           info.el.style.borderColor = eventColor;
           info.el.style.color = this.getTextColor(eventColor);
           info.el.style.fontWeight = 'bold';
-          // Opcional: añadir un borde más grueso para actividades aprobadas
           info.el.style.borderWidth = '2px';
+          info.el.style.cursor = 'not-allowed'; // No permitir drag en aprobadas
+
+          // Deshabilitar drag para eventos aprobados
+          info.event.setProp('editable', false);
         } else {
-          // Comportamiento normal para actividades no aprobadas
           info.el.style.backgroundColor = this.lightenColor(eventColor, 0.3);
           info.el.style.borderColor = eventColor;
           info.el.style.color = this.getTextColor(eventColor);
+          info.el.style.cursor = 'move'; // Cambiar cursor para indicar que es draggable
         }
       }
     },
@@ -177,7 +226,31 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     // Añade esta propiedad para validar selecciones
     selectAllow: (selectInfo) => {
       return true;
-    }
+    },
+    eventAllow: (dropInfo, draggedEvent) => {
+      if (!draggedEvent) {
+        return false;
+      }
+      // No permitir mover a días feriados
+      if (this.isHoliday(dropInfo.start)) {
+        return false;
+      }
+
+      // No permitir mover a fines de semana (opcional)
+      const isWeekend =
+        dropInfo.start.getDay() === 0 || dropInfo.start.getDay() === 6;
+      if (isWeekend) {
+        return false;
+      }
+
+      // No permitir mover actividades aprobadas
+      const isApproved = draggedEvent.extendedProps['isApproved'];
+      if (isApproved) {
+        return false;
+      }
+
+      return true;
+    },
   });
   currentEvents = signal<EventApi[]>([]);
 
@@ -197,19 +270,21 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.loadActivityTypes();
     this.loadHolidays();
-    this.loadProjects().pipe(take(1)).subscribe(() => {
-      this.loadInitialData();
+    /*this.loadProjects()
+      .pipe(take(1))
+      .subscribe(() => {
+        this.loadInitialData();
 
-      // Configurar el calendario después de la inicialización
-      setTimeout(() => {
-        this.calendar = this.calendarComponent.getApi();
+        // Configurar el calendario después de la inicialización
+        setTimeout(() => {
+          this.calendar = this.calendarComponent.getApi();
 
-        // Actualizar el botón cuando cambia el mes
-        this.calendar.on('datesSet', (dateInfo: any) => {
-          this.loadActivities(); // Recargar actividades para el nuevo mes
-        });
-      }, 500);
-    });
+          // Actualizar el botón cuando cambia el mes
+          this.calendar.on('datesSet', (dateInfo: any) => {
+            this.loadActivities(); // Recargar actividades para el nuevo mes
+          });
+        }, 500);
+      });*/
   }
 
   ngOnDestroy(): void {
@@ -225,7 +300,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     this.snackBar.open(
       `Total de horas registradas en ${monthName} de ${year}: ${this.monthlyHours()}`,
       'Cerrar',
-      { duration: 4000, panelClass: ['hours-snackbar'] }
+      { duration: 4000, panelClass: ['hours-snackbar'] },
     );
   }
 
@@ -260,7 +335,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
         console.error('Error al cargar tipos de actividad:', error);
         // Puedes mantener un fallback si es necesario
         this.activityTypes = this.getDefaultActivityTypes();
-      }
+      },
     });
     this.subscriptions.add(activityTypesSub);
   }
@@ -277,7 +352,9 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       hoursCounter.textContent = `Horas del mes: ${this.monthlyHours()}`;
 
       // Insertar antes del botón "Generar Reporte"
-      const generateReportBtn = toolbar.querySelector('.fc-generateReport-button');
+      const generateReportBtn = toolbar.querySelector(
+        '.fc-generateReport-button',
+      );
       if (generateReportBtn) {
         toolbar.insertBefore(hoursCounter, generateReportBtn);
       } else {
@@ -296,14 +373,54 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   private getDefaultActivityTypes(): ActivityType[] {
     // Fallback por si falla la carga desde el servidor
     return [
-      { id: 1, name: 'Desarrollo', description: 'Programación y desarrollo de software', colorCode: '#2E8B57' },
-      { id: 2, name: 'Reunión', description: 'Reuniones con clientes y equipo', colorCode: '#4169E1' },
-      { id: 3, name: 'Análisis', description: 'Análisis de requerimientos y diseño', colorCode: '#FF6347' },
-      { id: 4, name: 'Testing', description: 'Pruebas y control de calidad', colorCode: '#9370DB' },
-      { id: 5, name: 'Documentación', description: 'Creación de documentación', colorCode: '#DAA520' },
-      { id: 6, name: 'Soporte', description: 'Soporte técnico y mantenimiento', colorCode: '#DC143C' },
-      { id: 7, name: 'Capacitación', description: 'Entrenamiento y capacitación', colorCode: '#008B8B' },
-      { id: 1002, name: 'Auditoria', description: 'Auditoria Informática', colorCode: '#518B00' }
+      {
+        id: 1,
+        name: 'Desarrollo',
+        description: 'Programación y desarrollo de software',
+        colorCode: '#2E8B57',
+      },
+      {
+        id: 2,
+        name: 'Reunión',
+        description: 'Reuniones con clientes y equipo',
+        colorCode: '#4169E1',
+      },
+      {
+        id: 3,
+        name: 'Análisis',
+        description: 'Análisis de requerimientos y diseño',
+        colorCode: '#FF6347',
+      },
+      {
+        id: 4,
+        name: 'Testing',
+        description: 'Pruebas y control de calidad',
+        colorCode: '#9370DB',
+      },
+      {
+        id: 5,
+        name: 'Documentación',
+        description: 'Creación de documentación',
+        colorCode: '#DAA520',
+      },
+      {
+        id: 6,
+        name: 'Soporte',
+        description: 'Soporte técnico y mantenimiento',
+        colorCode: '#DC143C',
+      },
+      {
+        id: 7,
+        name: 'Capacitación',
+        description: 'Entrenamiento y capacitación',
+        colorCode: '#008B8B',
+      },
+      {
+        id: 1002,
+        name: 'Auditoria',
+        description: 'Auditoria Informática',
+        colorCode: '#518B00',
+      },
     ];
   }
 
@@ -354,8 +471,10 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error al cargar feriados:', error);
-        this.snackBar.open('Error al cargar días feriados', 'Cerrar', { duration: 3000 });
-      }
+        this.snackBar.open('Error al cargar días feriados', 'Cerrar', {
+          duration: 3000,
+        });
+      },
     });
     this.subscriptions.add(holidaysSub);
   }
@@ -364,7 +483,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     await this.loadActivities();
   }
 
-  loadProjects(): Observable<Project[]> {
+  /*loadProjects(): Observable<Project[]> {
     this.isLoadingProjects = true;
 
     if (!this.currentEmployeeId) {
@@ -373,18 +492,18 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     }
 
     return this.projectService.getFilteredProjects(this.currentEmployeeId).pipe(
-      map(response => {
+      map((response) => {
         this.projectList = response.items || [];
         this.isLoadingProjects = false;
         return this.projectList;
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error loading projects:', error);
         this.isLoadingProjects = false;
         return throwError(() => new Error('Error al cargar proyectos'));
-      })
+      }),
     );
-  }
+  }*/
 
   private async loadActivities(retryCount = 0): Promise<void> {
     try {
@@ -395,7 +514,9 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           setTimeout(() => this.loadActivities(retryCount + 1), 500);
           return;
         }
-        console.error('CalendarComponent no disponible después de múltiples intentos');
+        console.error(
+          'CalendarComponent no disponible después de múltiples intentos',
+        );
         return;
       }
 
@@ -403,19 +524,27 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
 
-      console.log('Cargando actividades para:', { month: currentMonth, year: currentYear });
+      //console.log('Cargando actividades para:', { month: currentMonth, year: currentYear });
 
-      const response: ApiResponse | undefined = await this.activityService.getActivities(currentMonth, currentYear).toPromise();
+      const response: ApiResponse | undefined = await this.activityService
+        .getActivities(currentMonth, currentYear)
+        .toPromise();
 
       if (response?.data) {
         // Filtrar actividades solo para el empleado logueado
-        const filteredActivities = response.data.filter((activity: Activity) => {
-          if (this.currentEmployeeId === null) {
-            console.warn('EmployeeID es null - mostrando todas las actividades');
-            return activity.status;
-          }
-          return activity.employeeID === this.currentEmployeeId && activity.status;
-        });
+        const filteredActivities = response.data.filter(
+          (activity: Activity) => {
+            if (this.currentEmployeeId === null) {
+              console.warn(
+                'EmployeeID es null - mostrando todas las actividades',
+              );
+              return activity.status;
+            }
+            return (
+              activity.employeeID === this.currentEmployeeId && activity.status
+            );
+          },
+        );
 
         this.mapActivitiesToEvents(filteredActivities);
         this.updateMonthlyHoursButton();
@@ -441,9 +570,13 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
 
       // Solo mostrar snackbar para errores específicos
       if (error === 401) {
-        this.snackBar.open('Sesión inválida. Por favor, inicie sesión nuevamente.', 'Cerrar');
+        this.snackBar.open(
+          'Sesión inválida. Por favor, inicie sesión nuevamente.',
+          'Cerrar',
+        );
         this.router.navigate(['/login']);
-      } else if (error !== 404) { // No mostrar error para "no encontrado"
+      } else if (error !== 404) {
+        // No mostrar error para "no encontrado"
         //this.snackBar.open('Error al cargar actividades.', 'Cerrar', { duration: 3000 });
       }
 
@@ -463,25 +596,23 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     const calendarApi = this.calendarComponent.getApi();
     calendarApi.removeAllEvents();
 
-    // Reiniciar contadores
     this.monthlyHours.set(0);
     this.dailyHoursMap.clear();
 
-    // Si no hay actividades, salir silenciosamente
     if (!activities || activities.length === 0) {
       calendarApi.render();
       this.updateMonthlyHoursButton();
       return;
     }
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       try {
         const startDate = this.parseActivityDate(activity.activityDate);
         const dateKey = startDate.toISOString().split('T')[0];
         const hoursQuantity = activity.hoursQuantity;
 
         if (this.isDateInCurrentMonth(startDate)) {
-          this.monthlyHours.update(hours => hours + hoursQuantity);
+          this.monthlyHours.update((hours) => hours + hoursQuantity);
         }
 
         const currentHours = this.dailyHoursMap.get(dateKey) || 0;
@@ -492,21 +623,25 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
 
         if (!allDayEvent) {
           const startDateTime = new Date(startDate);
-          endDate = new Date(startDateTime.getTime() + hoursQuantity * 60 * 60 * 1000);
+          endDate = new Date(
+            startDateTime.getTime() + hoursQuantity * 60 * 60 * 1000,
+          );
         }
 
-        const project = this.projectList.find(p => p.id === activity.projectID);
-        const activityType = this.activityTypes.find(t => t.id === activity.activityTypeID);
+        const project = this.projectList.find(
+          (p) => p.id === activity.projectID,
+        );
+        const activityType = this.activityTypes.find(
+          (t) => t.id === activity.activityTypeID,
+        );
+        const isApproved =
+          activity.approvedByID !== null && activity.approvedByID !== undefined;
 
-        // VERIFICAR SI LA ACTIVIDAD ESTÁ APROBADA (usando approvedByID)
-        const isApproved = activity.approvedByID !== null && activity.approvedByID !== undefined;
-
-        // Si está aprobada, usar color magenta, sino el color normal del tipo de actividad
         let color: string;
         if (isApproved) {
-          color = '#FF00FF'; // Magenta para actividades aprobadas
+          color = '#FF00FF';
         } else {
-          color = activityType?.colorCode || '#9E9E9E'; // Color normal si no está aprobada
+          color = activityType?.colorCode || '#9E9E9E';
         }
 
         let rawTitle: string;
@@ -516,12 +651,12 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           rawTitle = `${activity.requirementCode} - ${project?.name || 'Sin proyecto'}`;
         }
 
-        // Añadir indicador de aprobación en el título si está aprobada
         if (isApproved) {
-          rawTitle = `✓ ${rawTitle}`; // Agregar un checkmark al inicio
+          rawTitle = `✓ ${rawTitle}`;
         }
 
-        const truncatedTitle = rawTitle.length > 20 ? rawTitle.substring(0, 17) + '...' : rawTitle;
+        const truncatedTitle =
+          rawTitle.length > 20 ? rawTitle.substring(0, 17) + '...' : rawTitle;
 
         const eventData = {
           id: activity.id.toString(),
@@ -529,6 +664,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           start: startDate,
           end: endDate,
           allDay: allDayEvent,
+          editable: !isApproved, // Solo editable si no está aprobada
           backgroundColor: color,
           borderColor: color,
           textColor: this.getTextColor(color),
@@ -541,14 +677,33 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
             requirementCode: activity.requirementCode,
             employeeID: activity.employeeID,
             fullDay: allDayEvent,
-            isApproved: isApproved, // Añadir esta propiedad para referencia
-            approvedByID: activity.approvedByID // Mantener la referencia
-          }
+            isApproved: isApproved,
+            approvedByID: activity.approvedByID,
+            originalDate: startDate, // Guardar la fecha original para posibles reversiones
+          },
         };
 
         const addedEvent = calendarApi.addEvent(eventData);
+
+        // Aplicar estilo visual para eventos no arrastrables
+        if (addedEvent) {
+          // Aplicar estilo visual para eventos no arrastrables
+          if (isApproved) {
+            // Acceder al elemento DOM del evento correctamente
+            const eventEl = document.querySelector(
+              `[data-event-id="${addedEvent.id}"]`,
+            );
+            if (eventEl) {
+              (eventEl as HTMLElement).style.cursor = 'not-allowed';
+            }
+          }
+        }
       } catch (error) {
-        console.error(`Error procesando actividad ${activity.id}:`, activity, error);
+        console.error(
+          `Error procesando actividad ${activity.id}:`,
+          activity,
+          error,
+        );
       }
     });
 
@@ -577,8 +732,10 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
 
     const calendarApi = this.calendarComponent.getApi();
     const currentDate = calendarApi.getDate();
-    return date.getMonth() === currentDate.getMonth() &&
-          date.getFullYear() === currentDate.getFullYear();
+    return (
+      date.getMonth() === currentDate.getMonth() &&
+      date.getFullYear() === currentDate.getFullYear()
+    );
   }
 
   private updateDayCells(): void {
@@ -673,7 +830,10 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    console.warn('Formato de fecha no reconocido, usando fecha actual', dateInput);
+    console.warn(
+      'Formato de fecha no reconocido, usando fecha actual',
+      dateInput,
+    );
     return new Date();
   }
 
@@ -688,7 +848,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     if (this.isHoliday(selectInfo.start)) {
       const confirmed = await this.showConfirmationDialog(
         'Día feriado',
-        'Este día es feriado. ¿Está seguro de que desea crear una actividad?'
+        'Este día es feriado. ¿Está seguro de que desea crear una actividad?',
       );
 
       if (!confirmed) {
@@ -701,47 +861,51 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.projectService.getProjectsByUserRole(this.currentEmployeeId ?? undefined).subscribe({
-      next: (projectsResponse) => {
-        const dialogRef = this.dialog.open(EventDialogComponent, {
-          width: '800px',
-          data: {
-            event: {
-              activityDate: selectInfo.start,
-              fullDay: true,
-              hours: 8,
-              activityTypeID: 1,
-              projectID: null,
-              activityDescription: '',
-              details: null,
-              requirementCode: ''
+    this.projectService
+      .getProjectsByUserRole(this.currentEmployeeId ?? undefined)
+      .subscribe({
+        next: (projectsResponse) => {
+          const dialogRef = this.dialog.open(EventDialogComponent, {
+            width: '800px',
+            data: {
+              event: {
+                activityDate: selectInfo.start,
+                fullDay: true,
+                hours: 8,
+                activityTypeID: 1,
+                projectID: null,
+                activityDescription: '',
+                details: null,
+                requirementCode: '',
+              },
+              isEdit: false,
+              projects: projectsResponse.items,
+              activityTypes: this.activityTypes,
             },
-            isEdit: false,
-            projects: projectsResponse.items,
-            activityTypes: this.activityTypes
-          }
-        });
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            // Si es un array, son actividades recurrentes
-            if (Array.isArray(result)) {
-              this.createRecurrentActivities(result);
-            } else {
-              // Si es un objeto, es una actividad única
-              this.createActivity({
-                ...result,
-                projectID: result.projectID,
-                employeeID: this.currentEmployeeId
-              });
+          });
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+              // Si es un array, son actividades recurrentes
+              if (Array.isArray(result)) {
+                this.createRecurrentActivities(result);
+              } else {
+                // Si es un objeto, es una actividad única
+                this.createActivity({
+                  ...result,
+                  projectID: result.projectID,
+                  employeeID: this.currentEmployeeId,
+                });
+              }
             }
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Error loading projects for dialog', error);
-        this.snackBar.open('Error al cargar proyectos', 'Cerrar', { duration: 3000 });
-      }
-    });
+          });
+        },
+        error: (error) => {
+          console.error('Error loading projects for dialog', error);
+          this.snackBar.open('Error al cargar proyectos', 'Cerrar', {
+            duration: 3000,
+          });
+        },
+      });
   }
 
   async handleAddActivity(): Promise<void> {
@@ -749,7 +913,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     if (this.isHoliday(new Date())) {
       const confirmed = await this.showConfirmationDialog(
         'Día feriado',
-        'Hoy es feriado. ¿Está seguro de que desea crear una actividad?'
+        'Hoy es feriado. ¿Está seguro de que desea crear una actividad?',
       );
 
       if (!confirmed) {
@@ -762,53 +926,57 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.projectService.getProjectsByUserRole(this.currentEmployeeId ?? undefined).subscribe({
-      next: (projectsResponse) => {
-        const dialogRef = this.dialog.open(EventDialogComponent, {
-          width: '800px',
-          data: {
-            event: {
-              activityDate: new Date(),
-              fullDay: true,
-              hours: 8,
-              activityTypeID: 1,
-              projectID: null,
-              activityDescription: '',
-              details: '',
-              requirementCode: ''
+    this.projectService
+      .getProjectsByUserRole(this.currentEmployeeId ?? undefined)
+      .subscribe({
+        next: (projectsResponse) => {
+          const dialogRef = this.dialog.open(EventDialogComponent, {
+            width: '800px',
+            data: {
+              event: {
+                activityDate: new Date(),
+                fullDay: true,
+                hours: 8,
+                activityTypeID: 1,
+                projectID: null,
+                activityDescription: '',
+                details: '',
+                requirementCode: '',
+              },
+              isEdit: false,
+              projects: projectsResponse.items,
+              activityTypes: this.activityTypes,
             },
-            isEdit: false,
-            projects: projectsResponse.items,
-            activityTypes: this.activityTypes
-          }
-        });
+          });
 
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            // Si es un array, son actividades recurrentes
-            if (Array.isArray(result)) {
-              if (result.length > 30) {
-                // Mostrar confirmación para muchas actividades
-                this.confirmMultipleActivities(result);
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+              // Si es un array, son actividades recurrentes
+              if (Array.isArray(result)) {
+                if (result.length > 30) {
+                  // Mostrar confirmación para muchas actividades
+                  this.confirmMultipleActivities(result);
+                } else {
+                  this.createRecurrentActivities(result);
+                }
               } else {
-                this.createRecurrentActivities(result);
+                // Si es un objeto, es una actividad única
+                this.createActivity({
+                  ...result,
+                  projectID: result.projectID,
+                  employeeID: this.currentEmployeeId,
+                });
               }
-            } else {
-              // Si es un objeto, es una actividad única
-              this.createActivity({
-                ...result,
-                projectID: result.projectID,
-                employeeID: this.currentEmployeeId
-              });
             }
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Error loading projects for dialog', error);
-        this.snackBar.open('Error al cargar proyectos', 'Cerrar', { duration: 3000 });
-      }
-    });
+          });
+        },
+        error: (error) => {
+          console.error('Error loading projects for dialog', error);
+          this.snackBar.open('Error al cargar proyectos', 'Cerrar', {
+            duration: 3000,
+          });
+        },
+      });
   }
 
   // Método para confirmar la creación de muchas actividades
@@ -819,11 +987,11 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
         title: 'Confirmar creación múltiple',
         message: `Estás a punto de crear ${activities.length} actividades. ¿Estás seguro de que deseas continuar?`,
         confirmText: 'Sí, crear todas',
-        cancelText: 'Cancelar'
-      }
+        cancelText: 'Cancelar',
+      },
     });
 
-    confirmDialogRef.afterClosed().subscribe(confirmed => {
+    confirmDialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.createRecurrentActivities(activities);
       }
@@ -835,10 +1003,10 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     let createdCount = 0;
     let errorCount = 0;
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       const activityPayload = {
         ...activity,
-        employeeID: this.currentEmployeeId
+        employeeID: this.currentEmployeeId,
       };
 
       this.activityService.createActivity(activityPayload).subscribe({
@@ -848,7 +1016,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
             this.snackBar.open(
               `Se crearon ${createdCount} de ${activities.length} actividades recurrentes`,
               'Cerrar',
-              { duration: 5000 }
+              { duration: 5000 },
             );
             this.loadActivities();
           }
@@ -860,16 +1028,19 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
             this.snackBar.open(
               `Se crearon ${createdCount} de ${activities.length} actividades. ${errorCount} fallaron.`,
               'Cerrar',
-              { duration: 5000 }
+              { duration: 5000 },
             );
             this.loadActivities();
           }
-        }
+        },
       });
     });
   }
 
-  private showConfirmationDialog(title: string, message: string): Promise<boolean> {
+  private showConfirmationDialog(
+    title: string,
+    message: string,
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         width: '600px',
@@ -877,11 +1048,11 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           title,
           message,
           confirmText: 'Sí, continuar',
-          cancelText: 'Cancelar'
-        }
+          cancelText: 'Cancelar',
+        },
       });
 
-      dialogRef.afterClosed().subscribe(result => {
+      dialogRef.afterClosed().subscribe((result) => {
         resolve(!!result);
       });
     });
@@ -890,37 +1061,48 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   handleGenerateReport() {
     const dialogRef = this.dialog.open(ReportDialogComponent, {
       width: '500px',
-      data: {
-
-      }
+      data: {},
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
       }
     });
   }
 
-
   private createActivity(eventData: any): void {
-
     // Si viene con success: true, probablemente es el objeto incorrecto
     if (eventData && eventData.success === true) {
-      console.error('Se recibió objeto de éxito en lugar de datos de actividad');
+      console.error(
+        'Se recibió objeto de éxito en lugar de datos de actividad',
+      );
       this.snackBar.open('Error: Datos de actividad no válidos', 'Cerrar');
       return;
     }
 
     // Validación más específica y descriptiva
-    const requiredFields = ['projectID', 'activityTypeID', 'hoursQuantity', 'activityDate'];
-    const missingFields = requiredFields.filter(field => {
+    const requiredFields = [
+      'projectID',
+      'activityTypeID',
+      'hoursQuantity',
+      'activityDate',
+    ];
+    const missingFields = requiredFields.filter((field) => {
       const value = eventData[field];
       return value === undefined || value === null || value === '';
     });
 
     if (missingFields.length > 0) {
-      console.error('Campos requeridos faltantes:', missingFields, 'Datos recibidos:', eventData);
-      this.snackBar.open(`Datos incompletos. Faltan: ${missingFields.join(', ')}`, 'Cerrar');
+      console.error(
+        'Campos requeridos faltantes:',
+        missingFields,
+        'Datos recibidos:',
+        eventData,
+      );
+      this.snackBar.open(
+        `Datos incompletos. Faltan: ${missingFields.join(', ')}`,
+        'Cerrar',
+      );
       return;
     }
 
@@ -935,8 +1117,9 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     const PERMISO_ID = 4004;
 
     const hours = Number(eventData.hoursQuantity);
-    const allowZero = eventData.activityTypeID === VACACIONES_ID ||
-                      eventData.activityTypeID === PERMISO_ID;
+    const allowZero =
+      eventData.activityTypeID === VACACIONES_ID ||
+      eventData.activityTypeID === PERMISO_ID;
 
     if (isNaN(hours) || hours < 0 || (!allowZero && hours === 0)) {
       console.error('hoursQuantity no es válido:', eventData.hoursQuantity);
@@ -944,12 +1127,15 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-
     const activityDate = this.ensureDateObject(eventData.activityDate);
 
     // Solo advertencia para feriados, no impedir
     if (this.isHoliday(activityDate)) {
-      this.snackBar.open('Advertencia: La actividad se creará en un día feriado', 'Cerrar', { duration: 3000 });
+      this.snackBar.open(
+        'Advertencia: La actividad se creará en un día feriado',
+        'Cerrar',
+        { duration: 3000 },
+      );
     }
 
     // Construir el payload de manera más robusta
@@ -961,30 +1147,41 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       activityDescription: eventData.activityDescription || '',
       requirementCode: eventData.requirementCode || '',
       notes: eventData.notes || eventData.details || '', // Soporta ambos nombres
-      employeeID: this.currentEmployeeId
+      employeeID: this.currentEmployeeId,
     };
 
     this.activityService.createActivity(activityPayload).subscribe({
       next: (response) => {
-        this.snackBar.open('Actividad creada correctamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Actividad creada correctamente', 'Cerrar', {
+          duration: 3000,
+        });
         this.loadActivities();
       },
       error: (error) => {
         if (error.status === 401) {
-          this.snackBar.open('Sesión inválida. Por favor vuelva a iniciar sesión', 'Cerrar');
+          this.snackBar.open(
+            'Sesión inválida. Por favor vuelva a iniciar sesión',
+            'Cerrar',
+          );
           this.router.navigate(['/login']);
         } else {
           console.error('Error al crear actividad:', error);
-          this.snackBar.open('Error al crear actividad: ' + (error.error?.message || error.message || 'Error desconocido'), 'Cerrar');
+          this.snackBar.open(
+            'Error al crear actividad: ' +
+              (error.error?.message || error.message || 'Error desconocido'),
+            'Cerrar',
+          );
         }
-      }
+      },
     });
   }
 
   private isAdminUser(): boolean {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     const roles = userData.data?.roles || [];
-    return roles.some((role: any) => role.id === 1 && role.roleName === "Administrador");
+    return roles.some(
+      (role: any) => role.id === 1 && role.roleName === 'Administrador',
+    );
   }
 
   private applyEventColors(eventApi: EventApi, color: string): void {
@@ -1001,7 +1198,10 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     const bgColor = this.lightenColor(eventData.color, 0.85);
     const textColor = this.getTextColor(eventData.color);
 
-    const baseColor = eventData.color || this.getColorForActivityType(eventData.activityTypeID) || '#4285F4';
+    const baseColor =
+      eventData.color ||
+      this.getColorForActivityType(eventData.activityTypeID) ||
+      '#4285F4';
 
     const activityDate = this.ensureDateObject(eventData.activityDate);
     // Mapea los datos del formulario al formato del endpoint
@@ -1012,31 +1212,40 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       activityDate: activityDate.toISOString().split('T')[0], // Formato YYYY-MM-DD
       activityDescription: eventData.activityDescription,
       notes: eventData.details || '',
-      requirementCode: eventData.requirementCode
+      requirementCode: eventData.requirementCode,
     };
 
     // Llama al servicio para guardar en el backend
     this.activityService.createActivity(activityPayload).subscribe({
       next: (response) => {
         this.loadActivities();
-        this.snackBar.open('Actividad creada correctamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Actividad creada correctamente', 'Cerrar', {
+          duration: 3000,
+        });
       },
       error: (error) => {
         if (error.status === 401) {
-          this.snackBar.open('Sesión inválida. Por favor vuelva a iniciar sesión', 'Cerrar');
+          this.snackBar.open(
+            'Sesión inválida. Por favor vuelva a iniciar sesión',
+            'Cerrar',
+          );
           this.router.navigate(['/login']);
         } else {
-          this.snackBar.open('Error al crear actividad: ' + error.error?.message, 'Cerrar');
+          this.snackBar.open(
+            'Error al crear actividad: ' + error.error?.message,
+            'Cerrar',
+          );
         }
-      }
+      },
     });
 
     return calendarApi.addEvent({
       title: `${eventData.activityType} - ${eventData.project}`,
       start: activityDate, // Usa la fecha convertida
-      end: eventData.fullDay === 'full' ?
-        activityDate :
-        new Date(activityDate.getTime() + eventData.hours * 60 * 60 * 1000),
+      end:
+        eventData.fullDay === 'full'
+          ? activityDate
+          : new Date(activityDate.getTime() + eventData.hours * 60 * 60 * 1000),
       color: eventData.color,
       backgroundColor: bgColor,
       textColor: textColor,
@@ -1045,21 +1254,21 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
         details: eventData.details,
         hours: eventData.hours,
         fullDay: eventData.fullDay,
-        activityType: eventData.activityType
-      }
+        activityType: eventData.activityType,
+      },
     });
   }
 
   private getColorForActivityType(activityTypeId: number | undefined): string {
     // Mapeo de colores para cada tipo de actividad
-    const activityTypeColors: {[key: number]: string} = {
+    const activityTypeColors: { [key: number]: string } = {
       1: '#4285F4', // Desarrollo - Azul
       2: '#EA4335', // Reunión - Rojo
       3: '#FBBC05', // Análisis - Amarillo
       4: '#34A853', // Revisión - Verde
       5: '#673AB7', // Documentación - Morado
       6: '#FF9800', // Soporte - Naranja
-      7: '#00BCD4'  // Capacitación - Cyan
+      7: '#00BCD4', // Capacitación - Cyan
     };
 
     // Si el ID es undefined o no está en el mapeo, devuelve un color por defecto
@@ -1079,7 +1288,8 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       return new Date(date);
     }
 
-    if (date && date.toDate) { // Para objetos como firebase Timestamp
+    if (date && date.toDate) {
+      // Para objetos como firebase Timestamp
       return date.toDate();
     }
 
@@ -1088,19 +1298,19 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   }
 
   getProjectId(projectName: string): number {
-    const project = this.projectList.find(p => p.name === projectName);
+    const project = this.projectList.find((p) => p.name === projectName);
     return project?.id ?? 0;
   }
 
   private getActivityTypeId(activityType: string): number {
-    const activityTypes: {[key: string]: number} = {
-      'Desarrollo': 1,
-      'Reunión': 2,
-      'Análisis': 3,
-      'Revisión': 4,
-      'Documentación': 5,
-      'Soporte': 6,
-      'Capacitación': 7
+    const activityTypes: { [key: string]: number } = {
+      Desarrollo: 1,
+      Reunión: 2,
+      Análisis: 3,
+      Revisión: 4,
+      Documentación: 5,
+      Soporte: 6,
+      Capacitación: 7,
     };
     return activityTypes[activityType] || 1; // Si no existe, devuelve 1 (Desarrollo) por defecto
   }
@@ -1129,19 +1339,21 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           // Aseguramos que fullDay se mapee correctamente
           fullDay: extendedProps['hoursQuantity'] === 8,
           hours: extendedProps['hoursQuantity'],
-          requirementCode: extendedProps['requirementCode']
+          requirementCode: extendedProps['requirementCode'],
         },
         isEdit: true,
         projects: this.projectList,
         activityTypes: this.activityTypes,
-        currentCalendarEvents: this.currentEvents()
-      }
+        currentCalendarEvents: this.currentEvents(),
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result && result.deleted) {
         // Si se eliminó la actividad, recargar el calendario
-        this.snackBar.open('Actividad eliminada correctamente', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('Actividad eliminada correctamente', 'Cerrar', {
+          duration: 3000,
+        });
         this.loadActivities().then(() => {
           // Forzar la actualización del botón después de eliminar
           this.updateMonthlyHoursButton();
@@ -1152,16 +1364,16 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           return;
         }
         const updateData = {
-        projectID: result.projectID,
-        activityTypeID: result.activityTypeID,
-        hoursQuantity: result.hoursQuantity || result.hours, // Ambos nombres por seguridad
-        activityDate: result.activityDate,
-        activityDescription: result.activityDescription || result.details, // Ambos nombres
-        notes: result.notes || result.details, // Ambos nombres
-        requirementCode: result.requirementCode,
-        employeeID: this.currentEmployeeId // Añadir employeeID
-      };
-      /*
+          projectID: result.projectID,
+          activityTypeID: result.activityTypeID,
+          hoursQuantity: result.hoursQuantity || result.hours, // Ambos nombres por seguridad
+          activityDate: result.activityDate,
+          activityDescription: result.activityDescription || result.details, // Ambos nombres
+          notes: result.notes || result.details, // Ambos nombres
+          requirementCode: result.requirementCode,
+          employeeID: this.currentEmployeeId, // Añadir employeeID
+        };
+        /*
 
         this.activityService.updateActivity(numericId, updateData).subscribe({
           next: () => {
@@ -1189,7 +1401,11 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     const event = changeInfo.event;
 
     if (this.isHoliday(event.start)) {
-      this.snackBar.open('No se pueden mover actividades a días feriados', 'Cerrar', { duration: 3000 });
+      this.snackBar.open(
+        'No se pueden mover actividades a días feriados',
+        'Cerrar',
+        { duration: 3000 },
+      );
       changeInfo.revert(); // Revertir el cambio
       return;
     }
@@ -1199,12 +1415,16 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     const updatedData = {
       projectID: extendedProps['projectID'],
       activityTypeID: extendedProps['activityTypeID'],
-      hoursQuantity: event.allDay ? 8 : (event.end ? (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 60) : extendedProps['hoursQuantity']),
+      hoursQuantity: event.allDay
+        ? 8
+        : event.end
+          ? (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 60)
+          : extendedProps['hoursQuantity'],
       activityDate: this.formatDate(event.start),
       activityDescription: extendedProps['activityDescription'],
       notes: extendedProps['notes'],
       requirementCode: extendedProps['requirementCode'],
-      employeeID: this.currentEmployeeId // Asegúrate de incluir el employeeID
+      employeeID: this.currentEmployeeId, // Asegúrate de incluir el employeeID
     };
 
     /*
@@ -1220,45 +1440,47 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       }
     });
     */
-    this.snackBar.open('Actividad movida/redimensionada', 'Cerrar', { duration: 2000 });
+    this.snackBar.open('Actividad movida/redimensionada', 'Cerrar', {
+      duration: 2000,
+    });
   }
 
   private formatDate(dateInput: any): string {
-      // Si es undefined o null, devuelve la fecha actual
-      if (!dateInput) {
-          return new Date().toISOString().split('T')[0];
-      }
-
-      // Si ya es un objeto Date, formatea directamente
-      if (dateInput instanceof Date) {
-          return dateInput.toISOString().split('T')[0];
-      }
-
-      // Si es un string en formato ISO (YYYY-MM-DD)
-      if (typeof dateInput === 'string') {
-          // Si ya está en el formato correcto, devuélvelo directamente
-          if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-              return dateInput;
-          }
-          // Si es un string ISO con tiempo, extrae solo la parte de la fecha
-          if (dateInput.includes('T')) {
-              return dateInput.split('T')[0];
-          }
-          // Intenta parsear otros formatos de string
-          const parsedDate = new Date(dateInput);
-          if (!isNaN(parsedDate.getTime())) {
-              return parsedDate.toISOString().split('T')[0];
-          }
-      }
-
-      // Si es un timestamp numérico
-      if (typeof dateInput === 'number') {
-          return new Date(dateInput).toISOString().split('T')[0];
-      }
-
-      // Si no reconocemos el formato, usamos la fecha actual como fallback
-      console.warn('Formato de fecha no reconocido:', dateInput);
+    // Si es undefined o null, devuelve la fecha actual
+    if (!dateInput) {
       return new Date().toISOString().split('T')[0];
+    }
+
+    // Si ya es un objeto Date, formatea directamente
+    if (dateInput instanceof Date) {
+      return dateInput.toISOString().split('T')[0];
+    }
+
+    // Si es un string en formato ISO (YYYY-MM-DD)
+    if (typeof dateInput === 'string') {
+      // Si ya está en el formato correcto, devuélvelo directamente
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+        return dateInput;
+      }
+      // Si es un string ISO con tiempo, extrae solo la parte de la fecha
+      if (dateInput.includes('T')) {
+        return dateInput.split('T')[0];
+      }
+      // Intenta parsear otros formatos de string
+      const parsedDate = new Date(dateInput);
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate.toISOString().split('T')[0];
+      }
+    }
+
+    // Si es un timestamp numérico
+    if (typeof dateInput === 'number') {
+      return new Date(dateInput).toISOString().split('T')[0];
+    }
+
+    // Si no reconocemos el formato, usamos la fecha actual como fallback
+    console.warn('Formato de fecha no reconocido:', dateInput);
+    return new Date().toISOString().split('T')[0];
   }
 
   private lightenColor(color: string | undefined, factor: number): string {
@@ -1271,9 +1493,11 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
     }
 
     // Asegúrate que el color tenga el formato correcto (3 o 6 caracteres)
-    if (color.length === 4) { // #RGB
+    if (color.length === 4) {
+      // #RGB
       color = `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
-    } else if (color.length !== 7) { // #RRGGBB
+    } else if (color.length !== 7) {
+      // #RRGGBB
       return '#e6f2ff'; // Color por defecto si el formato no es válido
     }
 
@@ -1292,7 +1516,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   }
 
   private getTextColor(bgColor: string | undefined): string {
-  if (!bgColor) return '#000000'; // Negro por defecto si no hay color
+    if (!bgColor) return '#000000'; // Negro por defecto si no hay color
 
     // Asegura que el color empiece con #
     if (!bgColor.startsWith('#')) {
@@ -1314,5 +1538,283 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
     this.changeDetector.detectChanges(); // workaround for pressionChangedAfterItHasBeenCheckedError
+  }
+
+  handleEventDragStart(dragInfo: any): void {
+    //console.log('Drag started:', dragInfo.event.title);
+
+    // Cambiar estilo visual durante el drag
+    dragInfo.el.style.opacity = '0.7';
+    dragInfo.el.style.zIndex = '9999';
+  }
+
+  handleEventDragStop(dragInfo: any): void {
+    //console.log('Drag stopped:', dragInfo.event.title);
+
+    // Restaurar estilo
+    dragInfo.el.style.opacity = '1';
+    dragInfo.el.style.zIndex = '';
+  }
+
+  handleEventDrop(dropInfo: any): void {
+    const event = dropInfo.event;
+    const oldDate = dropInfo.oldEvent.start;
+    const newDate = dropInfo.event.start;
+
+    console.log('Event dropped:', {
+      event: event.title,
+      from: oldDate,
+      to: newDate,
+    });
+
+    // Verificar si el evento está aprobado
+    const isApproved = event.extendedProps['isApproved'];
+    if (isApproved) {
+      this.snackBar.open('No se pueden mover actividades aprobadas', 'Cerrar', {
+        duration: 3000,
+      });
+      dropInfo.revert();
+      return;
+    }
+
+    // Verificar feriados
+    if (this.isHoliday(newDate)) {
+      this.snackBar.open(
+        'No se pueden mover actividades a días feriados',
+        'Cerrar',
+        { duration: 3000 },
+      );
+      dropInfo.revert();
+      return;
+    }
+
+    // Verificar fin de semana
+    const isWeekend = newDate.getDay() === 0 || newDate.getDay() === 6;
+    if (isWeekend) {
+      this.snackBar.open(
+        'No se pueden mover actividades a fines de semana',
+        'Cerrar',
+        { duration: 3000 },
+      );
+      dropInfo.revert();
+      return;
+    }
+
+    // Verificar límite de 8 horas por día
+    const oldDateString = oldDate.toISOString().split('T')[0];
+    const newDateString = newDate.toISOString().split('T')[0];
+    const eventHours = event.extendedProps['hoursQuantity'] || 0;
+
+    const oldDayHours = this.dailyHoursMap.get(oldDateString) || 0;
+    const newDayHours = this.dailyHoursMap.get(newDateString) || 0;
+
+    // Si es el mismo día, no hay problema de límite
+    if (oldDateString !== newDateString && newDayHours + eventHours > 8) {
+      this.snackBar.open(
+        'No se pueden agregar más de 8 horas en un día',
+        'Cerrar',
+        { duration: 3000 },
+      );
+      dropInfo.revert();
+      return;
+    }
+
+    // Actualizar en el backend primero
+    this.updateActivityAfterDrag(event, oldDate, newDate);
+  }
+
+  private updateActivityAfterDrag(
+    event: any,
+    oldDate: Date,
+    newDate: Date,
+  ): void {
+    if (!event || !event.id) {
+      console.error('Evento no válido para actualizar');
+      return;
+    }
+
+    const activityId = Number(event.id);
+    const extendedProps = event.extendedProps || {};
+
+    if (isNaN(activityId)) {
+      console.error('ID de evento no válido:', event.id);
+      this.snackBar.open('Error: ID de actividad no válido', 'Cerrar');
+      return;
+    }
+
+    const updateData = {
+      projectID: extendedProps['projectID'],
+      activityTypeID: extendedProps['activityTypeID'],
+      hoursQuantity: extendedProps['hoursQuantity'] || 0,
+      activityDate: this.formatDate(newDate),
+      activityDescription: extendedProps['activityDescription'] || '',
+      notes: extendedProps['notes'] || '',
+      requirementCode: extendedProps['requirementCode'] || '',
+      employeeID: this.currentEmployeeId,
+    };
+
+    const snackBarRef = this.snackBar.open(
+      'Actualizando actividad...',
+      'Cerrar',
+    );
+
+    this.activityService.updateActivity(activityId, updateData).subscribe({
+      next: () => {
+        snackBarRef.dismiss();
+        this.snackBar.open('Actividad movida correctamente', 'Cerrar', {
+          duration: 2000,
+        });
+
+        // Actualizar contadores inmediatamente
+        this.updateHoursCountersAfterDrag(
+          extendedProps['hoursQuantity'] || 0,
+          oldDate,
+          newDate,
+        );
+
+        // Actualizar indicadores visuales
+        this.updateDayCellHours(oldDate);
+        this.updateDayCellHours(newDate);
+
+        // Recargar para asegurar consistencia
+        this.loadActivities();
+      },
+      error: (error) => {
+        console.error('Error al actualizar actividad por drag:', error);
+        snackBarRef.dismiss();
+
+        if (error.status === 401) {
+          this.snackBar.open(
+            'Sesión inválida. Por favor, inicie sesión nuevamente.',
+            'Cerrar',
+          );
+          this.router.navigate(['/login']);
+        } else if (
+          error.status === 400 &&
+          error.error?.message?.includes('aprobada')
+        ) {
+          this.snackBar.open(
+            'No se puede mover una actividad aprobada',
+            'Cerrar',
+            { duration: 3000 },
+          );
+        } else {
+          this.snackBar.open(
+            'Error al mover actividad: ' +
+              (error.error?.message || error.message),
+            'Cerrar',
+          );
+        }
+
+        // Revertir contadores
+        this.loadActivities();
+      },
+    });
+  }
+
+  private updateHoursCountersAfterDrag(
+    hoursQuantity: number,
+    oldDate: Date,
+    newDate: Date,
+  ): void {
+    const oldDateString = oldDate.toISOString().split('T')[0];
+    const newDateString = newDate.toISOString().split('T')[0];
+
+    // Actualizar mapa de horas diarias
+    const oldHours = this.dailyHoursMap.get(oldDateString) || 0;
+    const newHours = this.dailyHoursMap.get(newDateString) || 0;
+
+    this.dailyHoursMap.set(
+      oldDateString,
+      Math.max(0, oldHours - hoursQuantity),
+    );
+    this.dailyHoursMap.set(newDateString, newHours + hoursQuantity);
+
+    // Actualizar horas mensuales (si el cambio es entre meses diferentes)
+    const isSameMonth =
+      oldDate.getMonth() === newDate.getMonth() &&
+      oldDate.getFullYear() === newDate.getFullYear();
+
+    if (!isSameMonth) {
+      // Si cambia de mes, recalcular todo
+      this.recalculateMonthlyHours();
+    }
+
+    // Actualizar botón de horas mensuales
+    this.updateMonthlyHoursButton();
+  }
+
+  private updateDayCellHours(date: Date): void {
+    const dateString = date.toISOString().split('T')[0];
+    const dayCell = this.findDayCellByDate(dateString);
+
+    if (dayCell) {
+      const hours = this.dailyHoursMap.get(dateString) || 0;
+
+      // Limpiar cualquier indicador existente
+      const existingIndicator = dayCell.querySelector('.daily-hours');
+      if (existingIndicator) {
+        existingIndicator.remove();
+      }
+
+      // Si hay horas, añadir nuevo indicador
+      if (hours > 0) {
+        this.addHoursToDayCell(dayCell, hours);
+      }
+
+      // Actualizar clase de día completado
+      if (hours >= 8) {
+        dayCell.classList.add('fc-day-completed');
+      } else {
+        dayCell.classList.remove('fc-day-completed');
+      }
+    }
+  }
+
+  private recalculateMonthlyHours(): void {
+    const calendarApi = this.calendarComponent.getApi();
+    if (!calendarApi) return;
+
+    const currentDate = calendarApi.getDate();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    let totalHours = 0;
+
+    this.dailyHoursMap.forEach((hours, dateString) => {
+      const date = new Date(dateString);
+      if (
+        date.getMonth() === currentMonth &&
+        date.getFullYear() === currentYear
+      ) {
+        totalHours += hours;
+      }
+    });
+
+    this.monthlyHours.set(totalHours);
+  }
+
+  private updateDailyHoursAfterDrag(event: any, newDate: string): void {
+    const extendedProps = event.extendedProps;
+    const hoursQuantity = extendedProps['hoursQuantity'] || 0;
+
+    // Obtener fecha original (si está almacenada)
+    const originalDate = extendedProps['originalDate'];
+    if (originalDate) {
+      const oldDateString = new Date(originalDate).toISOString().split('T')[0];
+      const oldHours = this.dailyHoursMap.get(oldDateString) || 0;
+      this.dailyHoursMap.set(
+        oldDateString,
+        Math.max(0, oldHours - hoursQuantity),
+      );
+    }
+
+    // Actualizar nueva fecha
+    const newDateString = newDate.split('T')[0];
+    const currentHours = this.dailyHoursMap.get(newDateString) || 0;
+    this.dailyHoursMap.set(newDateString, currentHours + hoursQuantity);
+
+    // Actualizar botón de horas mensuales
+    this.updateMonthlyHoursButton();
   }
 }

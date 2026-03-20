@@ -12,6 +12,8 @@ import {
   ProyectoDataResponse,
   ProyectoHoursResponse,
   ResourceAssignmentPayload,
+  UpdateProjectRequest,
+  UpdateProjectResponse,
 } from '../interfaces/project.interface';
 import {
   BehaviorSubject,
@@ -37,6 +39,7 @@ import {
   Role,
 } from '../interfaces/project.interface';
 import { AuthService } from '../../auth/services/auth.service';
+import { PagedResult } from '../../leaders/interfaces/leader.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -62,7 +65,7 @@ export class ProjectService {
 
   getProjects(): Observable<any> {
     return this.http
-      .get<ApiResponse>(`${this.urlBase}/api/Project/GetAllProjects`)
+      .get<Observable<Project>>(`${this.urlBase}/api/Project/GetAllProjects`)
       .pipe(
         catchError((error) => {
           console.error('Error fetching all projects:', error);
@@ -74,15 +77,18 @@ export class ProjectService {
       );
   }
 
-  getAllProjects(): Observable<ProjectWithID[]> {
-    const pageSize = 100;
-    let pageNumber = 1;
+  getAllProjects(pageNumber: number = 1, pageSize: number = 500, search: string = ''): Observable<Project[]> {
+    let params = new HttpParams()
+      .set('PageNumber', pageNumber.toString())
+      .set('PageSize', pageSize.toString());
+
+    if (search && search.trim() !== '') {
+      params = params.set('Search', search.trim());
+    }
 
     return this.http
-      .get<ApiResponseData>(`${this.urlBase}/api/Project/GetAllProjects`, {
-        params: new HttpParams()
-          .set('PageNumber', pageNumber.toString())
-          .set('PageSize', pageSize.toString()),
+      .get<any>(`${this.urlBase}/api/Project/GetAllProjects`, {
+        params,
       })
       .pipe(
         map((response) => response?.items || []), // Cambiado de data a items
@@ -92,6 +98,25 @@ export class ProjectService {
         })
       );
   }
+
+  updateProject(id: number, request: UpdateProjectRequest): Observable<SuccessResponse<UpdateProjectResponse>> {
+    this.showLoading();
+    console.log('ID recibido en el servicio:', id);
+
+    if (id === undefined || id === null || isNaN(id)) {
+      throw new Error('ID de proyecto no válido: ' + id);
+    }
+
+    // No incluyas el id en el cuerpo de la solicitud
+    return this.http
+      .put<SuccessResponse<UpdateProjectResponse>>(
+        `${this.urlBase}/api/Project/UpdateProjectByID/${id}`,
+        request
+      )
+      .pipe(finalize(() => this.hideLoading()));
+  }
+
+  //Antes de cambio
 
   getProjectsByEmployeeId(employeeId: number): Observable<any[]> {
     return this.getAllProjects().pipe(
@@ -303,13 +328,14 @@ export class ProjectService {
     );
   }
 
-  createProject(projectData: Project): Observable<ProjectWithID> {
+  /*createProject(projectData: Project): Observable<ProjectWithID> {
     this.showLoading();
     // 1. Crear copia segura sin ID
     const payload: Omit<ProjectWithID, 'id'> = {
       clientID: projectData.clientID,
       projectStatusID: projectData.projectStatusID,
       projectTypeID: projectData.projectTypeID,
+      leaderId: projectData.leaderId, // Asegúrate de incluir el líder en el payload
       code: projectData.code,
       name: projectData.name,
       description: projectData.description,
@@ -332,27 +358,7 @@ export class ProjectService {
     return this.http
       .post<ProjectWithID>(`${this.urlBase}/api/Project/CreateProject`, payload)
       .pipe(finalize(() => this.hideLoading()));
-  }
-
-  updateProject(
-    id: number,
-    updateProjectRequest: Omit<Project, 'id'>
-  ): Observable<SuccessResponse<Project>> {
-    this.showLoading();
-    console.log('ID recibido en el servicio:', id);
-
-    if (id === undefined || id === null || isNaN(id)) {
-      throw new Error('ID de proyecto no válido: ' + id);
-    }
-
-    // No incluyas el id en el cuerpo de la solicitud
-    return this.http
-      .put<SuccessResponse<Project>>(
-        `${this.urlBase}/api/Project/UpdateProjectByID/${id}`,
-        updateProjectRequest
-      )
-      .pipe(finalize(() => this.hideLoading()));
-  }
+  }*/
 
   inactivateProject(id: number, data: any): Observable<any> {
     this.showLoading();

@@ -20,6 +20,8 @@ import {
 } from '../../interfaces/project.interface';
 import { forkJoin, switchMap } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
+import { GetLeaderDetailsResponse } from '../../../leaders/interfaces/leader.interface';
+import { LeadersService } from '../../../leaders/services/leaders.service';
 
 @Component({
   selector: 'project-info',
@@ -42,6 +44,7 @@ import { MatTableModule } from '@angular/material/table';
 export class ProjectInfoComponent implements OnInit {
   project: Project | null = null; // Usando la interfaz Project
   client: Client | null = null; // Usando la interfaz Client
+  leader: GetLeaderDetailsResponse | null = null; // Usando la interfaz GetLeaderDetailsResponse
   isLoading = true;
   error: string | null = null;
 
@@ -54,6 +57,7 @@ export class ProjectInfoComponent implements OnInit {
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private clientService: ClientService,
+    private leaderService: LeadersService,
     private datePipe: DatePipe
   ) {}
 
@@ -115,14 +119,20 @@ export class ProjectInfoComponent implements OnInit {
           }
 
           // Obtenemos la información del cliente
-          return this.clientService.getClientByID(
-            basicInfo.clientID || detailInfo.clientID
-          );
+          return forkJoin({
+            client: this.clientService.getClientByID(
+              basicInfo.clientID || detailInfo.clientID
+            ),
+            leader: this.leaderService.getLeaderByID(
+             basicInfo.leaderID
+            ),
+          });
         })
       )
       .subscribe({
-        next: (clientData) => {
-          this.client = clientData;
+        next: ({client, leader}) => {
+          this.client = client;
+          this.leader = leader;
           this.isLoading = false;
         },
         error: (err) => {

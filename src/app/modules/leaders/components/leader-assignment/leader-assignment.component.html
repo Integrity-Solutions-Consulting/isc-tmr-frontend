@@ -1,7 +1,7 @@
 <!-- leader-assignment.component.html -->
 <h2 mat-dialog-title class="dialog-title">
   <mat-icon class="title-icon">assignment_ind</mat-icon>
-  Asignaciones de Proyectos - {{leader?.person?.firstName}} {{leader?.person?.lastName}}
+  Asignaciones de Proyectos - {{leader?.firstName}} {{leader?.lastName}}
 </h2>
 
 <mat-dialog-content>
@@ -9,19 +9,19 @@
     <!-- Información del líder -->
     <div class="leader-info" *ngIf="leader">
       <div class="info-row">
-        <div class="info-item">
+        <!--<div class="info-item">
           <mat-icon class="info-icon">badge</mat-icon>
-          <strong>Identificación:</strong> {{leader.person.identificationNumber}}
-        </div>
+          <strong>Identificación:</strong> {{leader.id}}
+        </div>-->
         <div class="info-item">
           <mat-icon class="info-icon">email</mat-icon>
-          <strong>Email:</strong> {{leader.person.email}}
+          <strong>Email:</strong> {{leader.email}}
         </div>
       </div>
       <div class="info-row">
         <div class="info-item">
           <mat-icon class="info-icon">phone</mat-icon>
-          <strong>Teléfono:</strong> {{leader.person.phone || 'N/A'}}
+          <strong>Teléfono:</strong> {{leader.phone || 'N/A'}}
         </div>
         <div class="info-item">
           <mat-icon class="info-icon">circle</mat-icon>
@@ -63,16 +63,16 @@
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <!-- <mat-form-field appearance="outline">
             <input matInput formControlName="responsibility" placeholder="Responsabilidades" required>
             <mat-icon matPrefix>description</mat-icon>
             <mat-error *ngIf="assignmentForm.get('responsibility')?.hasError('required')">
               Responsabilidad es requerida
             </mat-error>
-          </mat-form-field>
+          </mat-form-field> -->
         </div>
 
-        <div class="form-row">
+        <!-- <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Tipo de Liderazgo</mat-label>
             <mat-select formControlName="leadershipType" required>
@@ -102,7 +102,7 @@
             </mat-select>
             <mat-icon matPrefix>status</mat-icon>
           </mat-form-field>
-        </div>
+        </div> -->
 
         <button mat-raised-button color="primary" (click)="addAssignment()" [disabled]="!assignmentForm.valid" class="add-button">
           <mat-icon>add</mat-icon>
@@ -137,13 +137,13 @@
           </div>
 
           <div class="assignment-details">
-            <div class="detail-row">
+            <!--<div class="detail-row">
               <span class="detail-label">
                 <mat-icon>description</mat-icon>
                 Responsabilidad:
               </span>
               <span class="detail-value">{{assignment.responsibility || 'Sin especificar'}}</span>
-            </div>
+            </div>-->
 
             <div class="detail-row">
               <span class="detail-label">
@@ -186,7 +186,8 @@
   <button mat-button (click)="onClose()" class="cancel-btn">
     Cancelar
   </button>
-  <button mat-raised-button style="background-color: var(--itg-primary); color: var(--itg-bg);" (click)="onSubmit()" [disabled]="saving || assignedProjects.length === 0" class="save-btn">
+  <button mat-raised-button style="background-color: var(--itg-primary); color: var(--itg-bg);"
+          (click)="onSubmit()" [disabled]="saving || assignedProjects.length === 0" class="save-btn">
     {{saving ? 'Guardando...' : 'Guardar Cambios'}}
   </button>
 </mat-dialog-actions>
