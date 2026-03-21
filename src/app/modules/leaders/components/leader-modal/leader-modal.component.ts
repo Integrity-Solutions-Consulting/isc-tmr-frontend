@@ -126,10 +126,12 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
   }
 
   private initializeForm(leaderData: any): void {
-    this.leaderForm = this.fb.group({
-      existingPerson: [null],
+    const initialLeadershipType = leaderData?.LeadershipType ?? true;
 
-      LeadershipType: [leaderData?.LeadershipType ?? true, Validators.required], // Agregado Validators.required
+    this.leaderForm = this.fb.group({
+      existingPerson: [null, (!this.isEditMode && initialLeadershipType) ? Validators.required : null],
+
+      LeadershipType: [initialLeadershipType, Validators.required], // Agregado Validators.required
       FirstName: [leaderData.FirstName || '', Validators.required],
       LastName: [leaderData.LastName || '', Validators.required],
       Email: [leaderData.Email || '', [Validators.required, Validators.email]],
@@ -143,23 +145,25 @@ export class LeaderModalComponent implements OnInit, OnDestroy {
 
       const existingPersonControl = this.leaderForm.get('existingPerson');
 
-       // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
-      existingPersonControl?.setValue(null);
-
-      this.leaderForm.patchValue({
-        FirstName: '',
-        LastName: '',
-        Email: '',
-        Phone: ''
-      });
-
-      if (isIntegrity) {
-        existingPersonControl?.setValidators(Validators.required);
-
-      } else {
-        existingPersonControl?.clearValidators();
+      if (!this.isEditMode) {
+        // LIMPIAR DATOS CUANDO CAMBIO TIPO DE LÍDER
         existingPersonControl?.setValue(null);
 
+        this.leaderForm.patchValue({
+          FirstName: '',
+          LastName: '',
+          Email: '',
+          Phone: ''
+        });
+
+        if (isIntegrity) {
+          existingPersonControl?.setValidators(Validators.required);
+        } else {
+          existingPersonControl?.clearValidators();
+          existingPersonControl?.setValue(null);
+        }
+      } else {
+        existingPersonControl?.clearValidators();
       }
       existingPersonControl?.updateValueAndValidity();
     });
