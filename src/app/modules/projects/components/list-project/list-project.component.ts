@@ -92,9 +92,9 @@ export class ListProjectComponent implements OnInit{
         'name',
         'description',
         'projectStatusID',
-        // Propiedades anidadas del líder (asumiendo que lider[0] siempre está disponible)
-        'lider.0.getPersonResponse.firstName',
-        'lider.0.getPersonResponse.lastName',
+        // Propiedades anidadas del líder
+        'leader.firstName',
+        'leader.lastName',
       ],
       threshold: 0.3, // Nivel de "fuzzy match" (tolerancia a errores)
       ignoreLocation: true,
@@ -139,7 +139,7 @@ export class ListProjectComponent implements OnInit{
     ) {
       // Ya corregido, usa ProjectWithID
       this.dataSource = new MatTableDataSource<ProjectWithID>();
-      this.dataSource.sortingDataAccessor = (item: ProjectWithIndex, property: string) => {
+     /* this.dataSource.sortingDataAccessor = (item: ProjectWithIndex, property: string) => {
         switch (property) {
           case 'startDate':
           case 'endDate':
@@ -153,7 +153,7 @@ export class ListProjectComponent implements OnInit{
           default:
             return item[property];
         }
-      };
+      };*/
 
     }
 
@@ -302,11 +302,8 @@ export class ListProjectComponent implements OnInit{
     }
 
     getLeaderName(project: any): string {
-        if (project.lider && project.lider.length > 0) {
-            const leader = project.lider[0];
-            if (leader.getPersonResponse) {
-                return `${leader.getPersonResponse.firstName} ${leader.getPersonResponse.lastName}`;
-            }
+        if (project.leader && project.leader.firstName) {
+            return `${project.leader.firstName} ${project.leader.lastName}`;
         }
         return 'Sin asignar';
     }

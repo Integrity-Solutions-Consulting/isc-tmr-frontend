@@ -19,6 +19,7 @@ import { SuccessResponse } from '../../../../shared/interfaces/response.interfac
 import { LoadingComponent } from '../../../auth/components/login-loading/login-loading.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LeadersService } from '../../../leaders/services/leaders.service';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -31,7 +32,6 @@ export const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM yyyy'
   },
 };
-
 @Component({
   standalone: true,
   imports: [
@@ -56,17 +56,19 @@ export const MY_DATE_FORMATS = {
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    { provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'DD/MM/YYYY',
-      },
-      display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY'
-      },
-    }}
+    {
+      provide: MAT_DATE_FORMATS, useValue: {
+        parse: {
+          dateInput: 'DD/MM/YYYY',
+        },
+        display: {
+          dateInput: 'DD/MM/YYYY',
+          monthYearLabel: 'MMMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY'
+        },
+      }
+    }
   ],
   selector: 'app-project-modal',
   templateUrl: './project-modal.component.html',
@@ -86,6 +88,14 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   projectStatuses: any[] = [];
   isLoadingStatuses = false;
 
+  leaders: any[] = [];
+  formattedLeaders: any[] = [];
+  isLoadingLeaders = false;
+
+  pageSize: number = 10;
+  currentPage: number = 0;
+  currentSearch: string = '';
+
   showClientWaitingFields: boolean = false;
 
   public clientFilterCtrl: FormControl<string | null> = new FormControl<string>('');
@@ -96,6 +106,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private projectService: ProjectService,
     private clientService: ClientService,
+    private leaderService: LeadersService,
     private dialogRef: MatDialogRef<ProjectModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { project?: ProjectWithID }
   ) {
@@ -106,6 +117,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     this.loadClients();
     this.loadProjectTypes();
     this.loadProjectStatuses();
+    this.loadLeaders();
 
     if (this.data?.project) {
       this.isEditMode = true;
@@ -154,6 +166,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       clientId: ['', Validators.required],
       projectStatusId: ['', Validators.required],
       projectTypeId: [null, Validators.required],
+      leaderId: [null, Validators.required], // Nuevo campo para el líder asignado
       code: ['', [Validators.required, Validators.maxLength(50)]],
       name: ['', [Validators.required, Validators.maxLength(150)]],
       description: [''],
@@ -260,6 +273,28 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadLeaders(): void {
+    this.isLoadingLeaders = true;
+    this.leaderService.getAllLeaders(
+      1,
+      1000,
+      this.currentSearch
+    ).subscribe({
+      next: (resp: any) => {
+        this.leaders = resp.items ? resp.items : resp;
+        this.formattedLeaders = this.leaders.map((leader: any) => ({
+          id: leader.id,
+          fullName: `${leader.firstName} ${leader.lastName}`
+        }));
+        this.isLoadingLeaders = false;
+      },
+      error: (err) => {
+        console.error('Error loading leaders:', err);
+        this.isLoadingLeaders = false;
+      }
+    });
+  }
+
   private loadClients(): void {
     this.isLoadingClients = true;
     this.clientService.getClients(1, 1000, '').subscribe({
@@ -308,10 +343,12 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   }
 
   private patchFormValues(project: ProjectWithID): void {
+    const leaderVal = project.leaderId !== undefined ? project.leaderId : ((project as any).leaderID || project.leader?.id);
     this.projectForm.patchValue({
       clientId: project.clientID,
       projectStatusId: project.projectStatusID,
       projectTypeId: project.projectTypeID,
+      leaderId: leaderVal,
       code: project.code,
       name: project.name,
       description: project.description,
@@ -353,9 +390,11 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     const selectedType = this.projectTypes.find(t => t.id === formValue.projectTypeId);
 
     const projectData: Project = {
+      id: this.projectId || 0,
       clientID: formValue.clientId,
       projectStatusID: Number(formValue.projectStatusId),
       projectTypeID: formValue.projectTypeId,
+      leaderID: formValue.leaderId, // Asignar el líder seleccionado
       code: formValue.code,
       name: formValue.name,
       description: formValue.description || '',
@@ -371,7 +410,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       observation: formValue.observations || ''
     };
 
-    console.log('Datos del proyecto a enviar:', projectData);
+    //console.log('Datos del proyecto a enviar:', projectData);
 
     const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
       ? this.projectService.updateProject(this.data.project.id, projectData)

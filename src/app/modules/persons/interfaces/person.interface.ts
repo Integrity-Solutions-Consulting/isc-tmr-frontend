@@ -1,3 +1,4 @@
+//GetPersonRequest
 export interface Person {
   GenderID?: number;
   NationalityID?: number;
@@ -10,4 +11,21 @@ export interface Person {
   email?: string;
   phone?: string;
   address?: string;
+}
+
+//Despues del cambio
+export interface GetPersonResponse {
+  id: number;
+  genderID?: number;
+  nationalityID?: number;
+  identificationTypeID?: number;
+  identificationNumber: string;
+  personType: 'NATURAL' | 'JURIDICA';
+  firstName: string;
+  lastName: string;
+  birthDate?: Date;
+  email?: string;
+  phone?: string;
+  address?: string;
+  status: boolean;
 }

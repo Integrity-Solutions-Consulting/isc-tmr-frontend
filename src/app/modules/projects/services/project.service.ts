@@ -12,6 +12,8 @@ import {
   ProyectoDataResponse,
   ProyectoHoursResponse,
   ResourceAssignmentPayload,
+  UpdateProjectRequest,
+  UpdateProjectResponse,
 } from '../interfaces/project.interface';
 import {
   BehaviorSubject,
@@ -37,6 +39,7 @@ import {
   Role,
 } from '../interfaces/project.interface';
 import { AuthService } from '../../auth/services/auth.service';
+import { PagedResult } from '../../leaders/interfaces/leader.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -58,11 +61,11 @@ export class ProjectService {
 
   urlBase: string = environment.URL_BASE;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   getProjects(): Observable<any> {
     return this.http
-      .get<ApiResponse>(`${this.urlBase}/api/Project/GetAllProjects`)
+      .get<Observable<Project>>(`${this.urlBase}/api/Project/GetAllProjects`)
       .pipe(
         catchError((error) => {
           console.error('Error fetching all projects:', error);
@@ -74,15 +77,18 @@ export class ProjectService {
       );
   }
 
-  getAllProjects(): Observable<ProjectWithID[]> {
-    const pageSize = 100;
-    let pageNumber = 1;
+  getAllProjects(pageNumber: number = 1, pageSize: number = 500, search: string = ''): Observable<Project[]> {
+    let params = new HttpParams()
+      .set('PageNumber', pageNumber.toString())
+      .set('PageSize', pageSize.toString());
+
+    if (search && search.trim() !== '') {
+      params = params.set('Search', search.trim());
+    }
 
     return this.http
-      .get<ApiResponseData>(`${this.urlBase}/api/Project/GetAllProjects`, {
-        params: new HttpParams()
-          .set('PageNumber', pageNumber.toString())
-          .set('PageSize', pageSize.toString()),
+      .get<any>(`${this.urlBase}/api/Project/GetAllProjects`, {
+        params,
       })
       .pipe(
         map((response) => response?.items || []), // Cambiado de data a items
@@ -92,6 +98,25 @@ export class ProjectService {
         })
       );
   }
+
+  updateProject(id: number, request: UpdateProjectRequest): Observable<SuccessResponse<UpdateProjectResponse>> {
+    this.showLoading();
+    console.log('ID recibido en el servicio:', id);
+
+    if (id === undefined || id === null || isNaN(id)) {
+      throw new Error('ID de proyecto no válido: ' + id);
+    }
+
+    // No incluyas el id en el cuerpo de la solicitud
+    return this.http
+      .put<SuccessResponse<UpdateProjectResponse>>(
+        `${this.urlBase}/api/Project/UpdateProjectByID/${id}`,
+        request
+      )
+      .pipe(finalize(() => this.hideLoading()));
+  }
+
+  //Antes de cambio
 
   getProjectsByEmployeeId(employeeId: number): Observable<any[]> {
     return this.getAllProjects().pipe(
@@ -309,20 +334,21 @@ export class ProjectService {
     const payload: Omit<ProjectWithID, 'id'> = {
       clientID: projectData.clientID,
       projectStatusID: projectData.projectStatusID,
-      projectTypeID: projectData.projectTypeID,
+      projectTypeID: projectData.projectTypeID || 0,
+      leaderId: projectData.leaderID || 0, // Asegúrate de incluir el líder en el payload
       code: projectData.code,
       name: projectData.name,
-      description: projectData.description,
-      startDate: projectData.startDate,
-      endDate: projectData.endDate,
-      actualStartDate: projectData.actualStartDate,
-      actualEndDate: projectData.actualEndDate,
-      budget: projectData.budget,
-      hours: projectData.hours,
-      status: projectData.status,
-      waitingStartDate: projectData.waitingStartDate,
-      waitingEndDate: projectData.waitingEndDate,
-      observation: projectData.observation,
+      description: projectData.description || '',
+      startDate: projectData.startDate || '',
+      endDate: projectData.endDate || '',
+      actualStartDate: projectData.actualStartDate || null,
+      actualEndDate: projectData.actualEndDate || null,
+      budget: projectData.budget || 0,
+      hours: projectData.hours || 0,
+      status: projectData.status || true,
+      waitingStartDate: projectData.waitingStartDate || null,
+      waitingEndDate: projectData.waitingEndDate || null,
+      observation: projectData.observation || null,
     };
 
     // 2. Verificación final del payload
@@ -331,26 +357,6 @@ export class ProjectService {
     // 3. Realizar la petición
     return this.http
       .post<ProjectWithID>(`${this.urlBase}/api/Project/CreateProject`, payload)
-      .pipe(finalize(() => this.hideLoading()));
-  }
-
-  updateProject(
-    id: number,
-    updateProjectRequest: Omit<Project, 'id'>
-  ): Observable<SuccessResponse<Project>> {
-    this.showLoading();
-    console.log('ID recibido en el servicio:', id);
-
-    if (id === undefined || id === null || isNaN(id)) {
-      throw new Error('ID de proyecto no válido: ' + id);
-    }
-
-    // No incluyas el id en el cuerpo de la solicitud
-    return this.http
-      .put<SuccessResponse<Project>>(
-        `${this.urlBase}/api/Project/UpdateProjectByID/${id}`,
-        updateProjectRequest
-      )
       .pipe(finalize(() => this.hideLoading()));
   }
 

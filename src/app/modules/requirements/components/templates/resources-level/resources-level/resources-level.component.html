@@ -1,0 +1,29 @@
+<div class="resources-container">
+
+  <header class="header">
+    <div class="title-group">
+      <mat-icon class="resources-icon">group</mat-icon>
+      <h1>Nivel de Recursos</h1>
+    </div>
+  </header>
+
+  <section class="counters-list">
+
+    <div *ngFor="let cat of categories; let i = index" class="counter-row">
+      <span class="label">{{ cat.categoryName }}</span>
+
+      <div class="controls">
+        <button class="btn-control" (click)="disminuir(i)">-</button>
+        <span class="value-box">{{ categoryFormArray.at(i).value.quantity }}</span>
+        <button class="btn-control" (click)="aumentar(i)">+</button>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="total-footer">
+    <span class="total-label">Total de Personal Requerido:</span>
+    <span class="total-value">{{ total }}</span>
+  </footer>
+
+</div>
