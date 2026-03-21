@@ -61,7 +61,7 @@ export class ProjectService {
 
   urlBase: string = environment.URL_BASE;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   getProjects(): Observable<any> {
     return this.http
@@ -328,27 +328,27 @@ export class ProjectService {
     );
   }
 
-  /*createProject(projectData: Project): Observable<ProjectWithID> {
+  createProject(projectData: Project): Observable<ProjectWithID> {
     this.showLoading();
     // 1. Crear copia segura sin ID
     const payload: Omit<ProjectWithID, 'id'> = {
       clientID: projectData.clientID,
       projectStatusID: projectData.projectStatusID,
-      projectTypeID: projectData.projectTypeID,
-      leaderId: projectData.leaderId, // Asegúrate de incluir el líder en el payload
+      projectTypeID: projectData.projectTypeID || 0,
+      leaderId: projectData.leaderID || 0, // Asegúrate de incluir el líder en el payload
       code: projectData.code,
       name: projectData.name,
-      description: projectData.description,
-      startDate: projectData.startDate,
-      endDate: projectData.endDate,
-      actualStartDate: projectData.actualStartDate,
-      actualEndDate: projectData.actualEndDate,
-      budget: projectData.budget,
-      hours: projectData.hours,
-      status: projectData.status,
-      waitingStartDate: projectData.waitingStartDate,
-      waitingEndDate: projectData.waitingEndDate,
-      observation: projectData.observation,
+      description: projectData.description || '',
+      startDate: projectData.startDate || '',
+      endDate: projectData.endDate || '',
+      actualStartDate: projectData.actualStartDate || null,
+      actualEndDate: projectData.actualEndDate || null,
+      budget: projectData.budget || 0,
+      hours: projectData.hours || 0,
+      status: projectData.status || true,
+      waitingStartDate: projectData.waitingStartDate || null,
+      waitingEndDate: projectData.waitingEndDate || null,
+      observation: projectData.observation || null,
     };
 
     // 2. Verificación final del payload
@@ -358,7 +358,7 @@ export class ProjectService {
     return this.http
       .post<ProjectWithID>(`${this.urlBase}/api/Project/CreateProject`, payload)
       .pipe(finalize(() => this.hideLoading()));
-  }*/
+  }
 
   inactivateProject(id: number, data: any): Observable<any> {
     this.showLoading();

@@ -32,7 +32,6 @@ export const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM yyyy'
   },
 };
-
 @Component({
   standalone: true,
   imports: [
@@ -57,17 +56,19 @@ export const MY_DATE_FORMATS = {
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    { provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'DD/MM/YYYY',
-      },
-      display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY'
-      },
-    }}
+    {
+      provide: MAT_DATE_FORMATS, useValue: {
+        parse: {
+          dateInput: 'DD/MM/YYYY',
+        },
+        display: {
+          dateInput: 'DD/MM/YYYY',
+          monthYearLabel: 'MMMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY'
+        },
+      }
+    }
   ],
   selector: 'app-project-modal',
   templateUrl: './project-modal.component.html',
@@ -275,8 +276,8 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   private loadLeaders(): void {
     this.isLoadingLeaders = true;
     this.leaderService.getAllLeaders(
-      this.currentPage + 1,
-      this.pageSize,
+      1,
+      1000,
       this.currentSearch
     ).subscribe({
       next: (resp: any) => {
@@ -342,10 +343,12 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   }
 
   private patchFormValues(project: ProjectWithID): void {
+    const leaderVal = project.leaderId !== undefined ? project.leaderId : ((project as any).leaderID || project.leader?.id);
     this.projectForm.patchValue({
       clientId: project.clientID,
       projectStatusId: project.projectStatusID,
       projectTypeId: project.projectTypeID,
+      leaderId: leaderVal,
       code: project.code,
       name: project.name,
       description: project.description,
@@ -386,11 +389,12 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     const formValue = this.projectForm.getRawValue();
     const selectedType = this.projectTypes.find(t => t.id === formValue.projectTypeId);
 
-    /*const projectData: Project = {
+    const projectData: Project = {
+      id: this.projectId || 0,
       clientID: formValue.clientId,
       projectStatusID: Number(formValue.projectStatusId),
       projectTypeID: formValue.projectTypeId,
-      leaderId: formValue.leaderId, // Asignar el líder seleccionado
+      leaderID: formValue.leaderId, // Asignar el líder seleccionado
       code: formValue.code,
       name: formValue.name,
       description: formValue.description || '',
@@ -404,15 +408,15 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       waitingStartDate: formValue.waitStartDate ? new Date(formValue.waitStartDate).toISOString() : null,
       waitingEndDate: formValue.waitEndDate ? new Date(formValue.waitEndDate).toISOString() : null,
       observation: formValue.observations || ''
-    };*/
+    };
 
     //console.log('Datos del proyecto a enviar:', projectData);
 
-    /*const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
+    const request$: Observable<ProjectWithID | SuccessResponse<Project>> = this.isEditMode && this.data?.project?.id
       ? this.projectService.updateProject(this.data.project.id, projectData)
-      : this.projectService.createProject(projectData);*/
+      : this.projectService.createProject(projectData);
 
-    /*request$.subscribe({
+    request$.subscribe({
       next: (response: any) => {
         this.projectService.hideLoading();
         this.isSubmitting = false;
@@ -423,7 +427,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         console.error('Error al guardar el proyecto:', err);
       }
-    });*/
+    });
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
