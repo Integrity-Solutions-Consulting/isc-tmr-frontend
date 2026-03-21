@@ -28,7 +28,6 @@
       </div>
 
       <!-- Persona Existente -->
-
       <div class="field-with-help" *ngIf="leaderForm.get('LeadershipType')?.value === true">
         <mat-form-field appearance="outline" class="full-width">
           <mat-select formControlName="existingPerson" (selectionChange)="onPersonSelected($event)" placeholder="Persona">
@@ -125,7 +124,6 @@
       </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-
   <button mat-raised-button (click)="onCancel()">Cancelar</button>
   <button mat-raised-button
           style="background-color: var(--itg-primary); color: var(--itg-bg)"

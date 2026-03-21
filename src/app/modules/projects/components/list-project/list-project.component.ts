@@ -27,54 +27,54 @@ import Fuse, { IFuseOptions } from 'fuse.js';
 
 @Injectable()
 export class ProjectPaginatorIntl implements MatPaginatorIntl {
-    changes = new Subject<void>();
+  changes = new Subject<void>();
 
-    firstPageLabel = `Primera Página`;
-    itemsPerPageLabel = `Registros por Página:`;
-    lastPageLabel = `Última Página`;
+  firstPageLabel = `Primera Página`;
+  itemsPerPageLabel = `Registros por Página:`;
+  lastPageLabel = `Última Página`;
 
-    nextPageLabel = 'Página Siguiente ';
-    previousPageLabel = 'Página Anterior';
+  nextPageLabel = 'Página Siguiente ';
+  previousPageLabel = 'Página Anterior';
 
-    getRangeLabel(page: number, pageSize: number, length: number): string {
-        if (length === 0) {
-            return `Página 1 de 1`;
-        }
-        const amountPages = Math.ceil(length / pageSize);
-        return `Página ${page + 1} de ${amountPages}`;
-    }
+  getRangeLabel(page: number, pageSize: number, length: number): string {
+    if (length === 0) {
+      return `Página 1 de 1`;
+    }
+    const amountPages = Math.ceil(length / pageSize);
+    return `Página ${page + 1} de ${amountPages}`;
+  }
 }
 
 interface ProjectWithIndex extends Project {
-    [key: string]: any;
+  [key: string]: any;
 }
 
 @Component({
-    selector: 'list-project',
-    standalone: true,
-    imports: [
-        CommonModule,
-        MatTableModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatIconModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatMenuModule,
-        MatSortModule,
-        MatPaginatorModule,
-        MatTooltipModule,
-        ReactiveFormsModule
-    ],
-    providers: [
-        {
-            provide: MatPaginatorIntl,
-            useClass: ProjectPaginatorIntl
-        }
-    ],
-    templateUrl: './list-project.component.html',
-    styleUrl: './list-project.component.scss'
+  selector: 'list-project',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatMenuModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    ReactiveFormsModule
+  ],
+  providers: [
+    {
+      provide: MatPaginatorIntl,
+      useClass: ProjectPaginatorIntl
+    }
+  ],
+  templateUrl: './list-project.component.html',
+  styleUrl: './list-project.component.scss'
 })
 export class ListProjectComponent implements OnInit{
 
