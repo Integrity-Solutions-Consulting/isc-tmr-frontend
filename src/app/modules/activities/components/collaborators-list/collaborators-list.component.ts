@@ -1,7 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -14,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { catchError, finalize, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { catchError, finalize, forkJoin, map, of, switchMap, tap, EMPTY } from 'rxjs';
 import { ClientDetail, LeaderDetail, ProjectDetail } from '../../interfaces/activity.interface';
 import { environment } from '../../../../../environments/environment';
 import { MatSelectModule } from '@angular/material/select';
@@ -65,6 +65,7 @@ export class CollaboratorsListComponent implements OnInit {
 
   private http = inject(HttpClient);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
   urlBase: string = environment.URL_BASE;
 
   monthControl = new FormControl<number>(new Date().getMonth());
@@ -800,10 +801,12 @@ export class CollaboratorsListComponent implements OnInit {
         this.dataSource.data = [];
         this.noDataMessage = 'Error al cargar los datos. Por favor, inténtalo de nuevo.';
         this.resetPagination();
-        return of([]);
+        this.cdr.markForCheck();
+        return EMPTY;
       }),
       finalize(() => {
-      this.loading = false;
+        this.loading = false;
+        this.cdr.markForCheck();
     })
     ).subscribe({
       next: (employees) => {
@@ -811,6 +814,7 @@ export class CollaboratorsListComponent implements OnInit {
           this.dataSource.data = [];
           this.noDataMessage = 'No hay empleados que hayan registrado actividades durante ese periodo.';
           this.resetPagination();
+          this.cdr.markForCheck();
           return;
         }
 
@@ -851,12 +855,14 @@ export class CollaboratorsListComponent implements OnInit {
 
         // Resetear a la primera página después de cargar nuevos datos
         this.resetPagination();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error loading data:', err);
         this.dataSource.data = [];
         this.noDataMessage = 'Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo.';
         this.resetPagination();
+        this.cdr.markForCheck();
       }
     });
 
