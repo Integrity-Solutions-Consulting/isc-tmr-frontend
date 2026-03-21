@@ -154,7 +154,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
       monthlyHours: {
         // Nuevo botón para horas mensuales (solo visual)
         text: '', // Texto inicial
-        click: () => {}, // Función vacía para deshabilitar el clic
+        click: () => { }, // Función vacía para deshabilitar el clic
       },
       generateReport: {
         text: 'Generar Reporte',
@@ -270,21 +270,29 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.loadActivityTypes();
     this.loadHolidays();
-    /*this.loadProjects()
-      .pipe(take(1))
-      .subscribe(() => {
-        this.loadInitialData();
+    if (this.currentEmployeeId) {
+      this.projectService.getProjectsByUserRole(this.currentEmployeeId).subscribe({
+        next: (response) => {
+          this.projectList = response.items || response || [];
+          this.loadInitialData();
 
-        // Configurar el calendario después de la inicialización
-        setTimeout(() => {
-          this.calendar = this.calendarComponent.getApi();
+          // Configurar el calendario después de la inicialización
+          setTimeout(() => {
+            if (this.calendarComponent) {
+              this.calendar = this.calendarComponent.getApi();
 
-          // Actualizar el botón cuando cambia el mes
-          this.calendar.on('datesSet', (dateInfo: any) => {
-            this.loadActivities(); // Recargar actividades para el nuevo mes
-          });
-        }, 500);
-      });*/
+              // Actualizar el botón cuando cambia el mes
+              this.calendar.on('datesSet', (dateInfo: any) => {
+                this.loadActivities(); // Recargar actividades para el nuevo mes
+              });
+            }
+          }, 500);
+        },
+        error: (error) => {
+          console.error('Error loading projects on init:', error);
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -1168,7 +1176,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
           console.error('Error al crear actividad:', error);
           this.snackBar.open(
             'Error al crear actividad: ' +
-              (error.error?.message || error.message || 'Error desconocido'),
+            (error.error?.message || error.message || 'Error desconocido'),
             'Cerrar',
           );
         }
@@ -1701,7 +1709,7 @@ export class DailyActivitiesComponent implements AfterViewInit, OnDestroy {
         } else {
           this.snackBar.open(
             'Error al mover actividad: ' +
-              (error.error?.message || error.message),
+            (error.error?.message || error.message),
             'Cerrar',
           );
         }
