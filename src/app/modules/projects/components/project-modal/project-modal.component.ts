@@ -279,11 +279,11 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       this.pageSize,
       this.currentSearch
     ).subscribe({
-      next: (resp) => {
-        //this.leaders = resp.items ?? resp; // Manejar ambos casos: con o sin wrapper "items"
-        this.formattedLeaders = this.leaders.map(leader => ({
+      next: (resp: any) => {
+        this.leaders = resp.items ? resp.items : resp;
+        this.formattedLeaders = this.leaders.map((leader: any) => ({
           id: leader.id,
-          fullName: `${leader.person.firstName} ${leader.person.lastName}`
+          fullName: `${leader.firstName} ${leader.lastName}`
         }));
         this.isLoadingLeaders = false;
       },
