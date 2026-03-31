@@ -115,14 +115,12 @@ export class ChangePasswordComponent implements OnInit {
         return;
       }
 
-      // Codificar el token para incluirlo como parámetro en la URL
-      const encodedToken = encodeURIComponent(token);
-
-      // Cambiar el body para usar los nombres de campo requeridos por el nuevo endpoint
+      // Cambiar el body para usar los nombres de campo requeridos por el nuevo endpoint, incluyendo el token
       const body = {
         currentPassword: oldPassword,
         newPassword: newPassword,
         confirmPassword: confirmPassword,
+        token: token,
       };
 
       // Agregar headers para especificar que esperamos JSON
@@ -130,10 +128,10 @@ export class ChangePasswordComponent implements OnInit {
         'Content-Type': 'application/json',
       });
 
-      // Cambiar a POST y al nuevo endpoint con el token como parámetro
+      // Cambiar a POST y al nuevo endpoint con el token en el body
       this.http
         .post(
-          `${this.urlBase}/api/auth/change-password?token=${encodedToken}`,
+          `${this.urlBase}/api/auth/change-password`,
           body,
           {
             headers: headers,
