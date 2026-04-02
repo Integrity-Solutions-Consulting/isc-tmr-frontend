@@ -21,6 +21,12 @@ export class AuthInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
+    // Rutas públicas que no requieren token ni validación de expiración
+    const publicUrls = ['/api/auth/login', '/api/auth/recuperar-password', '/api/auth/reset-password'];
+    if (publicUrls.some(url => request.url.includes(url))) {
+      return next.handle(request);
+    }
+
     const token = this.authService.getToken();
 
     // Validar expiración antes de enviar request
