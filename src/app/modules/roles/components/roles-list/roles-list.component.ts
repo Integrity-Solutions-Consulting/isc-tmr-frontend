@@ -72,6 +72,9 @@ export class RolesListComponent implements OnInit, AfterViewInit {
   }
 
   formatModules(modules: any[]): string {
+    if (!modules || !Array.isArray(modules)) {
+      return '';
+    }
     return modules.map(m => m.moduleName).join(', ');
   }
 
@@ -81,15 +84,9 @@ export class RolesListComponent implements OnInit, AfterViewInit {
       data: { role, modules: this.allModules }
     });
 
-    dialogRef.afterClosed().subscribe(updatedRole => {
-      if (updatedRole) {
-        // Actualizamos directamente el datasource con el rol modificado
-        const data = this.dataSource.data;
-        const index = data.findIndex(r => r.id === role.id);
-        if (index !== -1) {
-          data[index] = updatedRole;
-          this.dataSource.data = data;
-        }
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadRoles(); // Recargar datos en lugar de reemplazarlo con boolean
       }
     });
   }
@@ -113,15 +110,9 @@ export class RolesListComponent implements OnInit, AfterViewInit {
       data: { role }
     });
 
-    dialogRef.afterClosed().subscribe(updatedRole => {
-      if (updatedRole) {
-        // Actualizamos directamente el datasource con el rol modificado
-        const data = this.dataSource.data;
-        const index = data.findIndex(r => r.id === role.id);
-        if (index !== -1) {
-          data[index] = updatedRole;
-          this.dataSource.data = data;
-        }
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadRoles(); // Recargar datos en lugar de reemplazarlo con boolean
       }
     });
   }
