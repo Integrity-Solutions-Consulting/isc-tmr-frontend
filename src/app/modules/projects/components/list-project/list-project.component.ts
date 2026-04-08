@@ -25,6 +25,8 @@ import { AssignmentDialogComponent } from '../assignment-dialog/assignment-dialo
 import { MatMenuModule } from '@angular/material/menu';
 import Fuse, { IFuseOptions } from 'fuse.js';
 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 @Injectable()
 export class ProjectPaginatorIntl implements MatPaginatorIntl {
     changes = new Subject<void>();
@@ -63,6 +65,7 @@ interface ProjectWithIndex extends Project {
         MatInputModule,
         MatMenuModule,
         MatSortModule,
+        MatButtonToggleModule,
         MatPaginatorModule,
         MatTooltipModule,
         ReactiveFormsModule
@@ -113,10 +116,11 @@ export class ListProjectComponent implements OnInit {
 
     searchControl = new FormControl('');
     currentSearchTerm: string = '';
+    statusFilterControl = new FormControl('active');
 
     selection = new SelectionModel<any>(true, []);
 
-    displayedColumns: string[] = ['code', 'name', 'description', 'startDate', 'endDate', 'leader', 'options'];
+    displayedColumns: string[] = ['code', 'name', 'description', 'startDate', 'endDate', 'leader', 'status', 'options'];
 
     readonly projectCodesMap: { [key: string]: string } = {
         '1': 'Planificación',
@@ -159,6 +163,10 @@ export class ListProjectComponent implements OnInit {
 
     ngOnInit(): void {
         this.setupSearchControl();
+        this.statusFilterControl.valueChanges.subscribe(() => {
+            this.currentPage = 0;
+            this.applyFuseFilter(this.currentSearch);
+        });
         this.loadAllProjectsForClient(this.currentPage + 1, this.pageSize, this.currentSearch);
     }
 
@@ -228,6 +236,13 @@ export class ListProjectComponent implements OnInit {
             const searchResults = this.fuse.search(searchTerm);
             // Extrae solo el objeto Project del resultado
             filteredData = searchResults.map(result => result.item);
+        }
+
+        const statusFilter = this.statusFilterControl.value;
+        if (statusFilter === 'active') {
+            filteredData = filteredData.filter(p => p.status === true);
+        } else if (statusFilter === 'inactive') {
+            filteredData = filteredData.filter(p => p.status === false);
         }
 
         // Actualiza el paginador y la tabla con los resultados filtrados

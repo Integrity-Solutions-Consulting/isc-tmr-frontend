@@ -26,6 +26,7 @@ import { MatNativeDateModule, provideNativeDateAdapter, DateAdapter, MAT_DATE_FO
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter, MomentDateModule } from '@angular/material-moment-adapter';
 import { MatMenuModule } from '@angular/material/menu';
 import Fuse, { IFuseOptions } from 'fuse.js';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -76,6 +77,7 @@ export class EmployeePaginatorIntl implements MatPaginatorIntl {
     MatSortModule,
     MatPaginatorModule,
     MatTooltipModule,
+    MatButtonToggleModule,
     ReactiveFormsModule
   ],
   providers: [
@@ -112,6 +114,7 @@ export class EmployeeListComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   searchControl = new FormControl('');
+  statusFilterControl = new FormControl('active');
 
   readonly identificationTypesMap: {[key: number]: string} = {
     1: 'Cédula',
@@ -176,6 +179,18 @@ export class EmployeeListComponent implements AfterViewInit {
         this.loadEmployees(this.currentPage + 1, this.pageSize, this.currentSearch);
       }
     });
+
+    this.statusFilterControl.valueChanges.subscribe(() => {
+      this.currentPage = 0;
+      if (this.paginator) {
+        this.paginator.firstPage();
+      }
+      if (this.useClientSideSearch) {
+        this.applyClientSideSearch(this.currentSearch);
+      } else {
+        this.loadEmployees(this.currentPage + 1, this.pageSize, this.currentSearch);
+      }
+    });
   }
 
   loadEmployees(pageNumber: number = 1, pageSize: number = 10, search: string = ''): void {
@@ -189,10 +204,17 @@ export class EmployeeListComponent implements AfterViewInit {
     this.employeeService.getEmployees(pageNumber, pageSize, search).subscribe({
       next: (response) => {
         if (response?.items) {
-          const employees = response.items;
+          let employees = response.items;
+
+          const statusFilter = this.statusFilterControl.value;
+          if (statusFilter === 'active') {
+              employees = employees.filter(p => p.status === true);
+          } else if (statusFilter === 'inactive') {
+              employees = employees.filter(p => p.status === false);
+          }
 
           this.dataSource.data = employees;
-          this.totalItems = response.totalItems;
+          this.totalItems = employees.length; // Local filter overrides total length for current page
           this.pageSize = response.pageSize;
           this.currentPage = response.pageNumber - 1;
 
@@ -272,20 +294,37 @@ export class EmployeeListComponent implements AfterViewInit {
 
     // Perform search with Fuse.js
     const searchResults = this.fuse.search(searchTerm);
-    const filteredEmployees = searchResults.map(result => result.item);
+    let filteredEmployees = searchResults.map(result => result.item);
+
+    const statusFilter = this.statusFilterControl.value;
+    if (statusFilter === 'active') {
+        filteredEmployees = filteredEmployees.filter(p => p.status === true);
+    } else if (statusFilter === 'inactive') {
+        filteredEmployees = filteredEmployees.filter(p => p.status === false);
+    }
 
     this.updateDataSourceWithPagination(filteredEmployees);
   }
 
   private updateDataSourceWithPagination(employees: Employee[]): void {
-    this.totalItems = employees.length;
+    let filteredEmployees = employees;
+    if (!this.currentSearch.trim()) {
+        const statusFilter = this.statusFilterControl.value;
+        if (statusFilter === 'active') {
+            filteredEmployees = filteredEmployees.filter(p => p.status === true);
+        } else if (statusFilter === 'inactive') {
+            filteredEmployees = filteredEmployees.filter(p => p.status === false);
+        }
+    }
+
+    this.totalItems = filteredEmployees.length;
 
     // Check and adjust pageIndex if it's out of bounds after filtering
     const maxPageIndex = Math.max(0, Math.ceil(this.totalItems / this.pageSize) - 1);
     this.currentPage = Math.min(this.currentPage, maxPageIndex);
 
     const startIndex = this.currentPage * this.pageSize;
-    const paginatedEmployees = employees.slice(startIndex, startIndex + this.pageSize);
+    const paginatedEmployees = filteredEmployees.slice(startIndex, startIndex + this.pageSize);
 
     this.dataSource.data = paginatedEmployees;
 
