@@ -25,6 +25,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { AssignmentLeaderDialogComponent } from '../leader-assignment/leader-assignment.component';
 import Fuse, { IFuseOptions } from 'fuse.js';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Injectable()
 export class LeaderPaginatorIntl implements MatPaginatorIntl {
@@ -62,6 +63,7 @@ export class LeaderPaginatorIntl implements MatPaginatorIntl {
     MatSortModule,
     MatPaginatorModule,
     MatTooltipModule,
+    MatButtonToggleModule,
     ReactiveFormsModule
   ],
   providers: [
@@ -131,6 +133,7 @@ export class LeaderListComponent implements OnInit{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   searchControl = new FormControl('');
+  statusFilterControl = new FormControl('active');
 
   displayedColumns: string[] = ['idnumber', 'leadertype', 'names', 'status', 'contact', 'options'];
 
@@ -140,6 +143,14 @@ export class LeaderListComponent implements OnInit{
   currentSearch: string = '';
 
   ngOnInit(): void {
+      this.statusFilterControl.valueChanges.subscribe(() => {
+          this.currentPage = 0;
+          if (this.paginator) {
+              this.paginator.firstPage();
+          }
+          this.loadAllLeaders(1, this.pageSize, this.currentSearch);
+      });
+
       this.loadAllLeaders(this.currentPage + 1, this.pageSize, this.currentSearch);
 
       this.searchControl.valueChanges.pipe(
@@ -181,9 +192,18 @@ export class LeaderListComponent implements OnInit{
         next: (response) => {
           if (response?.items) {
 
-            this.dataSource.data = response.items;
+            let items = response.items;
 
-            this.totalItems = response.totalItems;
+            const statusFilter = this.statusFilterControl.value;
+            if (statusFilter === 'active') {
+                items = items.filter(p => p.status === true);
+            } else if (statusFilter === 'inactive') {
+                items = items.filter(p => p.status === false);
+            }
+
+            this.dataSource.data = items;
+
+            this.totalItems = response.totalItems; 
             this.pageSize = response.pageSize;
             this.currentPage = response.pageNumber - 1;
 

@@ -281,7 +281,8 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       this.currentSearch
     ).subscribe({
       next: (resp: any) => {
-        this.leaders = resp.items ? resp.items : resp;
+        const allLeaders = resp.items ? resp.items : resp;
+        this.leaders = allLeaders.filter((l: any) => l.status === true);
         this.formattedLeaders = this.leaders.map((leader: any) => ({
           id: leader.id,
           fullName: `${leader.firstName} ${leader.lastName}`
