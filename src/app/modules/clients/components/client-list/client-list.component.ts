@@ -179,7 +179,7 @@ export class ClientListComponent implements OnInit{
             }
 
             this.dataSource.data = items;
-            this.totalItems = items.length; // Override totalItems dynamically
+            this.totalItems = response.totalItems; 
             this.pageSize = response.pageSize;
             this.currentPage = response.pageNumber - 1;
 
