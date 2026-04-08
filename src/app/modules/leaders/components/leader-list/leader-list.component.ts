@@ -203,7 +203,7 @@ export class LeaderListComponent implements OnInit{
 
             this.dataSource.data = items;
 
-            this.totalItems = items.length; // Override dynamically
+            this.totalItems = response.totalItems; 
             this.pageSize = response.pageSize;
             this.currentPage = response.pageNumber - 1;
 

@@ -214,7 +214,7 @@ export class EmployeeListComponent implements AfterViewInit {
           }
 
           this.dataSource.data = employees;
-          this.totalItems = employees.length; // Local filter overrides total length for current page
+          this.totalItems = response.totalItems; 
           this.pageSize = response.pageSize;
           this.currentPage = response.pageNumber - 1;
 
