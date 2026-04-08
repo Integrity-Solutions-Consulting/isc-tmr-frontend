@@ -19,7 +19,23 @@
       </button>
     </mat-form-field>
 
-    <button mat-flat-button class="add-button" (click)="openCreateDialog()">
+    <div class="period-toggle-container" style="margin-left: 20px; display: inline-block;">
+      <mat-button-toggle-group
+        [formControl]="statusFilterControl"
+        class="period-toggle-group">
+        <mat-button-toggle value="all" class="period-toggle-button">
+          Todos
+        </mat-button-toggle>
+        <mat-button-toggle value="active" class="period-toggle-button">
+          Activos
+        </mat-button-toggle>
+        <mat-button-toggle value="inactive" class="period-toggle-button">
+          Inactivos
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <button mat-flat-button class="add-button" style="margin-left: auto;" (click)="openCreateDialog()">
       <mat-icon>add</mat-icon>
         Agregar Nuevo
     </button>

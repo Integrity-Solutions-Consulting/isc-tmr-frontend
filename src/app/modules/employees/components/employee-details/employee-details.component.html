@@ -147,6 +147,20 @@
           </div>
         </div>
       </div>
+
+      <!-- Sección de proyectos -->
+      <div class="contact-section" *ngIf="employee.assignedProjects && employee.assignedProjects.length > 0" style="margin-top: 20px;">
+        <h3 class="section-title">PROYECTOS ASIGNADOS</h3>
+        <div class="contact-grid">
+          <div class="contact-item" *ngFor="let project of employee.assignedProjects" style="align-items: flex-start;">
+            <mat-icon class="contact-icon" style="margin-top: 5px;">assignment</mat-icon>
+            <div style="display: flex; flex-direction: column;">
+              <span class="contact-value" style="font-weight: 500;">{{project.projectName}}</span>
+              <span class="contact-value" style="font-size: 0.9em; opacity: 0.8;">Cliente: {{project.clientName}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </mat-card-content>
 
     <!-- Acciones -->
