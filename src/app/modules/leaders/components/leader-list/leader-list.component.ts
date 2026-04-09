@@ -187,21 +187,19 @@ export class LeaderListComponent implements OnInit{
     search: string = ''
   ): void {
 
-    this.leaderService.getAllLeaders(pageNumber, pageSize, search)
+    let backendSearch = search;
+    const statusFilter = this.statusFilterControl.value;
+    if (statusFilter === 'active') {
+        backendSearch = (search + " |activo|").trim();
+    } else if (statusFilter === 'inactive') {
+        backendSearch = (search + " |inactivo|").trim();
+    }
+
+    this.leaderService.getAllLeaders(pageNumber, pageSize, backendSearch)
       .subscribe({
         next: (response) => {
           if (response?.items) {
-
-            let items = response.items;
-
-            const statusFilter = this.statusFilterControl.value;
-            if (statusFilter === 'active') {
-                items = items.filter(p => p.status === true);
-            } else if (statusFilter === 'inactive') {
-                items = items.filter(p => p.status === false);
-            }
-
-            this.dataSource.data = items;
+            this.dataSource.data = response.items;
 
             this.totalItems = response.totalItems; 
             this.pageSize = response.pageSize;

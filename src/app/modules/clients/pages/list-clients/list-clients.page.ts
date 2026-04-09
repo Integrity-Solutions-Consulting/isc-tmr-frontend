@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Client } from '../../interfaces/client.interface';
 import { ClientListComponent } from '../../components/client-list/client-list.component';
 import { MatCardModule } from '@angular/material/card';
@@ -10,6 +11,7 @@ import { ClientService } from '../../services/client.service';
   selector: 'list-customers',
   standalone: true,
   imports:[
+    CommonModule,
     ClientListComponent,
     LoadingComponent,
     MatCardModule
