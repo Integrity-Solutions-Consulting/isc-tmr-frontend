@@ -19,7 +19,7 @@
       </button>
     </mat-form-field>
 
-    <div class="period-toggle-container" style="margin-left: 20px; display: inline-block;">
+    <div class="period-toggle-container">
       <mat-button-toggle-group
         [formControl]="statusFilterControl"
         class="period-toggle-group">
@@ -35,10 +35,12 @@
       </mat-button-toggle-group>
     </div>
 
-    <button mat-flat-button class="add-button" style="margin-left: auto;" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
+    <div class="actions-group">
+      <button mat-flat-button class="add-button" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
         Agregar Nuevo
-    </button>
+      </button>
+    </div>
   </div>
 
   <table mat-table [dataSource]="dataSource" matSort style="border-radius: 8px 8px 0 0; overflow: hidden;">

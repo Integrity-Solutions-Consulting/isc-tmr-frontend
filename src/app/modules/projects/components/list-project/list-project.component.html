@@ -9,7 +9,7 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <div class="period-toggle-container" style="margin-left: 20px;">
+    <div class="period-toggle-container">
       <mat-button-toggle-group
         [formControl]="statusFilterControl"
         class="period-toggle-group">
@@ -25,17 +25,17 @@
       </mat-button-toggle-group>
     </div>
 
-    <button mat-flat-button class="add-button mb-20" style="margin-left: auto;" (click)="downloadProjects()">
-      <mat-icon>download</mat-icon>
-      Descargar Proyectos
-    </button>
+    <div class="actions-group">
+      <button mat-flat-button class="add-button" (click)="downloadProjects()">
+        <mat-icon>download</mat-icon>
+        Descargar Proyectos
+      </button>
 
-    <button mat-flat-button class="add-button mb-20" (click)="openCreateDialog()">
+      <button mat-flat-button class="add-button" (click)="openCreateDialog()">
         <mat-icon>add</mat-icon>
         Agregar Nuevo
-    </button>
-
-
+      </button>
+    </div>
   </div>
 
   <table mat-table [dataSource]="dataSource" matSort style="border-radius: 8px 8px 0 0; overflow: hidden;">

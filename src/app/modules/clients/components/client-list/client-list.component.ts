@@ -166,19 +166,18 @@ export class ClientListComponent implements OnInit{
   };
 
   loadClients(pageNumber: number = 1, pageSize: number = 10, search: string = ''): void {
-    this.clientService.getClients(pageNumber, pageSize, search).subscribe({
+    let backendSearch = search;
+    const statusFilter = this.statusFilterControl.value;
+    if (statusFilter === 'active') {
+        backendSearch = (search + " |activo|").trim();
+    } else if (statusFilter === 'inactive') {
+        backendSearch = (search + " |inactivo|").trim();
+    }
+
+    this.clientService.getClients(pageNumber, pageSize, backendSearch).subscribe({
       next: (response) => {
         if (response?.items) {
-            let items = response.items;
-
-            const statusFilter = this.statusFilterControl.value;
-            if (statusFilter === 'active') {
-                items = items.filter(p => p.status === true);
-            } else if (statusFilter === 'inactive') {
-                items = items.filter(p => p.status === false);
-            }
-
-            this.dataSource.data = items;
+            this.dataSource.data = response.items;
             this.totalItems = response.totalItems; 
             this.pageSize = response.pageSize;
             this.currentPage = response.pageNumber - 1;
