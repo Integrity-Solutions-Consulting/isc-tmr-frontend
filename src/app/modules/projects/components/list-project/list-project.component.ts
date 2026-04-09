@@ -17,6 +17,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { ProjectModalComponent } from '../project-modal/project-modal.component';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
@@ -63,6 +64,7 @@ interface ProjectWithIndex extends Project {
         MatButtonModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSelectModule,
         MatMenuModule,
         MatSortModule,
         MatButtonToggleModule,
@@ -117,10 +119,29 @@ export class ListProjectComponent implements OnInit {
     searchControl = new FormControl('');
     currentSearchTerm: string = '';
     statusFilterControl = new FormControl('active');
+    projectStatusFilterControl = new FormControl('all');
 
     selection = new SelectionModel<any>(true, []);
 
-    displayedColumns: string[] = ['code', 'name', 'description', 'startDate', 'endDate', 'leader', 'status', 'options'];
+    displayedColumns: string[] = ['code', 'name', 'description', 'startDate', 'endDate', 'leader', 'projectType', 'status', 'options'];
+
+    readonly statusFilterOptions = [
+        { value: 'all', label: 'Todos' },
+        { value: 'active', label: 'Activos' },
+        { value: 'inactive', label: 'Inactivos' },
+    ];
+
+    readonly projectStatusFilterOptions = [
+        { value: 'all', label: 'Todos los estados' },
+        { value: '1', label: 'Planificación' },
+        { value: '2', label: 'Aprobado' },
+        { value: '3', label: 'En Progreso' },
+        { value: '4', label: 'En Espera' },
+        { value: '5', label: 'Cancelado' },
+        { value: '6', label: 'Completado' },
+        { value: '7', label: 'Aplazado' },
+        { value: '8', label: 'En Espera de Cliente' },
+    ];
 
     readonly projectCodesMap: { [key: string]: string } = {
         '1': 'Planificación',
@@ -129,7 +150,8 @@ export class ListProjectComponent implements OnInit {
         '4': 'En Espera',
         '5': 'Cancelado',
         '6': 'Completado',
-        '7': 'Aplazado'
+        '7': 'Aplazado',
+        '8': 'En Espera de Cliente'
     }
 
     totalItems: number = 0;
@@ -149,8 +171,8 @@ export class ListProjectComponent implements OnInit {
              case 'endDate':
                return new Date(item[property]).getTime();
              case 'leader':
-               return this.getLeaderName(item).toLowerCase();
-             case 'name':
+               return this.getLeaderName(item).toLowerCase();             case 'projectType':
+               return this.getProjectStatusName(item.projectTypeID).toLowerCase();             case 'name':
              case 'code':
              case 'description':
                return item[property]?.toLowerCase() || '';
@@ -164,6 +186,10 @@ export class ListProjectComponent implements OnInit {
     ngOnInit(): void {
         this.setupSearchControl();
         this.statusFilterControl.valueChanges.subscribe(() => {
+            this.currentPage = 0;
+            this.applyFuseFilter(this.currentSearch);
+        });
+        this.projectStatusFilterControl.valueChanges.subscribe(() => {
             this.currentPage = 0;
             this.applyFuseFilter(this.currentSearch);
         });
@@ -243,6 +269,11 @@ export class ListProjectComponent implements OnInit {
             filteredData = filteredData.filter(p => p.status === true);
         } else if (statusFilter === 'inactive') {
             filteredData = filteredData.filter(p => p.status === false);
+        }
+
+        const projectStatusFilter = this.projectStatusFilterControl.value;
+        if (projectStatusFilter && projectStatusFilter !== 'all') {
+            filteredData = filteredData.filter(p => String(p.projectStatusID) === projectStatusFilter);
         }
 
         // Actualiza el paginador y la tabla con los resultados filtrados
@@ -348,8 +379,24 @@ export class ListProjectComponent implements OnInit {
         }
     }
 
-    getProjectStatusName(projectStatusId: number): string {
-        return this.projectCodesMap[projectStatusId] || 'Desconocido';
+    getProjectStatusName(projectStatusId: number | string): string {
+        const key = String(projectStatusId);
+        return this.projectCodesMap[key] || 'Desconocido';
+    }
+
+    getProjectStatusClass(projectStatusId: number | string): string {
+        const statusName = this.getProjectStatusName(projectStatusId);
+        switch (statusName) {
+            case 'Planificación': return 'planning';
+            case 'Aprobado': return 'approved';
+            case 'En Progreso': return 'in-progress';
+            case 'En Espera': return 'on-hold';
+            case 'Cancelado': return 'cancelled';
+            case 'Completado': return 'completed';
+            case 'Aplazado': return 'postponed';
+            case 'En Espera de Cliente': return 'waiting-client';
+            default: return 'unknown';
+        }
     }
 
     isAllSelected() {
@@ -378,7 +425,7 @@ export class ListProjectComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.loadProjects(this.currentPage + 1, this.pageSize, this.currentSearch);
+                this.reloadAllProjectsAfterAction();
                 this.snackBar.open("Proyecto creado con éxito", "Cerrar", { duration: 5000 });
             }
         });
@@ -397,7 +444,7 @@ export class ListProjectComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.loadProjects(this.currentPage + 1, this.pageSize, this.currentSearch);
+                this.reloadAllProjectsAfterAction();
                 this.snackBar.open("Proyecto actualizado con éxito", "Cerrar", { duration: 5000 });
             }
         });
@@ -429,7 +476,7 @@ export class ListProjectComponent implements OnInit {
                     }).subscribe({
                         next: () => {
                             this.snackBar.open('Proyecto desactivado con éxito', 'Cerrar', { duration: 3000 });
-                            this.loadProjects();
+                            this.reloadAllProjectsAfterAction();
                         },
                         error: (err) => {
                             this.snackBar.open('Error al desactivar proyecto', 'Cerrar', { duration: 3000 });
@@ -450,7 +497,7 @@ export class ListProjectComponent implements OnInit {
                     }).subscribe({
                         next: () => {
                             this.snackBar.open('Proyecto activado con éxito', 'Cerrar', { duration: 3000 });
-                            this.loadProjects();
+                            this.reloadAllProjectsAfterAction();
                         },
                         error: (err) => {
                             this.snackBar.open('Error al activar proyecto', 'Cerrar', { duration: 3000 });
