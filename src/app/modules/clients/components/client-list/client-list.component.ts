@@ -31,6 +31,7 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Injectable()
 export class CustomerPaginatorIntl implements MatPaginatorIntl {
@@ -72,6 +73,7 @@ export class CustomerPaginatorIntl implements MatPaginatorIntl {
     MatSortModule,
     MatPaginatorModule,
     MatTooltipModule,
+    MatButtonToggleModule,
     ReactiveFormsModule
   ],
   providers: [
@@ -120,6 +122,7 @@ export class ClientListComponent implements OnInit{
   }
 
   searchControl = new FormControl('');
+  statusFilterControl = new FormControl('active');
 
   editingCustomer: any = null;
 
@@ -132,6 +135,14 @@ export class ClientListComponent implements OnInit{
   currentSearch: string = '';
 
   ngOnInit(): void {
+    this.statusFilterControl.valueChanges.subscribe(() => {
+      this.currentPage = 0;
+      if (this.paginator) {
+        this.paginator.firstPage();
+      }
+      this.loadClients(this.currentPage + 1, this.pageSize, this.currentSearch);
+    });
+
     this.loadClients(this.currentPage + 1, this.pageSize, this.currentSearch);
 
     this.searchControl.valueChanges.pipe(
@@ -140,7 +151,9 @@ export class ClientListComponent implements OnInit{
     ).subscribe(value => {
       this.currentSearch = value || ''; // Update the search string
       this.currentPage = 0;             // Reset internal 0-based page index to 0
-      this.paginator.firstPage();       // Reset MatPaginator to first page (pageIndex becomes 0)
+      if (this.paginator) {
+        this.paginator.firstPage();       // Reset MatPaginator to first page (pageIndex becomes 0)
+      }
 
       this.loadClients(this.currentPage + 1, this.pageSize, this.currentSearch);
     });
@@ -156,8 +169,17 @@ export class ClientListComponent implements OnInit{
     this.clientService.getClients(pageNumber, pageSize, search).subscribe({
       next: (response) => {
         if (response?.items) {
-            this.dataSource.data = response.items;
-            this.totalItems = response.totalItems;
+            let items = response.items;
+
+            const statusFilter = this.statusFilterControl.value;
+            if (statusFilter === 'active') {
+                items = items.filter(p => p.status === true);
+            } else if (statusFilter === 'inactive') {
+                items = items.filter(p => p.status === false);
+            }
+
+            this.dataSource.data = items;
+            this.totalItems = response.totalItems; 
             this.pageSize = response.pageSize;
             this.currentPage = response.pageNumber - 1;
 
