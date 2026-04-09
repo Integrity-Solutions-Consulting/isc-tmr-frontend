@@ -3,7 +3,6 @@
   <div class="top-items">
     <mat-form-field appearance="outline" class="search-field">
       <input matInput
-            (keyup)="applyFilter($event)"
             placeholder="Buscar por nombres, número de identificación..."
             [formControl]="searchControl"
             #input>

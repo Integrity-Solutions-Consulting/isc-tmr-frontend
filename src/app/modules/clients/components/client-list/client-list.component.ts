@@ -240,15 +240,6 @@ export class ClientListComponent implements OnInit{
     this.selection.select(...this.customers);
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
   openEditDialog(client: Client): void {
     const dialogRef = this.dialog.open(ClientModalComponent, {
       width: '800px',
