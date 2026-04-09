@@ -201,19 +201,18 @@ export class EmployeeListComponent implements AfterViewInit {
       return;
     }
 
-    this.employeeService.getEmployees(pageNumber, pageSize, search).subscribe({
+    let backendSearch = search;
+    const statusFilter = this.statusFilterControl.value;
+    if (statusFilter === 'active') {
+        backendSearch = (search + " |activo|").trim();
+    } else if (statusFilter === 'inactive') {
+        backendSearch = (search + " |inactivo|").trim();
+    }
+
+    this.employeeService.getEmployees(pageNumber, pageSize, backendSearch).subscribe({
       next: (response) => {
         if (response?.items) {
-          let employees = response.items;
-
-          const statusFilter = this.statusFilterControl.value;
-          if (statusFilter === 'active') {
-              employees = employees.filter(p => p.status === true);
-          } else if (statusFilter === 'inactive') {
-              employees = employees.filter(p => p.status === false);
-          }
-
-          this.dataSource.data = employees;
+          this.dataSource.data = response.items;
           this.totalItems = response.totalItems; 
           this.pageSize = response.pageSize;
           this.currentPage = response.pageNumber - 1;

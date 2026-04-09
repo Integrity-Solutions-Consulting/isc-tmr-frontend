@@ -3,14 +3,13 @@
   <div class="top-items">
     <mat-form-field appearance="outline" class="search-field">
       <input matInput
-            (keyup)="applyFilter($event)"
             placeholder="Buscar por nombres, número de identificación..."
             [formControl]="searchControl"
             #input>
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <div class="period-toggle-container" style="margin-left: 20px;">
+    <div class="period-toggle-container">
       <mat-button-toggle-group
         [formControl]="statusFilterControl"
         class="period-toggle-group">
@@ -26,10 +25,12 @@
       </mat-button-toggle-group>
     </div>
 
-    <button mat-flat-button class="add-button" style="margin-left: auto;" (click)="openCreateDialog()">
+    <div class="actions-group">
+      <button mat-flat-button class="add-button" (click)="openCreateDialog()">
         <mat-icon>add</mat-icon>
         Agregar Nuevo
-    </button>
+      </button>
+    </div>
   </div>
 
   <table mat-table [dataSource]="dataSource" matSort style="border-radius: 8px 8px 0 0; overflow: hidden;">
