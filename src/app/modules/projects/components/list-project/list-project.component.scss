@@ -131,6 +131,13 @@ td.mat-cell {
 .period-toggle-container {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.status-select,
+.project-status-select {
+  min-width: 180px;
+  margin-top: 19px;
 }
 
 .period-toggle-group {
@@ -200,6 +207,114 @@ td.mat-cell {
 
     .status-text {
       color: #F44336; // Rojo
+    }
+  }
+
+  &.planning {
+    background-color: rgba(33, 150, 243, 0.1); // Azul claro
+
+    .status-dot {
+      background-color: #2196F3; // Azul
+    }
+
+    .status-text {
+      color: #2196F3; // Azul
+    }
+  }
+
+  &.approved {
+    background-color: rgba(76, 175, 80, 0.1); // Verde claro
+
+    .status-dot {
+      background-color: #4CAF50; // Verde
+    }
+
+    .status-text {
+      color: #4CAF50; // Verde
+    }
+  }
+
+  &.in-progress {
+    background-color: rgba(25, 118, 210, 0.1); // Azul oscuro claro
+
+    .status-dot {
+      background-color: #1976D2; // Azul oscuro
+    }
+
+    .status-text {
+      color: #1976D2; // Azul oscuro
+    }
+  }
+
+  &.on-hold {
+    background-color: rgba(255, 193, 7, 0.1); // Amarillo claro
+
+    .status-dot {
+      background-color: #FFC107; // Amarillo
+    }
+
+    .status-text {
+      color: #FFC107; // Amarillo
+    }
+  }
+
+  &.cancelled {
+    background-color: rgba(244, 67, 54, 0.1); // Rojo claro
+
+    .status-dot {
+      background-color: #F44336; // Rojo
+    }
+
+    .status-text {
+      color: #F44336; // Rojo
+    }
+  }
+
+  &.completed {
+    background-color: rgba(56, 142, 60, 0.1); // Verde oscuro claro
+
+    .status-dot {
+      background-color: #388E3C; // Verde oscuro
+    }
+
+    .status-text {
+      color: #388E3C; // Verde oscuro
+    }
+  }
+
+  &.postponed {
+    background-color: rgba(255, 87, 34, 0.1); // Naranja claro
+
+    .status-dot {
+      background-color: #FF5722; // Naranja
+    }
+
+    .status-text {
+      color: #FF5722; // Naranja
+    }
+  }
+
+  &.waiting-client {
+    background-color: rgba(96, 96, 96, 0.1); // Gris claro
+
+    .status-dot {
+      background-color: #606060; // Gris
+    }
+
+    .status-text {
+      color: #606060; // Gris
+    }
+  }
+
+  &.unknown {
+    background-color: rgba(158, 158, 158, 0.1); // Gris medio claro
+
+    .status-dot {
+      background-color: #9E9E9E; // Gris medio
+    }
+
+    .status-text {
+      color: #9E9E9E; // Gris medio
     }
   }
 }

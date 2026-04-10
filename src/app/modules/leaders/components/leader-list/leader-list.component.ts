@@ -19,6 +19,7 @@ import { ProjectService } from '../../../projects/services/project.service';
 import { Project, ProjectWithID } from '../../../projects/interfaces/project.interface';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -60,6 +61,7 @@ export class LeaderPaginatorIntl implements MatPaginatorIntl {
     MatMenuModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatSortModule,
     MatPaginatorModule,
     MatTooltipModule,
