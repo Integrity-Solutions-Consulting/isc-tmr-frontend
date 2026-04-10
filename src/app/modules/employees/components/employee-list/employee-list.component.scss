@@ -107,6 +107,12 @@ td.mat-cell {
 .period-toggle-container {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.status-select {
+  min-width: 180px;
+  margin-top: 19px;
 }
 
 .period-toggle-group {

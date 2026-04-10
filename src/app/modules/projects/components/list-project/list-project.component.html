@@ -10,19 +10,23 @@
     </mat-form-field>
 
     <div class="period-toggle-container">
-      <mat-button-toggle-group
-        [formControl]="statusFilterControl"
-        class="period-toggle-group">
-        <mat-button-toggle value="all" class="period-toggle-button">
-          Todos
-        </mat-button-toggle>
-        <mat-button-toggle value="active" class="period-toggle-button">
-          Activos
-        </mat-button-toggle>
-        <mat-button-toggle value="inactive" class="period-toggle-button">
-          Inactivos
-        </mat-button-toggle>
-      </mat-button-toggle-group>
+      <mat-form-field appearance="outline" class="status-select">
+        <mat-label>Estado</mat-label>
+        <mat-select [formControl]="statusFilterControl">
+          <mat-option *ngFor="let option of statusFilterOptions" [value]="option.value">
+            {{option.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="project-status-select">
+        <mat-label>Estado de Proyecto</mat-label>
+        <mat-select [formControl]="projectStatusFilterControl">
+          <mat-option *ngFor="let option of projectStatusFilterOptions" [value]="option.value">
+            {{option.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="actions-group">
@@ -58,6 +62,16 @@
     <ng-container matColumnDef="leader">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Líder Técnico </th>
       <td mat-cell *matCellDef="let element">{{getLeaderName(element)}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="projectType">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado de Proyecto </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="status-container" [ngClass]="getProjectStatusClass(element.projectStatusID)">
+          <div class="status-dot"></div>
+          <div class="status-text">{{getProjectStatusName(element.projectStatusID)}}</div>
+        </div>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="status">
