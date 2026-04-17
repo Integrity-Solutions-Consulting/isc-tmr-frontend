@@ -1,0 +1,53 @@
+<mat-card class="homologacion-card">
+  <mat-card-header>
+    <mat-card-title>Homologación de Colaboradores</mat-card-title>
+    <mat-card-subtitle>Mapeo de nombres de sistemas externos a colaboradores TMR</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="toolbar">
+      <button mat-raised-button color="primary" (click)="openAddDialog()" id="btn-agregar-homologacion">
+        <mat-icon>add</mat-icon>
+        Agregar
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="homologacion-table">
+
+        <!-- Nombre Externo -->
+        <ng-container matColumnDef="nombreExterno">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre en Sistema Externo</th>
+          <td mat-cell *matCellDef="let row">{{ row.nombreExterno }}</td>
+        </ng-container>
+
+        <!-- Colaborador TMR -->
+        <ng-container matColumnDef="nombreColaboradorTMR">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Colaborador TMR</th>
+          <td mat-cell *matCellDef="let row">{{ row.nombreColaboradorTMR }}</td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="status-badge" [class.active]="row.estado" [class.inactive]="!row.estado">
+              {{ row.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+            {{ isLoading ? 'Cargando...' : 'No hay registros de homologación.' }}
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>
